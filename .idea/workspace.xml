@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="153fa95a-8330-4b1f-b1a4-4d9832c3bc86" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapi/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/webapi/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +48,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
+    "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "preferences.lookFeel",
@@ -56,8 +57,22 @@
 }]]></component>
   <component name="RunManager">
     <configuration name="WebapiApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <envs>
+        <env name="USERNAME" value="postgres" />
+        <env name="PASSWORD" value="test123" />
+      </envs>
       <module name="webapi" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.zo.webapi.WebapiApplication" />
+      <extension name="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </extension>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -81,7 +96,7 @@
       <updated>1761639840310</updated>
       <workItem from="1761639841472" duration="4181000" />
       <workItem from="1761647587983" duration="99000" />
-      <workItem from="1761647801035" duration="36000" />
+      <workItem from="1761647801035" duration="3816000" />
     </task>
     <servers />
   </component>
