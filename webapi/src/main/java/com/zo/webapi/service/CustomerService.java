@@ -1,5 +1,7 @@
-package com.zo.webapi;
+package com.zo.webapi.service;
 
+import com.zo.webapi.model.Customer;
+import com.zo.webapi.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

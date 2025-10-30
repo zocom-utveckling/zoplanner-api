@@ -1,4 +1,4 @@
-package com.zo.webapi;
+package com.zo.webapi.model;
 
 import jakarta.persistence.*;
 
