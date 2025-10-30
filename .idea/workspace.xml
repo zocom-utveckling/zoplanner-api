@@ -12,6 +12,13 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -32,6 +39,9 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "JUnit.CustomerControllerTest.executor": "Run",
+    "JUnit.WebapiApplicationTests.contextLoads.executor": "Run",
+    "JUnit.WebapiApplicationTests.executor": "Run",
     "RequestMappingsPanelOrder0": "0",
     "RequestMappingsPanelOrder1": "1",
     "RequestMappingsPanelWidth0": "75",
@@ -50,18 +60,80 @@
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.annotationProcessors",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager">
-    <configuration name="WebapiApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+  <component name="RecentsManager">
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="com.zo.webapi.controller" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JUnit.CustomerControllerTest">
+    <configuration name="CustomerControllerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="webapi" />
-      <option name="SPRING_BOOT_MAIN_CLASS" value="com.zo.webapi.WebapiApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.zo.webapi.controller.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.zo.webapi.controller" />
+      <option name="MAIN_CLASS_NAME" value="com.zo.webapi.controller.CustomerControllerTest" />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="WebapiApplicationTests.contextLoads" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="webapi" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.zo.webapi.controller.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.zo.webapi" />
+      <option name="MAIN_CLASS_NAME" value="com.zo.webapi.WebapiApplicationTests" />
+      <option name="METHOD_NAME" value="contextLoads" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="WebapiApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <envs>
+        <env name="USERNAME" value="postgres" />
+        <env name="PASSWORD" value="test123" />
+        <env name="PORT" value="5433" />
+      </envs>
+      <module name="webapi" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.zo.webapi.WebapiApplication" />
+      <extension name="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="JUnit.CustomerControllerTest" />
+      <item itemvalue="JUnit.WebapiApplicationTests.contextLoads" />
+      <item itemvalue="Spring Boot.WebapiApplication" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.CustomerControllerTest" />
+        <item itemvalue="JUnit.WebapiApplicationTests.contextLoads" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -81,7 +153,8 @@
       <updated>1761639840310</updated>
       <workItem from="1761639841472" duration="4181000" />
       <workItem from="1761647587983" duration="99000" />
-      <workItem from="1761647801035" duration="36000" />
+      <workItem from="1761647801035" duration="12482000" />
+      <workItem from="1761734726310" duration="11324000" />
     </task>
     <servers />
   </component>
