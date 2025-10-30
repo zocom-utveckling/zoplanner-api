@@ -1,5 +1,6 @@
 package com.zo.webapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -30,9 +31,8 @@ public class Assignment {
     public Assignment() {
     }
 
-    public Assignment(Long id, String courseName, Long consultantId,
+    public Assignment(String courseName, Long consultantId,
                       LocalDate dateStart, LocalDate dateEnd, Long classId) {
-        this.id = id;
         this.courseName = courseName;
         this.consultantId = consultantId;
         this.dateStart = dateStart;
@@ -66,6 +66,7 @@ public class Assignment {
     }
 
     // Setters
+    @JsonIgnore
     public void setId(Long id) {
         this.id = id;
     }
