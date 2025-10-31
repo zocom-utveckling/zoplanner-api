@@ -3,27 +3,29 @@ package com.zo.webapi.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name="customers")
-public class Customers {
+@Table(name = "classes")
+
+public class ClassGroup {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
-    @Column(name = "name")
+
     private String name;
-    @Column(name = "city")
-    private String city;
 
-    //Constructors
-    public Customers(Long id, String name, String city) {
-        this.id = id;
+    @Column(name = "customer_id")
+    private Long customerId;
+
+    // Constructor
+
+    public ClassGroup() {}
+
+    public ClassGroup(String name, Long customerId) {
         this.name = name;
-        this.city = city;
+        this.customerId = customerId;
     }
-    public Customers() {}
 
-    //Getters and Setters
-
+    //Getters & Setters
     public Long getId() {
         return id;
     }
@@ -31,20 +33,16 @@ public class Customers {
     public void setId(Long id) {
         this.id = id;
     }
-
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
-
-    public String getCity() {
-        return city;
+    public Long getCustomerId() {
+        return customerId;
     }
-
-    public void setCity(String city) {
-        this.city = city;
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
     }
 }

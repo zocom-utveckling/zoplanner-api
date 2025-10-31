@@ -1,10 +1,13 @@
 package com.zo.webapi.controller;
 
-import com.zo.webapi.model.Customers;
+import com.zo.webapi.model.Customer;
 import com.zo.webapi.service.CustomerService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -17,7 +20,7 @@ public class CustomerController {
     }
 
     @GetMapping
-    public List<Customers> showAllCustomers() {
+    public List<Customer> showAllCustomers() {
         return customerService.getAllCustomers();
     }
 }

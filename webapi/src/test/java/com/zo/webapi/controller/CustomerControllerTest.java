@@ -1,6 +1,6 @@
 package com.zo.webapi.controller;
 
-import com.zo.webapi.model.Customers;
+import com.zo.webapi.model.Customer;
 import com.zo.webapi.service.CustomerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +27,9 @@ public class CustomerControllerTest {
     @Test
     void testShowAllCustomers_whenListNotEmpty() throws Exception {
         // Arrange
-        List<Customers> customers = List.of(
-                new Customers(1L, "Högskolan i Halmstad", "Halmstad"),
-                new Customers(2L, "Grit Academy", "Malmö")
+        List<Customer> customers = List.of(
+                new Customer(1L, "Högskolan i Halmstad", "Halmstad"),
+                new Customer(2L, "Grit Academy", "Malmö")
         );
         when(customerService.getAllCustomers()).thenReturn(customers);
 
@@ -46,7 +46,7 @@ public class CustomerControllerTest {
     @Test
     void testShowAllCustomers_whenListIsEmpty() throws Exception {
         // Arrange
-        List<Customers> customers = List.of();
+        List<Customer> customers = List.of();
         when(customerService.getAllCustomers()).thenReturn(customers);
 
         //Act & Assert
