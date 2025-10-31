@@ -50,8 +50,6 @@ CREATE DATABASE zoplanner;
 <img width="1355" height="1153" alt="image" src="https://github.com/user-attachments/assets/d4691335-832d-48a1-9291-dbd6e8c8cecb" />
 
 3. Klistra in koden i rutan och tryck på F5 eller "exicute script"
-<img width="1664" height="1232" alt="image" src="https://github.com/user-attachments/assets/7784d7c2-444e-4158-8e5e-44a970e883d9" />
-
 ```
 -- Create customers table
 CREATE TABLE customers (
@@ -95,3 +93,6 @@ CREATE TABLE sessions (
     assignment_id BIGINT REFERENCES assignments(id)
 );
 ```
+<img width="1664" height="1232" alt="image" src="https://github.com/user-attachments/assets/7784d7c2-444e-4158-8e5e-44a970e883d9" />
+
+
