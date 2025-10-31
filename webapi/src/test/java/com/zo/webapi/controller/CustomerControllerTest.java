@@ -60,4 +60,51 @@ public class CustomerControllerTest {
 
     }
 
+    @Test
+    void testShowCustomerById() throws Exception {
+        // Arrange
+        Customer customer = new Customer(1L, "Nercia Utbildning", "Malmö");
+        when(customerService.getCustomerById(customer.getId())).thenReturn(customer);
+
+        //Act & Assert
+        mockMvc.perform(get("/api/customers/{id}", customer.getId()).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Nercia Utbildning"))
+                .andExpect(jsonPath("$.city").value("Malmö"));
+
+    }
+
+    @Test
+    void testShowCustomerById_whenIdIsNotInDatabase() throws Exception {
+        // Arrange
+        when(customerService.getCustomerById(100L)).thenReturn(null);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/customers/{id}", 100L).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Customer with id 100 does not exist"));
+    }
+
+   @Test
+   void testCreateCustomer() throws Exception {
+       // Arrange
+       Customer customer = new Customer(1L, "Eslövs Folkhögskola", "Eslöv");
+       when(customerService.createCustomer(eq("Eslövs Folkhögskola"), eq("Eslöv"))).thenReturn(customer);
+
+       // Act & Assert
+       mockMvc.perform(post("/api/customers")
+                       .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                       .param("name", customer.getName())
+                       .param("city", customer.getCity()))
+               .andExpect(status().isCreated()) // или isOk() в зависимости от контроллера
+               .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+               .andExpect(jsonPath("$.id").value(1))
+               .andExpect(jsonPath("$.name").value("Eslövs Folkhögskola"))
+               .andExpect(jsonPath("$.city").value("Eslöv"));
+
+       verify(customerService).createCustomer("Eslövs Folkhögskola", "Eslöv");
+   }
+
+
+
 }

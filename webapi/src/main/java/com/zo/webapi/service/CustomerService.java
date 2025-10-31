@@ -1,10 +1,12 @@
 package com.zo.webapi.service;
 
+import com.zo.webapi.dto.CustomerUpdateDTO;
 import com.zo.webapi.model.Customer;
 import com.zo.webapi.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CustomerService {
@@ -17,4 +19,38 @@ public class CustomerService {
     public List<Customer> getAllCustomers() {
         return customerRepository.findAll();
     }
+
+    public Customer getCustomerById(Long id) {
+        return customerRepository.findById(id).orElseThrow(() -> new RuntimeException("Customer not found"));
+    }
+
+    public Customer createCustomer(String name, String city) {
+        Customer customer = new Customer();
+        customer.setName(name);
+        customer.setCity(city);
+        return customerRepository.save(customer);
+    }
+
+    public void deleteCustomer(Long id) {
+        if (!customerRepository.existsById(id)) {
+            throw new RuntimeException("Customer not found");
+        }
+        customerRepository.deleteById(id);
+    }
+
+    public Customer updateCustomer(Long id, CustomerUpdateDTO updateDto) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+
+        if (updateDto.getName() != null) {
+            customer.setName(updateDto.getName());
+        }
+        if (updateDto.getCity() != null) {
+            customer.setCity(updateDto.getCity());
+        }
+
+        return customerRepository.save(customer);
+    }
+
+
 }
