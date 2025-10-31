@@ -1,10 +1,8 @@
 package com.zo.webapi.controller;
 
-import com.zo.webapi.model.Customer;
+import com.zo.webapi.model.Customers;
 import com.zo.webapi.service.CustomerService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -29,9 +27,9 @@ public class CustomerControllerTest {
     @Test
     void testShowAllCustomers_whenListNotEmpty() throws Exception {
         // Arrange
-        List<Customer> customers = List.of(
-                new Customer(1L, "Högskolan i Halmstad", "Halmstad"),
-                new Customer(2L, "Grit Academy", "Malmö")
+        List<Customers> customers = List.of(
+                new Customers(1L, "Högskolan i Halmstad", "Halmstad"),
+                new Customers(2L, "Grit Academy", "Malmö")
         );
         when(customerService.getAllCustomers()).thenReturn(customers);
 
@@ -48,7 +46,7 @@ public class CustomerControllerTest {
     @Test
     void testShowAllCustomers_whenListIsEmpty() throws Exception {
         // Arrange
-        List<Customer> customers = List.of();
+        List<Customers> customers = List.of();
         when(customerService.getAllCustomers()).thenReturn(customers);
 
         //Act & Assert

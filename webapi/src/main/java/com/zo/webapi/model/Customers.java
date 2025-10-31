@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name="customers")
-public class Customer {
+public class Customers {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -15,12 +15,12 @@ public class Customer {
     private String city;
 
     //Constructors
-    public Customer(Long id, String name, String city) {
+    public Customers(Long id, String name, String city) {
         this.id = id;
         this.name = name;
         this.city = city;
     }
-    public Customer() {}
+    public Customers() {}
 
     //Getters and Setters
 

@@ -1,10 +1,10 @@
 package com.zo.webapi.repository;
 
-import com.zo.webapi.model.Customer;
+import com.zo.webapi.model.Customers;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CustomerRepository extends JpaRepository<Customer, Long> {
+public interface CustomerRepository extends JpaRepository<Customers, Long> {
 
 }

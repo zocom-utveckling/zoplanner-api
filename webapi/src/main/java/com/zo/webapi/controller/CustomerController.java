@@ -1,6 +1,6 @@
 package com.zo.webapi.controller;
 
-import com.zo.webapi.model.Customer;
+import com.zo.webapi.model.Customers;
 import com.zo.webapi.service.CustomerService;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +17,7 @@ public class CustomerController {
     }
 
     @GetMapping
-    public List<Customer> showAllCustomers() {
+    public List<Customers> showAllCustomers() {
         return customerService.getAllCustomers();
     }
 }

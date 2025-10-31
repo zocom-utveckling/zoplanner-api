@@ -1,6 +1,6 @@
 package com.zo.webapi.service;
 
-import com.zo.webapi.model.Customer;
+import com.zo.webapi.model.Customers;
 import com.zo.webapi.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,7 @@ public class CustomerService {
         this.customerRepository = customerRepository;
     }
 
-    public List<Customer> getAllCustomers() {
+    public List<Customers> getAllCustomers() {
         return customerRepository.findAll();
     }
 }
