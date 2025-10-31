@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="153fa95a-8330-4b1f-b1a4-4d9832c3bc86" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webapi/src/main/java/com/zo/webapi/controller/CustomerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/webapi/src/main/java/com/zo/webapi/controller/CustomerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webapi/src/main/java/com/zo/webapi/service/CustomerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/webapi/src/main/java/com/zo/webapi/service/CustomerService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webapi/src/test/java/com/zo/webapi/controller/CustomerControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/webapi/src/test/java/com/zo/webapi/controller/CustomerControllerTest.java" afterDir="false" />
-    </list>
+    <list default="true" id="153fa95a-8330-4b1f-b1a4-4d9832c3bc86" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -53,7 +48,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Spring Boot.WebapiApplication.executor": "Run",
-    "git-widget-placeholder": "feature/13-customer-crud-endpoints",
+    "git-widget-placeholder": "dev",
     "kotlin-language-version-configured": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
