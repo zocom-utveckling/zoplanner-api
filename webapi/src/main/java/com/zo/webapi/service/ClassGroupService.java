@@ -44,7 +44,7 @@ public class ClassGroupService {
         existing.setName(updatedClass.getName());
         existing.setCustomerId(updatedClass.getCustomerId());
 
-        return classGroupRepo.save(updatedClass);
+        return classGroupRepo.save(existing);
     }
 
     @Transactional
