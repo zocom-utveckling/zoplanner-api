@@ -23,12 +23,13 @@ public class ClassGroupController {
 
     @GetMapping
     public ResponseEntity<List<ClassGroup>> getAllClass() {
+
         return ResponseEntity.ok(classGroupService.getAllClass());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ClassGroup> getClassById(@PathVariable Long id) {
-        Optional<ClassGroup> cls = ClassGroupService.getClassById(id);
+        Optional<ClassGroup> cls = classGroupService.getClassById(id);  // ✅ CORRECT
         return cls.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

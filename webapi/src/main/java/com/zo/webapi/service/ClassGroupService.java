@@ -12,18 +12,18 @@ import java.util.Optional;
 @Service
 public class ClassGroupService {
 
-    private static ClassGroupRepository classGroupRepo;
+    private ClassGroupRepository classGroupRepo;
 
     @Autowired
     public ClassGroupService(ClassGroupRepository classGroupRepo) {
-        ClassGroupService.classGroupRepo = classGroupRepo;
+       this.classGroupRepo = classGroupRepo;
     }
 
     public List<ClassGroup> getAllClass() {
         return classGroupRepo.findAll();
     }
 
-    public static Optional<ClassGroup> getClassById(Long id) {
+    public Optional<ClassGroup> getClassById(Long id) {
         return classGroupRepo.findById(id);
     }
 
