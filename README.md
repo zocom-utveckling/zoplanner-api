@@ -58,7 +58,7 @@ CREATE TABLE customers (
     city VARCHAR(255)
 );
 
--- Create classes table
+-- Create class table
 CREATE TABLE classes (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255),
@@ -75,7 +75,7 @@ CREATE TABLE users (
     name VARCHAR(255)
 );
 
--- Create assignments table
+-- Create assignment table
 CREATE TABLE assignments (
     id BIGSERIAL PRIMARY KEY,
     course_name VARCHAR(255),
@@ -85,7 +85,7 @@ CREATE TABLE assignments (
     class_id BIGINT REFERENCES classes(id)
 );
 
--- Create sessions table
+-- Create schedule table
 CREATE TABLE sessions (
     id BIGSERIAL PRIMARY KEY,
     time_start TIMESTAMP,
