@@ -7,6 +7,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "assignments")
 public class Assignment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -65,7 +66,6 @@ public class Assignment {
     }
 
     // Setters
-
     public void setId(Long id) {
         this.id = id;
     }

@@ -5,9 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name="users")
-
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -92,4 +90,5 @@ public class User {
     public void setName(String name) {
         this.name = name;
     }
+
 }

@@ -1,5 +1,6 @@
 package com.zo.webapi.repository;
 
+
 import com.zo.webapi.model.Assignment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

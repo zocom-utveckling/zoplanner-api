@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-
 public class UserService {
     private final UserRepository userRepository;
 
@@ -42,10 +41,10 @@ public class UserService {
 
     //Deletes a user
     public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new IllegalArgumentException("User not found with id " + id);
-        }
-        userRepository.deleteById(id);
+       if (!userRepository.existsById(id)) {
+           throw new IllegalArgumentException("User not found with id " + id);
+       }
+       userRepository.deleteById(id);
     }
 
     //Get one user by ID
