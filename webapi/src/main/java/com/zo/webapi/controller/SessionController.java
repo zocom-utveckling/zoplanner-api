@@ -1,6 +1,5 @@
 package com.zo.webapi.controller;
 
-import com.zo.webapi.model.Assignment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
