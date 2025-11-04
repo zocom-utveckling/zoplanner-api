@@ -36,7 +36,10 @@ public class SessionService {
 
     @Transactional
     public Session createSession(Long id, Session session) {
-        if(assignmentService.getAssignmentById(id).isPresent()){
+        Optional<Assignment> assignment = assignmentService.getAssignmentById(id);
+        if(assignment.isPresent()){
+            session.setAssignment(assignment.get());
+            session.setId(null);
             return sessionRepository.save(session);
         } else return null;
     }

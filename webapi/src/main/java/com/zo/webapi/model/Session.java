@@ -1,26 +1,40 @@
 package com.zo.webapi.model;
 
+import com.fasterxml.jackson.annotation.*;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "sessions")
-
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 public class Session {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(hidden = true)
     private Long id;
 
+
+    @Schema(example = "2025-11-03 12:00", description = "När passet börjar (format: yyyy-MM-dd HH:mm)")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @Column(name = "time_start")
     private LocalDateTime timeStart;
 
+    @Schema(example = "2025-11-03 16:00", description = "När passet slutar (format: yyyy-MM-dd HH:mm)")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @Column(name = "time_end")
     private LocalDateTime timeEnd;
 
     @ManyToOne
     @JoinColumn(name = "assignment_id", nullable = false)
+    @JsonIgnoreProperties("assignment")
+    @Schema(hidden = true)
+    @JsonBackReference
     private Assignment assignment;
 
     /**
