@@ -74,7 +74,6 @@ public class Assignment {
     }
 
     // Setters
-    @JsonIgnore
     public void setId(Long id) {
         this.id = id;
     }
