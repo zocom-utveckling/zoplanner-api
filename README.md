@@ -35,7 +35,7 @@ Tryck på clone
 
 4. Följ guiden Hur man skapar environment variables i intellij
 
-5.Tryck på run 'webapiApplication'
+5. Tryck på run 'webapiApplication'
 <img width="1437" height="987" alt="image" src="https://github.com/user-attachments/assets/03f50868-2f29-4ede-a9ab-29e0438538fd" />
 
 ## Hur man skapar environment variables i intellij
