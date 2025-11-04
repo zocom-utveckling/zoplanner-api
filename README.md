@@ -1,6 +1,43 @@
 # Zoplanner-api
+## Hur man ladder ner och kör repot i IntelliJ IDEA
+1. * Installera Java JDK 21
+   * Installera IntelliJ IDEA (Community eller Ultimate)
+2. Logga in på github i IntelliJ IDEA
+   File -> Settings
+<img width="1438" height="907" alt="image" src="https://github.com/user-attachments/assets/4c8681a3-1917-42b2-a30d-29090f7ded80" />
+Version controrl
+<img width="980" height="739" alt="image" src="https://github.com/user-attachments/assets/5b60b172-2cb3-41cf-a52f-a634135fe6b9" />
 
-## Hur man skapar environment variables i intellij  
+github
+<img width="981" height="735" alt="image" src="https://github.com/user-attachments/assets/13efde85-ebd9-4944-b36d-d5d7b03014e1" />
+
+Logga in(Recomenderar via token)
+<img width="981" height="734" alt="image" src="https://github.com/user-attachments/assets/a435f2dd-e644-4181-b82a-efd165a69417" />
+
+3. Clona repot
+<img width="1443" height="910" alt="image" src="https://github.com/user-attachments/assets/7061eaa8-6b68-47b0-a289-4118970776d2" />
+
+Tryck på "github Dit namn"
+
+<img width="805" height="653" alt="image" src="https://github.com/user-attachments/assets/ee338342-d4b0-4c14-bff5-e6dccc6dbaa7" />
+
+<img width="789" height="648" alt="image" src="https://github.com/user-attachments/assets/7cf9e815-7462-4d9e-b536-43b3362bc4f6" />
+
+Här borde du se dina repos
+
+<img width="799" height="650" alt="image" src="https://github.com/user-attachments/assets/49c60f3f-4923-4998-8abd-13fdbeab7e49" />
+
+Tryck på clone
+
+3. Följ guiden Hur man skapar environment variables i intellij
+
+4.Tryck på run 'webapiApplication'
+<img width="1437" height="987" alt="image" src="https://github.com/user-attachments/assets/03f50868-2f29-4ede-a9ab-29e0438538fd" />
+
+## Hur man skapar environment variables i intellij
+
+
+
 1. Välj Main menu > Run > Edit configurations
 <img width="1466" height="636" alt="506558492-bffb6066-5b8f-4a8f-a430-c30235578e59" src="https://github.com/user-attachments/assets/7a95a2bd-10b5-41cf-932d-4d3b9f281470" />
 2. Välj Modify options > Environment variables
