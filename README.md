@@ -99,11 +99,15 @@ CREATE TABLE customers (
     city VARCHAR(255)
 );
 
--- Create class table
+-- Create classes table
 CREATE TABLE classes (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255),
-    customer_id BIGINT REFERENCES customers(id)
+    customer_id BIGINT,
+    CONSTRAINT class_customer_id_fkey 
+        FOREIGN KEY (customer_id) 
+        REFERENCES customers(id) 
+        ON DELETE CASCADE
 );
 
 -- Create users table
@@ -116,22 +120,34 @@ CREATE TABLE users (
     name VARCHAR(255)
 );
 
--- Create assignment table
+-- Create assignments table
 CREATE TABLE assignments (
     id BIGSERIAL PRIMARY KEY,
     course_name VARCHAR(255),
-    consultant_id BIGINT REFERENCES users(id),
+    consultant_id BIGINT,
     date_start DATE,
     date_end DATE,
-    class_id BIGINT REFERENCES classes(id)
+    class_id BIGINT,
+    CONSTRAINT assignment_consultant_id_fkey 
+        FOREIGN KEY (consultant_id) 
+        REFERENCES users(id) 
+        ON DELETE SET NULL,
+    CONSTRAINT assignment_class_id_fkey 
+        FOREIGN KEY (class_id) 
+        REFERENCES classes(id) 
+        ON DELETE CASCADE
 );
 
--- Create schedule table
+-- Create sessions table
 CREATE TABLE sessions (
     id BIGSERIAL PRIMARY KEY,
     time_start TIMESTAMP,
     time_end TIMESTAMP,
-    assignment_id BIGINT REFERENCES assignments(id)
+    assignment_id BIGINT,
+    CONSTRAINT schedule_assignment_id_fkey 
+        FOREIGN KEY (assignment_id) 
+        REFERENCES assignments(id) 
+        ON DELETE CASCADE
 );
 ```
 <img width="1664" height="1232" alt="image" src="https://github.com/user-attachments/assets/7784d7c2-444e-4158-8e5e-44a970e883d9" />
