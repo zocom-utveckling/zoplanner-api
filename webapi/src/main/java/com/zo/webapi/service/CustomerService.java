@@ -4,6 +4,7 @@ import com.zo.webapi.dto.CustomerUpdateDTO;
 import com.zo.webapi.model.Customer;
 import com.zo.webapi.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,7 @@ public class CustomerService {
 
     public void deleteCustomer(Long id) {
         if (!customerRepository.existsById(id)) {
-            throw new RuntimeException("Customer not found");
+            throw new RuntimeException("Customer not found with id: " + id);
         }
         customerRepository.deleteById(id);
     }

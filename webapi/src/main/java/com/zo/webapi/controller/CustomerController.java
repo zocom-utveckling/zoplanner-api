@@ -41,21 +41,14 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
         try {
             customerService.deleteCustomer(id);
             return ResponseEntity.noContent().build();
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            Throwable root = e.getRootCause();
-            String systemMessage = (root != null && root.getMessage() != null) ? root.getMessage() : e.getMessage();
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("message", systemMessage));
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("message", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "Internal server error"));
+            return ResponseEntity.notFound().build();
         }
     }
 
