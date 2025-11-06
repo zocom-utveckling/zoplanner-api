@@ -1,6 +1,7 @@
 package com.zo.webapi.controller;
 
 import com.zo.webapi.dto.CustomerUpdateDTO;
+import com.zo.webapi.model.Assignment;
 import com.zo.webapi.model.Customer;
 import com.zo.webapi.service.CustomerService;
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -25,14 +27,12 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> showCustomerById(@PathVariable Long id) {
-        Customer customer = customerService.getCustomerById(id);
-        if (customer == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("message", "Customer with id " + id + " does not exist"));
-        }
-        return ResponseEntity.ok(customer);
+    public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
+        Optional<Customer> customer = customerService.getCustomerById(id);
+        return customer.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
+
     @PostMapping
     public ResponseEntity<?> createCustomer(@RequestParam String name,
                                             @RequestParam String city) {
