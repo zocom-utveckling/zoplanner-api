@@ -1,8 +1,12 @@
 package com.zo.webapi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "assignments")
@@ -27,12 +31,16 @@ public class Assignment {
     @Column(name = "class_id")
     private Long classId;
 
-    // Constructors
-    public Assignment() {
-    }
 
-    public Assignment(String courseName, Long consultantId,
-                      LocalDate dateStart, LocalDate dateEnd, Long classId) {
+    @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, orphanRemoval = false)
+    @JsonIgnoreProperties("sessions")
+    @JsonManagedReference
+    private final List<Session> sessions = new ArrayList<>();
+
+    // Constructors
+    public Assignment() {}
+
+    public Assignment(String courseName, Long consultantId, LocalDate dateStart, LocalDate dateEnd, Long classId) {
         this.courseName = courseName;
         this.consultantId = consultantId;
         this.dateStart = dateStart;
@@ -90,4 +98,11 @@ public class Assignment {
         this.classId = classId;
     }
 
+    public List<Session> getSessions() {
+        return sessions;
+    }
+
+    public void addSession(Session session) {
+        sessions.add(session);
+    }
 }

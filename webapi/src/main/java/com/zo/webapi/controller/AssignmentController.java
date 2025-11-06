@@ -1,6 +1,8 @@
 package com.zo.webapi.controller;
 
 import com.zo.webapi.model.Assignment;
+import com.zo.webapi.model.Session;
+import com.zo.webapi.service.SessionService;
 import com.zo.webapi.service.AssignmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,10 +16,12 @@ import java.util.Optional;
 public class AssignmentController {
 
     private final AssignmentService assignmentService;
+    private final SessionService sessionService;
 
     @Autowired
-    public AssignmentController(AssignmentService assignmentService) {
+    public AssignmentController(AssignmentService assignmentService, SessionService sessionService) {
         this.assignmentService = assignmentService;
+        this.sessionService = sessionService;
     }
 
     @GetMapping
@@ -68,5 +72,19 @@ public class AssignmentController {
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    //Sessions
+    @GetMapping("/{id}/sessions")
+    public ResponseEntity<List<Session>> getSessionsByAssignmentId(@PathVariable Long id){
+        return ResponseEntity.ok(sessionService.getSessionsByAssignmentId(id));
+    }
+
+    @PostMapping("/{id}/sessions")
+    public ResponseEntity<Session> addSession(@PathVariable Long id, Session session){
+        Session result = sessionService.createSession(id, session);
+        if(result != null){
+            return ResponseEntity.ok(result);
+        } else return ResponseEntity.notFound().build();
     }
 }
