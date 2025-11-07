@@ -3,14 +3,13 @@ package com.zo.webapi.controller;
 import com.zo.webapi.model.Customer;
 import com.zo.webapi.service.CustomerService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
@@ -64,7 +63,7 @@ public class CustomerControllerTest {
     void testShowCustomerById() throws Exception {
         // Arrange
         Customer customer = new Customer(1L, "Nercia Utbildning", "Malmö");
-        when(customerService.getCustomerById(customer.getId())).thenReturn(customer);
+        when(customerService.getCustomerById(customer.getId())).thenReturn(Optional.of(customer));
 
         //Act & Assert
         mockMvc.perform(get("/api/customers/{id}", customer.getId()).contentType(MediaType.APPLICATION_JSON))
