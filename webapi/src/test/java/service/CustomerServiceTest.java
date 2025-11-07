@@ -4,6 +4,7 @@ import com.zo.webapi.dto.CustomerUpdateDTO;
 import com.zo.webapi.model.Customer;
 import com.zo.webapi.repository.CustomerRepository;
 import com.zo.webapi.service.CustomerService;
+import jakarta.validation.constraints.AssertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -54,9 +55,10 @@ public class CustomerServiceTest {
 
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
 
-        Customer found = customerService.getCustomerById(1L);
+        Optional<Customer> foundOpt = customerService.getCustomerById(1L);
 
-        assertNotNull(found);
+        assertTrue(foundOpt.isPresent());
+        Customer found = foundOpt.get();
         assertEquals("Alice", found.getName());
         assertEquals("Paris", found.getCity());
         verify(customerRepository).findById(1L);
@@ -65,8 +67,8 @@ public class CustomerServiceTest {
     @Test
     void testGetCustomerById_NotFound() {
         when(customerRepository.findById(99L)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> customerService.getCustomerById(99L));
-
+        Optional<Customer> result = customerService.getCustomerById(99L);
+        assertTrue(result.isEmpty());
         verify(customerRepository).findById(99L);
     }
 }
