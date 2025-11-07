@@ -1,16 +1,12 @@
 package com.zo.webapi.controller;
 
 import com.zo.webapi.dto.CustomerUpdateDTO;
+import com.zo.webapi.model.Assignment;
 import com.zo.webapi.model.Customer;
 import com.zo.webapi.service.CustomerService;
-import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,14 +27,12 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> showCustomerById(@PathVariable Long id) {
-        Customer customer = customerService.getCustomerById(id);
-        if (customer == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("message", "Customer with id " + id + " does not exist"));
-        }
-        return ResponseEntity.ok(customer);
+    public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
+        Optional<Customer> customer = customerService.getCustomerById(id);
+        return customer.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
+
     @PostMapping
     public ResponseEntity<?> createCustomer(@RequestParam String name,
                                             @RequestParam String city) {
@@ -46,16 +40,18 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.CREATED).body(customer);
     }
 
-   @DeleteMapping("/{id}")//if id is not found, return 404
-    public ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
         try {
             customerService.deleteCustomer(id);
             return ResponseEntity.noContent().build();
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("message", "Customer with id " + id + " does not exist"));
+            return ResponseEntity.notFound().build();
         }
     }
+
 
     @PatchMapping("/{id}")
     public ResponseEntity<Customer> updateCustomer(

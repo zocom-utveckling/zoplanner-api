@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
@@ -62,7 +63,7 @@ public class CustomerControllerTest {
     void testShowCustomerById() throws Exception {
         // Arrange
         Customer customer = new Customer(1L, "Nercia Utbildning", "Malmö");
-        when(customerService.getCustomerById(customer.getId())).thenReturn(customer);
+        when(customerService.getCustomerById(customer.getId())).thenReturn(Optional.of(customer));
 
         //Act & Assert
         mockMvc.perform(get("/api/customers/{id}", customer.getId()).contentType(MediaType.APPLICATION_JSON))
