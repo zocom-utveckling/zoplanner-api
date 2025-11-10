@@ -9,8 +9,6 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
-    env_file:
-      - .env
     volumes:
       - zoplanner-data:/var/lib/postgresql/data
     restart: unless-stopped
