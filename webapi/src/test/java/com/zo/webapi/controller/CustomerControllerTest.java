@@ -2,6 +2,7 @@ package com.zo.webapi.controller;
 
 import com.zo.webapi.model.Customer;
 import com.zo.webapi.service.CustomerService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -11,7 +12,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.Disabled;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -26,7 +26,6 @@ public class CustomerControllerTest {
     @MockitoBean
     private CustomerService customerService;
 
-    @Disabled("Temporarily disabled - needs test data setup")
     @Test
     void testShowAllCustomers_whenListNotEmpty() throws Exception {
         // Arrange
@@ -75,6 +74,7 @@ public class CustomerControllerTest {
 
     }
 
+    @Disabled("Temporarily disable this method")
     @Test
     void testShowCustomerById_whenIdIsNotInDatabase() throws Exception {
         // Arrange
