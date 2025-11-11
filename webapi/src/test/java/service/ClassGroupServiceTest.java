@@ -41,9 +41,43 @@ public class ClassGroupServiceTest {
     }
 
     @Test
+    void testGetClassById_NotFound() {
+        //Arrange
+        when(classGroupRepository.findById(99L)).thenReturn(Optional.empty());
+
+        //Act
+        Optional<ClassGroup> result = classGroupService.getClassById(99L);
+
+        // Assert
+        assertTrue(result.isEmpty(), "Expected empty Optional when class not found");
+        verify(classGroupRepository, times(1)).findById(99L);
+
+    }
+
+
+    @Test
     void testCreateClass() {
         ClassGroup newClass = new ClassGroup();
         when(classGroupRepository.save(newClass)).thenReturn(newClass);
         assertNotNull(classGroupService.createClass(newClass));
+    }
+
+    @Test
+    void testDeleteClass() {
+        when(classGroupRepository.existsById(1L)).thenReturn(true);
+        classGroupService.deleteClass(1L);
+        verify(classGroupRepository, times(1)).deleteById(1L);
+
+    }
+
+    @Test
+    void testDeleteClass_NotFound() {
+        when(classGroupRepository.existsById(99L)).thenReturn(false);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            classGroupService.deleteClass(99L);
+        });
+
+        assertEquals("Class not found with id: 99", exception.getMessage());
     }
 }

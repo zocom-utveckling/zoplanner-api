@@ -42,8 +42,10 @@ public class AssignmentServiceTest {
         when(assignmentRepository.findById(1L)).thenReturn(Optional.of(assignment));
 
         Optional<Assignment> result = assignmentService.getAssignmentById(1L);
+
         assertTrue(result.isPresent());
-        assertEquals(assignment, result.get().getId());
+        assertEquals(1L,result.get().getId());
+        verify(assignmentRepository, times(1)).findById(1L);
     }
 
     @Test
