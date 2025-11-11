@@ -1,4 +1,4 @@
-name: Build and Test
+name: CI - Build and Test Java
 
 on:
   push:
@@ -10,6 +10,26 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: zoplanner_user
+          POSTGRES_PASSWORD: zoplanner_password
+          POSTGRES_DB: zoplanner_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      PORT: 5432
+      USERNAME: zoplanner_user
+      PASSWORD: zoplanner_password
 
     steps:
       - name: Checkout code
@@ -27,7 +47,7 @@ jobs:
         working-directory: ./webapi
 
       - name: Run unit tests
-        run: mvn test -Dspring.profiles.active=test
+        run: mvn test
         working-directory: ./webapi
 
       - name: Display test results
