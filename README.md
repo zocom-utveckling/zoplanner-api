@@ -73,24 +73,75 @@ Tryck på clone
 
 <img width="1141" height="675" alt="Image" src="https://github.com/user-attachments/assets/704b5a74-4de6-4a71-8b73-b7e9f32e9da1" />
 
+## Skapa dockerimmage
+
+1. Navigera till mappen YOURPATHHERE/zoplanner-api/webapi/database
+2. Skapa en fil som hetter .env
+
+<img width="740" height="225" alt="image" src="https://github.com/user-attachments/assets/6a946323-1995-4054-a421-9531765f8047" />
+
+3. Öppna filen med en textedditor(recomenderar vscode)
+4. Klistra in koden och byt ut andvändarnman och lösen
+```
+POSTGRES_USER=YOURUSERNAMEHERE
+POSTGRES_PASSWORD=YOURPASSWORDHERE
+POSTGRES_DB=zoplanner
+```
+
+5. Starta en komandotolk
+
+<img width="975" height="506" alt="image" src="https://github.com/user-attachments/assets/abf8fdc2-c764-4816-ab37-00682bf79914" />
+
+
+6. Navigera till database mapen (exeplet är i windows)
+
+<img width="976" height="114" alt="image" src="https://github.com/user-attachments/assets/ca39567b-e359-4470-bb58-424a64cc6454" />
+
+7. Säkerställ att filerna är där
+
+<img width="979" height="512" alt="image" src="https://github.com/user-attachments/assets/f5e6c0c2-2b56-43e3-af51-68b3abc5fa0f" />
+
+8. Kör commandot ```docker-compose up -d```
+
+<img width="980" height="512" alt="image" src="https://github.com/user-attachments/assets/23723d2b-ffd9-4086-8ab1-58ec393ce019" />
+
+9. Starta database-zoplanner om den inte redan är på
+
+<img width="1452" height="1401" alt="image" src="https://github.com/user-attachments/assets/8935126d-ae82-4e8e-b4ec-e150e23fbf6e" />
+
+
+
 ## Skapa databas
 Rekommenderat program pgAdmin 4
 
-Välj PostgreSQL 18
-<img width="1362" height="1150" alt="image" src="https://github.com/user-attachments/assets/1558f3b6-5860-4d18-b31e-40999fba9930" />
+1. Läg till databasen
+   
+<img width="623" height="305" alt="image" src="https://github.com/user-attachments/assets/9d468722-2f28-45f6-ba2d-ee11eea655c9" />
+
+2. Välj ett namn (recomenderar zoplanner)
+
+<img width="704" height="545" alt="image" src="https://github.com/user-attachments/assets/3dd7c15e-697c-4a66-92c7-eef3e5aee77d" />
+   
+4. Skriv in samma andvändarnman/lösen som du skrev i din .env fil
+
+<img width="697" height="551" alt="image" src="https://github.com/user-attachments/assets/866de2b7-e738-48ac-9e1f-3005532aa661" />
+
+   
 Öppna Query Tool
-<img width="1355" height="1154" alt="image" src="https://github.com/user-attachments/assets/f63e9d92-8fd2-4d41-b14b-6039652fef33" />
+
+<img width="587" height="599" alt="image" src="https://github.com/user-attachments/assets/a3a44eb9-9f04-4b2c-963a-485f2b23a4ea" />
 
 
-1. Skapa databas
+
+5. Skapa databasen om den inte redan finns
 
 ```
 CREATE DATABASE zoplanner;
 ```
-2. Byt till den nya databasen
+6. Byt till den nya databasen
 <img width="1355" height="1153" alt="image" src="https://github.com/user-attachments/assets/d4691335-832d-48a1-9291-dbd6e8c8cecb" />
 
-3. Klistra in koden i rutan och tryck på F5 eller "exicute script"
+7. Klistra in koden i rutan och tryck på F5 eller "exicute script"
 ```
 -- Create customers table
 CREATE TABLE customers (
@@ -151,5 +202,9 @@ CREATE TABLE sessions (
 );
 ```
 <img width="1664" height="1232" alt="image" src="https://github.com/user-attachments/assets/7784d7c2-444e-4158-8e5e-44a970e883d9" />
+
+
+
+   
 
 
