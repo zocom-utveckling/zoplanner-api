@@ -48,7 +48,9 @@ Tryck på clone
 <img width="1128" height="833" alt="506559109-5e120a4e-900a-4156-89d5-0848a0fc4939" src="https://github.com/user-attachments/assets/58ea081c-f05c-45a7-876d-44c1a7887a1a" />
 3. Skriv ditt andvändarnamn, lösenord and port i detta formatet
 
-```USERNAME=YOURUSERNAME;PASSWORD=YOURPASSWORD;PORT=YOURPORTNUMBER```
+```
+POSTGRES_USER=YOURUSERNAME;POSTGRES_PASSWORD=YOURPASSWORD;PORT=YOURPORTNUMBER
+```
 <img width="818" height="705" alt="506559798-a0cb1111-d894-4d2f-aa65-9fae0b1a306a" src="https://github.com/user-attachments/assets/f8ea0858-9386-42e7-b1ae-760b38284cdb" />
 
 ## Hur man kontrollerar endpoints med Swagger
