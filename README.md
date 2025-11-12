@@ -75,44 +75,6 @@ POSTGRES_USER=YOURUSERNAME;POSTGRES_PASSWORD=YOURPASSWORD;PORT=YOURPORTNUMBER
 
 <img width="1141" height="675" alt="Image" src="https://github.com/user-attachments/assets/704b5a74-4de6-4a71-8b73-b7e9f32e9da1" />
 
-## Skapa dockerimmage
-
-1. Navigera till mappen YOURPATHHERE/zoplanner-api/webapi/database
-2. Skapa en fil som hetter .env
-
-<img width="740" height="225" alt="image" src="https://github.com/user-attachments/assets/6a946323-1995-4054-a421-9531765f8047" />
-
-3. Öppna filen med en textedditor(recomenderar vscode)
-4. Klistra in koden och byt ut andvändarnman och lösen
-```
-POSTGRES_USER=YOURUSERNAMEHERE
-POSTGRES_PASSWORD=YOURPASSWORDHERE
-POSTGRES_DB=zoplanner
-```
-
-5. Starta en komandotolk
-
-<img width="975" height="506" alt="image" src="https://github.com/user-attachments/assets/abf8fdc2-c764-4816-ab37-00682bf79914" />
-
-
-6. Navigera till database mapen (exeplet är i windows)
-
-<img width="976" height="114" alt="image" src="https://github.com/user-attachments/assets/ca39567b-e359-4470-bb58-424a64cc6454" />
-
-7. Säkerställ att filerna är där
-
-<img width="979" height="512" alt="image" src="https://github.com/user-attachments/assets/f5e6c0c2-2b56-43e3-af51-68b3abc5fa0f" />
-
-8. Kör commandot ```docker-compose up -d```
-
-<img width="980" height="512" alt="image" src="https://github.com/user-attachments/assets/23723d2b-ffd9-4086-8ab1-58ec393ce019" />
-
-9. Starta database-zoplanner om den inte redan är på
-
-<img width="1452" height="1401" alt="image" src="https://github.com/user-attachments/assets/8935126d-ae82-4e8e-b4ec-e150e23fbf6e" />
-
-
-
 ## Skapa databas
 Rekommenderat program pgAdmin 4
 
@@ -206,7 +168,38 @@ CREATE TABLE sessions (
 <img width="1664" height="1232" alt="image" src="https://github.com/user-attachments/assets/7784d7c2-444e-4158-8e5e-44a970e883d9" />
 
 
+## Hur man skapar dockerimmage för bara databasen
+1. Instalera docker-desktop
+2. Navigera till mappen YOURPATHHERE/zoplanner-api/webapi/database
+3. Skapa en fil som hetter .env
 
-   
+<img width="740" height="225" alt="image" src="https://github.com/user-attachments/assets/6a946323-1995-4054-a421-9531765f8047" />
+
+4. Öppna filen med en textedditor(recomenderar vscode)
+5. Klistra in koden och byt ut andvändarnman och lösen
+```
+POSTGRES_USER=YOURUSERNAMEHERE
+POSTGRES_PASSWORD=YOURPASSWORDHERE
+POSTGRES_DB=zoplanner
+```
+
+6. Starta en komandotolk
+
+<img width="975" height="506" alt="image" src="https://github.com/user-attachments/assets/abf8fdc2-c764-4816-ab37-00682bf79914" />
+
+
+7. Navigera till database mapen (exeplet är i windows)
+
+<img width="976" height="114" alt="image" src="https://github.com/user-attachments/assets/ca39567b-e359-4470-bb58-424a64cc6454" />
+
+8. Säkerställ att filerna är där
+
+<img width="979" height="512" alt="image" src="https://github.com/user-attachments/assets/f5e6c0c2-2b56-43e3-af51-68b3abc5fa0f" />
+
+9. Kör commandot ```docker-compose up -d```
+
+<img width="980" height="512" alt="image" src="https://github.com/user-attachments/assets/23723d2b-ffd9-4086-8ab1-58ec393ce019" />
+
+  
 
 
