@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    container_name: zoplanner
+    networks:
+      - zoplanner
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    restart: unless-stopped
+    depends_on:
+      - zoplanner-database
+  zoplanner-database:
+    build: database/
+    container_name: zoplanner-database
+    networks:
+      - zoplanner
+    ports:
+      - "5432:5432"
+    env_file:
+      .env
+    volumes:
+      - zoplanner-data:/var/lib/postgresql/data
+    restart: unless-stopped
+networks:
+  zoplanner:
+    driver: bridge
+
+volumes:
+  zoplanner-data:
+
+
+
+
+
+#    environment:
+#      - POSTGRES_USER=${POSTGRES_USER}
+#      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+#      - POSTGRES_DB=${POSTGRES_DB}
