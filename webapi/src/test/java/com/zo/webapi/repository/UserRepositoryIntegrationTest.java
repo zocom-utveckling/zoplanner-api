@@ -1,13 +1,17 @@
 package com.zo.webapi.repository;
 
 import com.zo.webapi.model.User;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 
+import java.util.List;
 import java.util.Optional;
+
 
 @DataJpaTest
 public class UserRepositoryIntegrationTest {
@@ -58,4 +62,68 @@ public class UserRepositoryIntegrationTest {
         assertThat(exists).isTrue();
         assertThat(notExists).isFalse();
     }
+
+    @Test
+    void testSaveAndGetAllUsers() {
+        User user1 = new User(null, "User1", "pass1", "USER", "City1", "Name1");
+        User user2 = new User(null, "User2", "pass2", "ADMIN", "City2", "Name2");
+        userRepository.save(user1);
+        userRepository.save(user2);
+
+        List<User> allUsers = userRepository.findAll();
+        assertThat(allUsers).hasSize(2);
+        assertThat(allUsers).extracting(User::getName).containsExactlyInAnyOrder("User1", "User2");
+
+
+    }
+
+    @Test
+    void testUpdateUser() {
+        User user = new User(null, "User1", "pass1", "USER", "City1", "Name1");
+        userRepository.save(user);
+
+        user.setPassword("newpass");
+        user.setCity("newcity");
+        userRepository.save(user);
+
+        Optional<User> updatedUser = userRepository.findByUsername("User1");
+        assertThat(updatedUser).isPresent();
+        assertThat(updatedUser.get().getPassword()).isEqualTo("newpass");
+        assertThat(updatedUser.get().getCity()).isEqualTo("newcity");
+    }
+
+    @Test
+    void testDeleteUser() {
+        User user = new User(null, "User1", "pass1", "USER", "City1", "Name1");
+        userRepository.save(user);
+
+        userRepository.delete(user);
+
+        Optional<User> deletedUser = userRepository.findByUsername("User1");
+        assertThat(deletedUser).isEmpty();
+    }
+
+    @Test
+    void testDuplicateUsernameThrowsException() {
+        User user1 = new User(null, "User1", "pass1", "USER", "City1", "Name1");
+        User user2 = new User(null, "user1", "pass2", "ADMIN", "City2", "Name2");
+
+        userRepository.save(user1);
+
+        assertThatThrownBy(() -> userRepository.saveAndFlush(user2)).isInstanceOf(Exception.class);
+    }
+
+    @Test
+    void testSaveUserWithMissingRequiredFields() {
+        User user = new User();
+
+        assertThatThrownBy(() -> userRepository.saveAndFlush(user)).isInstanceOf(ConstraintViolationException.class);
+    }
+
+    @Test
+    void testFindByUsernameNotFound() {
+        Optional<User> foundUser = userRepository.findByUsername("notfound");
+        assertThat(foundUser).isEmpty();
+    }
+
 }
