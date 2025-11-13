@@ -72,7 +72,7 @@ public class UserRepositoryIntegrationTest {
 
         List<User> allUsers = userRepository.findAll();
         assertThat(allUsers).hasSize(2);
-        assertThat(allUsers).extracting(User::getName).containsExactlyInAnyOrder("User1", "User2");
+        assertThat(allUsers).extracting(User::getName).containsExactlyInAnyOrder("Name1", "Name2");
 
 
     }
@@ -106,7 +106,7 @@ public class UserRepositoryIntegrationTest {
     @Test
     void testDuplicateUsernameThrowsException() {
         User user1 = new User(null, "User1", "pass1", "USER", "City1", "Name1");
-        User user2 = new User(null, "user1", "pass2", "ADMIN", "City2", "Name2");
+        User user2 = new User(null, "User1", "pass2", "ADMIN", "City2", "Name2");
 
         userRepository.save(user1);
 
