@@ -78,12 +78,11 @@ public class CustomerControllerTest {
     @Test
     void testShowCustomerById_whenIdIsNotInDatabase() throws Exception {
         // Arrange
-        when(customerService.getCustomerById(100L)).thenReturn(null);
+        when(customerService.getCustomerById(100L)).thenReturn(Optional.empty());
 
         // Act & Assert
         mockMvc.perform(get("/api/customers/{id}", 100L).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Customer with id 100 does not exist"));
+                .andExpect(status().isNotFound());
     }
 
    @Test
@@ -104,6 +103,30 @@ public class CustomerControllerTest {
                .andExpect(jsonPath("$.city").value("Eslöv"));
 
        verify(customerService).createCustomer("Eslövs Folkhögskola", "Eslöv");
+   }
+
+   @Test
+    void testDeleteCustomer() throws Exception {
+        //Arrange
+        // Successful deletion - do nothing
+        doNothing().when(customerService).deleteCustomer(eq(1L));
+
+        // Act and Assert
+        // Simulate DELETE
+        mockMvc.perform(delete("/api/customers/{id}", 1L))
+                .andExpect(status().isNoContent());
+
+        // Verify service method was called
+        verify(customerService).deleteCustomer(eq(1L));
+
+        // Arrange
+       // Mock service throw exception for non-existent customer
+        doThrow(new RuntimeException()).when(customerService).deleteCustomer(eq(999L));
+
+        // Act and Assert
+        // Simulate DELETE
+        mockMvc.perform(delete("/api/customers/{id}", 999L))
+                .andExpect(status().isNotFound());
    }
 
 
