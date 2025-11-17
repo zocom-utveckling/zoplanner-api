@@ -74,7 +74,7 @@ public class CustomerControllerTest {
 
     }
 
-    @Disabled("Temporarily disable this method")
+
     @Test
     void testShowCustomerById_whenIdIsNotInDatabase() throws Exception {
         // Arrange
