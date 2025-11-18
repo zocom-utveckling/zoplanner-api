@@ -1,6 +1,6 @@
 # Zoplanner-api
 
-## Innehåll
+### Innehåll
 - [Förutsättningar](#förutsättningar)
 - [Starta databasen och API:t i Docker](#hur-man-startar-databasen-och-zoplanner-api-i-docker)
 - [Köra projektet i IntelliJ IDEA](#hur-man-laddar-ner-och-kör-repot-i-intellij-idea)
