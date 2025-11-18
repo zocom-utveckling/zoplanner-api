@@ -13,31 +13,11 @@ jobs:
 
     services:
       postgres:
-        image: postgres:18-alpine
+        image: postgres:16-alpine
         env:
           POSTGRES_USER: zoplanner_user
           POSTGRES_PASSWORD: zoplanner_password
-          POSTGRES_DB: zoplanner_db
-        ports:name: CI - Build and Test Java
-
-on:
-  push:
-    branches: [ CI-build-test ]
-  pull_request:
-    branches: [ CI-build-test ]
-  workflow_dispatch:
-
-jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:18-alpine
-        env:
-          POSTGRES_USER: zoplanner_user
-          POSTGRES_PASSWORD: zoplanner_password
-          POSTGRES_DB: zoplanner_db
+          POSTGRES_DB: zoplanner
         ports:
           - 5432:5432
         options: >-
@@ -47,9 +27,10 @@ jobs:
           --health-retries 5
 
     env:
+      HOST: localhost
       PORT: 5432
-      USERNAME: zoplanner_user
-      PASSWORD: zoplanner_password
+      POSTGRES_USER: zoplanner_user
+      POSTGRES_PASSWORD: zoplanner_password
 
     steps:
       - name: Checkout code
@@ -62,12 +43,12 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-        #build and test will fail workflow if all tests fail
+      # build and test will fail workflow if tests fail
       - name: Build and Test with Maven
         run: mvn clean verify
         working-directory: ./webapi
 
-        #publish test results even if test fails(debugging concerned)
+      # publish test results even if test fails
       - name: Publish test results
         uses: actions/upload-artifact@v4
         if: always()
@@ -75,10 +56,7 @@ jobs:
           name: test-results
           path: webapi/target/surefire-reports
 
-        #show build success if all tests passed.working-directory.
+      # show build success if all tests passed
       - name: Display test results
         if: success()
-        run: |
-          echo "Build and all tests passsed!"
-          
-          
+        run: echo "Build and all tests passed!"
