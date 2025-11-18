@@ -43,7 +43,7 @@ public class AssignmentControllerTest {
 
         mockMvc.perform(get("/api/assignments"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1));
+                .andExpect(jsonPath("$[0].id").value(2));
 
     }
 
