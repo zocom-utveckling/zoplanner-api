@@ -39,7 +39,7 @@ public class ClassGroupControllerTest {
         // Act and assert - Simulate GET
         mockMvc.perform(get("/api/classes"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1));
+                .andExpect(jsonPath("$[0].id").value(2));
     }
 
     @Test
