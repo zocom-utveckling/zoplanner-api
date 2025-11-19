@@ -98,7 +98,8 @@ Spring Boot Dockerfile copies pre-built JAR from `target/`.
 
 ### Both projects changed
 ```bash  
-mvn clean package -DskipTestsdocker-compose up -d --build
+mvn clean package -DskipTests
+docker-compose up -d --build
 ```  
 
 ### Database configuration changed
