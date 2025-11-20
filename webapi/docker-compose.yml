@@ -1,5 +1,20 @@
-﻿version: '3.8'
+﻿
 services:
+  # PostgreSQL Database
+  zoplanner-database:
+    build: database/
+    container_name: zoplanner-database
+    networks:
+      - zoplanner
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - zoplanner-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # Spring Boot Application
   app:
     build: .
     container_name: zoplanner
@@ -12,18 +27,23 @@ services:
     restart: unless-stopped
     depends_on:
       - zoplanner-database
-  zoplanner-database:
-    build: database/
-    container_name: zoplanner-database
+
+  # .NET Application
+  dotnet-service:
+    build:
+      context: ../../zoplanner-service
+      dockerfile: zoplannerservice/Dockerfile
+    container_name: zoplanner-dotnet
     networks:
       - zoplanner
     ports:
-      - "5432:5432"
-    env_file:
-      .env
-    volumes:
-      - zoplanner-data:/var/lib/postgresql/data
+      - "5027:5027"
+    environment:
+      - SpringApi__BaseUrl=http://zoplanner:8080/api
     restart: unless-stopped
+    depends_on:
+      - app
+
 networks:
   zoplanner:
     driver: bridge
@@ -32,10 +52,7 @@ volumes:
   zoplanner-data:
 
 
-
-
-
-#    environment:
-#      - POSTGRES_USER=${POSTGRES_USER}
-#      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-#      - POSTGRES_DB=${POSTGRES_DB}
+  #    environment:
+  #      - POSTGRES_USER=${POSTGRES_USER}
+  #      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+  #      - POSTGRES_DB=${POSTGRES_DB}
