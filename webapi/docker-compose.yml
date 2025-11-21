@@ -43,6 +43,23 @@ services:
     restart: unless-stopped
     depends_on:
       - app
+
+    # Frontend Application
+  frontend:
+      build:
+        context: ../../zoplanner-frontend
+        dockerfile: Dockerfile
+      container_name: zoplanner-frontend
+      networks:
+        - zoplanner
+      ports:
+        - "3000:3000"
+      restart: unless-stopped
+      depends_on:
+        - app
+        - dotnet-service
+
+
 networks:
     zoplanner:
       driver: bridge
