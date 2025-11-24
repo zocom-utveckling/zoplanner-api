@@ -176,64 +176,167 @@ CREATE DATABASE zoplanner;
 
 7. Klistra in koden i rutan och tryck på F5 eller "Execute script"
 ```
--- Create customers table
-CREATE TABLE customers (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(255),
-    city VARCHAR(255)
-);
+-- ============================
+-- 1. ENUMS
+-- ============================
 
--- Create classes table
-CREATE TABLE classes (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(255),
-    customer_id BIGINT,
-    CONSTRAINT class_customer_id_fkey 
-        FOREIGN KEY (customer_id) 
-        REFERENCES customers(id) 
-        ON DELETE CASCADE
-);
+CREATE TYPE user_role AS ENUM ('manager', 'consultant', 'both');
+CREATE TYPE consultant_status_type AS ENUM ('available', 'busy', 'vacation', 'sick', 'studying', 'unavailable');
+CREATE TYPE mode_type AS ENUM ('onsite', 'remote', 'hybrid');
 
--- Create users table
+-- ============================
+-- 2. USERS
+-- ============================
+
 CREATE TABLE users (
-    id BIGSERIAL PRIMARY KEY,
-    username VARCHAR(255),
-    password VARCHAR(255),
-    role VARCHAR(255),
-    city VARCHAR(255),
-    name VARCHAR(255)
+id BIGSERIAL PRIMARY KEY,
+username VARCHAR(255) UNIQUE NOT NULL,
+password VARCHAR(255) NOT NULL,
+name VARCHAR(255) NOT NULL,
+role user_role NOT NULL DEFAULT 'consultant'
 );
 
--- Create assignments table
+-- ============================
+-- 3. MANAGERS
+-- ============================
+
+CREATE TABLE managers (
+id BIGSERIAL PRIMARY KEY,
+user_id BIGINT UNIQUE NOT NULL,
+FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- ============================
+-- 4. CONSULTANTS
+-- ============================
+
+CREATE TABLE consultants (
+id BIGSERIAL PRIMARY KEY,
+user_id BIGINT UNIQUE NOT NULL,
+manager_id BIGINT NULL,
+city VARCHAR(255) NOT NULL,
+FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+FOREIGN KEY (manager_id) REFERENCES managers(id) ON DELETE SET NULL
+);
+
+-- ============================
+-- 5. CUSTOMERS
+-- ============================
+
+CREATE TABLE customers (
+id BIGSERIAL PRIMARY KEY,
+name VARCHAR(255) NOT NULL,
+city VARCHAR(255) NOT NULL,
+manager_id BIGINT NULL,
+FOREIGN KEY (manager_id) REFERENCES managers(id) ON DELETE SET NULL
+);
+
+-- ============================
+-- 6. CLASSES
+-- ============================
+
+CREATE TABLE classes (
+id BIGSERIAL PRIMARY KEY,
+name VARCHAR(255) NOT NULL,
+customer_id BIGINT NOT NULL,
+FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
+);
+
+-- ============================
+-- 7. COURSES
+-- ============================
+
+CREATE TABLE courses (
+id BIGSERIAL PRIMARY KEY,
+name VARCHAR(255) NOT NULL,
+class_id BIGINT NOT NULL,
+date_start DATE NULL,
+date_end DATE NULL,
+FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE
+);
+
+-- ============================
+-- 8. ASSIGNMENTS
+-- ============================
+
 CREATE TABLE assignments (
-    id BIGSERIAL PRIMARY KEY,
-    course_name VARCHAR(255),
-    consultant_id BIGINT,
-    date_start DATE,
-    date_end DATE,
-    class_id BIGINT,
-    CONSTRAINT assignment_consultant_id_fkey 
-        FOREIGN KEY (consultant_id) 
-        REFERENCES users(id) 
-        ON DELETE SET NULL,
-    CONSTRAINT assignment_class_id_fkey 
-        FOREIGN KEY (class_id) 
-        REFERENCES classes(id) 
-        ON DELETE CASCADE
+id BIGSERIAL PRIMARY KEY,
+course_id BIGINT NULL,
+consultant_id BIGINT,
+date_start DATE NULL,
+date_end DATE NULL,
+FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+FOREIGN KEY (consultant_id) REFERENCES consultants(id) ON DELETE SET NULL
 );
 
--- Create sessions table
+-- ============================
+-- 9. SESSIONS
+-- ============================
+
 CREATE TABLE sessions (
-    id BIGSERIAL PRIMARY KEY,
-    time_start TIMESTAMP,
-    time_end TIMESTAMP,
-    assignment_id BIGINT,
-    CONSTRAINT schedule_assignment_id_fkey 
-        FOREIGN KEY (assignment_id) 
-        REFERENCES assignments(id) 
-        ON DELETE CASCADE
+id BIGSERIAL PRIMARY KEY,
+assignment_id BIGINT NOT NULL,
+time_start TIMESTAMP NULL,
+time_end TIMESTAMP NULL,
+mode mode_type DEFAULT 'onsite',
+comment TEXT,
+FOREIGN KEY (assignment_id) REFERENCES assignments(id) ON DELETE CASCADE
+);
+
+-- ============================
+-- 10. CONSULTANT STATUS
+-- ============================
+
+CREATE TABLE consultant_statuses (
+id BIGSERIAL PRIMARY KEY,
+consultant_id BIGINT NOT NULL,
+status consultant_status_type NOT NULL,
+date_start DATE NOT NULL,
+date_end DATE NOT NULL,
+comment TEXT,
+FOREIGN KEY (consultant_id) REFERENCES consultants(id) ON DELETE CASCADE
 );
 ```
+We are designing a scheduling system where:
+
+Managers can manage customers, classes, courses, and consultants.
+Consultants teach specific courses for certain customers/classes on specific days/times.
+A consultant works in one city and can also work remotely.
+Consultants have availability statuses (available, busy, vacation, sick, etc.).
+Managers can only see their own customers, classes, courses, and consultants.
+PostgreSQL Database Schema for Scheduling System
+
+All table creation queries are in the correct order
+
+Includes ENUMs, users, managers, consultants, customers, classes, courses, assignments, sessions, consultant_status
+
+Summary of Cascade Logic
+Users -> Managers: ON DELETE CASCADE
+Deleting a user automatically deletes the corresponding manager.
+
+Managers -> Consultants: ON DELETE CASCADE
+If a manager is deleted, consultants are preserved but manager_id becomes NULL.
+
+Managers -> Customers: ON DELETE CASCADE
+If a manager is deleted, customers are preserved but manager_id becomes NULL.
+
+Users -> Consultants: ON DELETE CASCADE
+Deleting a user also deletes the consultant.
+
+Courses -> Assignments: ON DELETE CASCADE
+Deleting a course deletes all assignments linked to it.
+
+Assignments -> Sessions: ON DELETE CASCADE
+Deleting an assignment deletes all its sessions.
+
+Consultants -> Assignments: ON DELETE SET NULL
+If a consultant is deleted, assignments are preserved but consultant_id becomes NULL.
+
+Consultants -> Consultant_Status: ON DELETE CASCADE
+Deleting a consultant removes all their status records.
+
+Customers -> Classes -> Courses hierarchy: ON DELETE CASCADE
+Deleting a customer deletes their classes, and in turn, all courses linked to classes.
 <img width="1664" height="1232" alt="image" src="https://github.com/user-attachments/assets/7784d7c2-444e-4158-8e5e-44a970e883d9" />
 
 
