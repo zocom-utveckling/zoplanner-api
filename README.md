@@ -175,6 +175,14 @@ CREATE DATABASE zoplanner;
 <img width="1355" height="1153" alt="image" src="https://github.com/user-attachments/assets/d4691335-832d-48a1-9291-dbd6e8c8cecb" />
 
 7. Klistra in koden i rutan och tryck på F5 eller "Execute script"
+> We are designing a scheduling system where:
+
+> Managers can manage customers, classes, courses, and consultants. Consultants teach specific courses for certain customers/classes on specific days/times. A consultant works in one city and can also work remotely. Consultants have availability statuses (available, busy, vacation, sick, etc.). Managers can only see their own customers, classes, courses, and consultants. PostgreSQL Database Schema for Scheduling System
+
+> All table creation queries are in the correct order
+
+> Includes ENUMs, users, managers, consultants, customers, classes, courses, assignments, sessions, consultant_status
+
 ```
 -- ============================
 -- 1. ENUMS
@@ -297,46 +305,35 @@ comment TEXT,
 FOREIGN KEY (consultant_id) REFERENCES consultants(id) ON DELETE CASCADE
 );
 ```
-We are designing a scheduling system where:
 
-Managers can manage customers, classes, courses, and consultants.
-Consultants teach specific courses for certain customers/classes on specific days/times.
-A consultant works in one city and can also work remotely.
-Consultants have availability statuses (available, busy, vacation, sick, etc.).
-Managers can only see their own customers, classes, courses, and consultants.
-PostgreSQL Database Schema for Scheduling System
-
-All table creation queries are in the correct order
-
-Includes ENUMs, users, managers, consultants, customers, classes, courses, assignments, sessions, consultant_status
-
-Summary of Cascade Logic
-Users -> Managers: ON DELETE CASCADE
+### Summary of Cascade Logic
+- Users -> Managers: ON DELETE CASCADE
 Deleting a user automatically deletes the corresponding manager.
 
-Managers -> Consultants: ON DELETE CASCADE
+- Managers -> Consultants: ON DELETE CASCADE
 If a manager is deleted, consultants are preserved but manager_id becomes NULL.
 
-Managers -> Customers: ON DELETE CASCADE
+- Managers -> Customers: ON DELETE CASCADE
 If a manager is deleted, customers are preserved but manager_id becomes NULL.
 
-Users -> Consultants: ON DELETE CASCADE
+- Users -> Consultants: ON DELETE CASCADE
 Deleting a user also deletes the consultant.
 
-Courses -> Assignments: ON DELETE CASCADE
+- Courses -> Assignments: ON DELETE CASCADE
 Deleting a course deletes all assignments linked to it.
 
-Assignments -> Sessions: ON DELETE CASCADE
+- Assignments -> Sessions: ON DELETE CASCADE
 Deleting an assignment deletes all its sessions.
 
-Consultants -> Assignments: ON DELETE SET NULL
+- Consultants -> Assignments: ON DELETE SET NULL
 If a consultant is deleted, assignments are preserved but consultant_id becomes NULL.
 
-Consultants -> Consultant_Status: ON DELETE CASCADE
+- Consultants -> Consultant_Status: ON DELETE CASCADE
 Deleting a consultant removes all their status records.
 
-Customers -> Classes -> Courses hierarchy: ON DELETE CASCADE
+- Customers -> Classes -> Courses hierarchy: ON DELETE CASCADE
 Deleting a customer deletes their classes, and in turn, all courses linked to classes.
+
 <img width="1664" height="1232" alt="image" src="https://github.com/user-attachments/assets/7784d7c2-444e-4158-8e5e-44a970e883d9" />
 
 
