@@ -188,9 +188,9 @@ CREATE DATABASE zoplanner;
 -- 1. ENUMS
 -- ============================
 
-CREATE TYPE user_role AS ENUM ('manager', 'consultant', 'both');
-CREATE TYPE consultant_status_type AS ENUM ('available', 'busy', 'vacation', 'sick', 'studying', 'unavailable');
-CREATE TYPE mode_type AS ENUM ('onsite', 'remote', 'hybrid');
+CREATE TYPE user_role AS ENUM ('MANAGER', 'CONSULTANT', 'BOTH');
+CREATE TYPE consultant_status_type AS ENUM ('AVAILABLE', 'BUSY', 'VACATION', 'SICK', 'STUDYING', 'UNAVAILABLE');
+CREATE TYPE session_location AS ENUM ('ONSITE', 'REMOTE', 'HYBRID');
 
 -- ============================
 -- 2. USERS
