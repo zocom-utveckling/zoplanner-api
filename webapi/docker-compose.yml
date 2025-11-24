@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  zoplanner-database:
+    build: database/
+    container_name: zoplanner-database
+    networks:
+      - zoplanner
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - zoplanner-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # Spring Boot Application
+  app:
+    build: .
+    container_name: zoplanner
+    networks:
+      - zoplanner
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    restart: unless-stopped
+    depends_on:
+      - zoplanner-database
+
+  # .NET Application
+  dotnet-service:
+    build:
+      context: ./path/to/dotnet-service  # Sökväg till .NET-tjänstens mapp som innehåller Dockerfile
+      dockerfile: Dockerfile
+    container_name: zoplanner-dotnet
+    networks:
+      - zoplanner
+    ports:
+      - "5027:5027"
+    environment:
+      - SpringApi__BaseUrl=http://zoplanner:8080/api
+    restart: unless-stopped
+    depends_on:
+      - app
+
+  # Frontend Application
+  frontend:
+    build:
+      context: ./path/to/frontend  # Sökväg till frontend-mappen som innehåller Dockerfile
+      dockerfile: Dockerfile
+    container_name: zoplanner-frontend
+    networks:
+      - zoplanner
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    depends_on:
+      - app
+      - dotnet-service
+
+networks:
+  zoplanner:
+    driver: bridge
+
+volumes:
+  zoplanner-data:
