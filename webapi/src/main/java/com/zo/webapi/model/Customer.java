@@ -14,11 +14,16 @@ public class Customer {
     @Column(name = "city")
     private String city;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "manager_id", nullable = true, foreignKey = @ForeignKey(name = "fk_customer_manager"))
+    private Manager manager;
+
     //Constructors
-    public Customer(Long id, String name, String city) {
+    public Customer(Long id, String name, String city, Manager manager) {
         this.id = id;
         this.name = name;
         this.city = city;
+        this.manager = manager;
     }
     public Customer() {}
 
@@ -46,5 +51,13 @@ public class Customer {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public Manager getManager() {
+        return manager;
+    }
+
+    public void setManager(Manager manager) {
+        this.manager = manager;
     }
 }
