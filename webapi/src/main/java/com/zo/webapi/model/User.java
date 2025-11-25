@@ -1,5 +1,6 @@
 package com.zo.webapi.model;
 
+import enums.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
@@ -19,25 +20,22 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @NotBlank(message = "Role is required")
-    @Column(name = "role", nullable = false)
-    private String role;
-
-    @Column(name = "city")
-    private String city;
-
     @NotBlank(message = "Name is required")
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private UserRole role;
+
+
     //Constructors
-    public User(Long id, String username, String password, String role, String city, String name) {
+    public User(Long id, String username, String password, String name, UserRole role) {
         this.id = id;
         this.username = username;
         this.password = password;
-        this.role = role;
-        this.city = city;
         this.name = name;
+        this.role = role;
     }
 
     public User() {}
@@ -67,21 +65,6 @@ public class User {
         this.password = password;
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
 
     public String getName() {
         return name;
@@ -89,6 +72,13 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public UserRole getRole() {
+        return role;
+    }
+    public void setRole(UserRole role) {
+        this.role = role;
     }
 
 }
