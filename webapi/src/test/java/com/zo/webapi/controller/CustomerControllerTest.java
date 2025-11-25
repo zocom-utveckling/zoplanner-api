@@ -5,6 +5,7 @@ import com.zo.webapi.model.Customer;
 import com.zo.webapi.model.Manager;
 import com.zo.webapi.model.User;
 import com.zo.webapi.service.CustomerService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -65,6 +66,7 @@ public class CustomerControllerTest {
                 .andExpect(jsonPath("$.city").value("Malmö"))
                 .andExpect(jsonPath("$.manager.id").value(1));
     }
+
 
     @Test
     void testShowCustomerById_whenIdIsNotInDatabase() throws Exception {
