@@ -373,12 +373,12 @@ POSTGRES_DB=zoplanner
 
 *Guiden för att sätta upp CI/CD Pipeline för zoplanner-api (Manuell med Shell kommand)*
 
-1.Navigera till projekt och skapa workflow
+1. Navigera till projekt och skapa workflow
 
 ```
 cd ~/zoplanner-api
 ```
-2.Skapa `.github/workflow –` 
+2. Skapa `.github/workflow –` 
 
           ```
           mkdir  -p .github/workflow
