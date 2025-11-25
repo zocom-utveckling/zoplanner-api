@@ -286,7 +286,7 @@ id BIGSERIAL PRIMARY KEY,
 assignment_id BIGINT NOT NULL,
 time_start TIMESTAMP NULL,
 time_end TIMESTAMP NULL,
-mode mode_type DEFAULT 'onsite',
+location session_location DEFAULT 'ONSITE',
 comment TEXT,
 FOREIGN KEY (assignment_id) REFERENCES assignments(id) ON DELETE CASCADE
 );
