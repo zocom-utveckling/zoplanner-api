@@ -1,4 +1,5 @@
-﻿
+version: '3.8'
+
 services:
   # PostgreSQL Database
   zoplanner-database:
@@ -31,8 +32,8 @@ services:
   # .NET Application
   dotnet-service:
     build:
-      context: ../../zoplanner-service
-      dockerfile: zoplannerservice/Dockerfile
+      context: ./path/to/dotnet-service  # Sökväg till .NET-tjänstens mapp som innehåller Dockerfile
+      dockerfile: Dockerfile
     container_name: zoplanner-dotnet
     networks:
       - zoplanner
@@ -44,25 +45,24 @@ services:
     depends_on:
       - app
 
-    # Frontend Application
+  # Frontend Application
   frontend:
-      build:
-        context: ../../zoplanner-frontend
-        dockerfile: Dockerfile
-      container_name: zoplanner-frontend
-      networks:
-        - zoplanner
-      ports:
-        - "3000:3000"
-      restart: unless-stopped
-      depends_on:
-        - app
-        - dotnet-service
-
+    build:
+      context: ./path/to/frontend  # Sökväg till frontend-mappen som innehåller Dockerfile
+      dockerfile: Dockerfile
+    container_name: zoplanner-frontend
+    networks:
+      - zoplanner
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    depends_on:
+      - app
+      - dotnet-service
 
 networks:
-    zoplanner:
-      driver: bridge
+  zoplanner:
+    driver: bridge
 
 volumes:
   zoplanner-data:

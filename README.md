@@ -175,65 +175,165 @@ CREATE DATABASE zoplanner;
 <img width="1355" height="1153" alt="image" src="https://github.com/user-attachments/assets/d4691335-832d-48a1-9291-dbd6e8c8cecb" />
 
 7. Klistra in koden i rutan och tryck på F5 eller "Execute script"
+> We are designing a scheduling system where:
+
+> Managers can manage customers, classes, courses, and consultants. Consultants teach specific courses for certain customers/classes on specific days/times. A consultant works in one city and can also work remotely. Consultants have availability statuses (available, busy, vacation, sick, etc.). Managers can only see their own customers, classes, courses, and consultants. PostgreSQL Database Schema for Scheduling System
+
+> All table creation queries are in the correct order
+
+> Includes ENUMs, users, managers, consultants, customers, classes, courses, assignments, sessions, consultant_status
+
 ```
--- Create customers table
-CREATE TABLE customers (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(255),
-    city VARCHAR(255)
-);
+-- ============================
+-- 1. ENUMS
+-- ============================
 
--- Create classes table
-CREATE TABLE classes (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(255),
-    customer_id BIGINT,
-    CONSTRAINT class_customer_id_fkey 
-        FOREIGN KEY (customer_id) 
-        REFERENCES customers(id) 
-        ON DELETE CASCADE
-);
+CREATE TYPE user_role AS ENUM ('MANAGER', 'CONSULTANT', 'BOTH');
+CREATE TYPE consultant_status_type AS ENUM ('AVAILABLE', 'BUSY', 'VACATION', 'SICK', 'STUDYING', 'UNAVAILABLE');
+CREATE TYPE session_location AS ENUM ('ONSITE', 'REMOTE', 'HYBRID');
 
--- Create users table
+-- ============================
+-- 2. USERS
+-- ============================
+
 CREATE TABLE users (
-    id BIGSERIAL PRIMARY KEY,
-    username VARCHAR(255),
-    password VARCHAR(255),
-    role VARCHAR(255),
-    city VARCHAR(255),
-    name VARCHAR(255)
+id BIGSERIAL PRIMARY KEY,
+username VARCHAR(255) UNIQUE NOT NULL,
+password VARCHAR(255) NOT NULL,
+name VARCHAR(255) NOT NULL,
+role user_role NOT NULL DEFAULT 'CONSULTANT'
 );
 
--- Create assignments table
+-- ============================
+-- 3. MANAGERS
+-- ============================
+
+CREATE TABLE managers (
+id BIGSERIAL PRIMARY KEY,
+user_id BIGINT UNIQUE NOT NULL,
+FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- ============================
+-- 4. CONSULTANTS
+-- ============================
+
+CREATE TABLE consultants (
+id BIGSERIAL PRIMARY KEY,
+user_id BIGINT UNIQUE NOT NULL,
+manager_id BIGINT NULL,
+city VARCHAR(255) NOT NULL,
+FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+FOREIGN KEY (manager_id) REFERENCES managers(id) ON DELETE SET NULL
+);
+
+-- ============================
+-- 5. CUSTOMERS
+-- ============================
+
+CREATE TABLE customers (
+id BIGSERIAL PRIMARY KEY,
+name VARCHAR(255) NOT NULL,
+city VARCHAR(255) NOT NULL,
+manager_id BIGINT NULL,
+FOREIGN KEY (manager_id) REFERENCES managers(id) ON DELETE SET NULL
+);
+
+-- ============================
+-- 6. CLASSES
+-- ============================
+
+CREATE TABLE classes (
+id BIGSERIAL PRIMARY KEY,
+name VARCHAR(255) NOT NULL,
+customer_id BIGINT NOT NULL,
+FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
+);
+
+-- ============================
+-- 7. COURSES
+-- ============================
+
+CREATE TABLE courses (
+id BIGSERIAL PRIMARY KEY,
+name VARCHAR(255) NOT NULL,
+class_id BIGINT NOT NULL,
+date_start DATE NULL,
+date_end DATE NULL,
+FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE
+);
+
+-- ============================
+-- 8. ASSIGNMENTS
+-- ============================
+
 CREATE TABLE assignments (
-    id BIGSERIAL PRIMARY KEY,
-    course_name VARCHAR(255),
-    consultant_id BIGINT,
-    date_start DATE,
-    date_end DATE,
-    class_id BIGINT,
-    CONSTRAINT assignment_consultant_id_fkey 
-        FOREIGN KEY (consultant_id) 
-        REFERENCES users(id) 
-        ON DELETE SET NULL,
-    CONSTRAINT assignment_class_id_fkey 
-        FOREIGN KEY (class_id) 
-        REFERENCES classes(id) 
-        ON DELETE CASCADE
+id BIGSERIAL PRIMARY KEY,
+course_id BIGINT NULL,
+consultant_id BIGINT,
+date_start DATE NULL,
+date_end DATE NULL,
+FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+FOREIGN KEY (consultant_id) REFERENCES consultants(id) ON DELETE SET NULL
 );
 
--- Create sessions table
+-- ============================
+-- 9. SESSIONS
+-- ============================
+
 CREATE TABLE sessions (
-    id BIGSERIAL PRIMARY KEY,
-    time_start TIMESTAMP,
-    time_end TIMESTAMP,
-    assignment_id BIGINT,
-    CONSTRAINT schedule_assignment_id_fkey 
-        FOREIGN KEY (assignment_id) 
-        REFERENCES assignments(id) 
-        ON DELETE CASCADE
+id BIGSERIAL PRIMARY KEY,
+assignment_id BIGINT NOT NULL,
+time_start TIMESTAMP NULL,
+time_end TIMESTAMP NULL,
+location session_location DEFAULT 'ONSITE',
+comment TEXT,
+FOREIGN KEY (assignment_id) REFERENCES assignments(id) ON DELETE CASCADE
+);
+
+-- ============================
+-- 10. CONSULTANT STATUS
+-- ============================
+
+CREATE TABLE consultant_statuses (
+id BIGSERIAL PRIMARY KEY,
+consultant_id BIGINT NOT NULL,
+status consultant_status_type NOT NULL,
+date_start DATE NOT NULL,
+date_end DATE NOT NULL,
+comment TEXT,
+FOREIGN KEY (consultant_id) REFERENCES consultants(id) ON DELETE CASCADE
 );
 ```
+
+### Summary of Cascade Logic
+- Users -> Managers: ON DELETE CASCADE
+Deleting a user automatically deletes the corresponding manager.
+
+- Managers -> Consultants: ON DELETE CASCADE
+If a manager is deleted, consultants are preserved but manager_id becomes NULL.
+
+- Managers -> Customers: ON DELETE CASCADE
+If a manager is deleted, customers are preserved but manager_id becomes NULL.
+
+- Users -> Consultants: ON DELETE CASCADE
+Deleting a user also deletes the consultant.
+
+- Courses -> Assignments: ON DELETE CASCADE
+Deleting a course deletes all assignments linked to it.
+
+- Assignments -> Sessions: ON DELETE CASCADE
+Deleting an assignment deletes all its sessions.
+
+- Consultants -> Assignments: ON DELETE SET NULL
+If a consultant is deleted, assignments are preserved but consultant_id becomes NULL.
+
+- Consultants -> Consultant_Status: ON DELETE CASCADE
+Deleting a consultant removes all their status records.
+
+- Customers -> Classes -> Courses hierarchy: ON DELETE CASCADE
+Deleting a customer deletes their classes, and in turn, all courses linked to classes.
+
 <img width="1664" height="1232" alt="image" src="https://github.com/user-attachments/assets/7784d7c2-444e-4158-8e5e-44a970e883d9" />
 
 
@@ -268,6 +368,117 @@ POSTGRES_DB=zoplanner
 9. Kör kommandot ```docker-compose up -d```
 
 <img width="980" height="512" alt="image" src="https://github.com/user-attachments/assets/23723d2b-ffd9-4086-8ab1-58ec393ce019" />
+
+# HUR SKA IMPLEMENTERA CI/CD MED GITHUB ACTIONS 
+
+*Guiden för att sätta upp CI/CD Pipeline för zoplanner-api (Manuell med Shell kommand)*
+
+1. Navigera till projekt och skapa workflow
+
+```
+cd ~/zoplanner-api
+```
+2. Skapa `.github/workflow –` 
+
+          ```
+          mkdir  -p .github/workflow
+          ```
+          
+3. Skapa `integration.yml` 
+
+   ```
+   touch .github/workflows/integration.yml
+   ```
+4.
+
+<img width="374" height="152" alt="image" src="https://github.com/user-attachments/assets/2a95ee3c-a6a2-4bc3-a19c-45265223e96b" />
+              
+
+5. Öppna `.github/workflows/integration.yml` och skriva denna configuration   
+
+<img width="478" height="691" alt="image" src="https://github.com/user-attachments/assets/dab3df3c-a72b-4cd0-a7b9-cf0323ebab5e" />
+<img width="486" height="493" alt="image" src="https://github.com/user-attachments/assets/a8345eb5-f258-4e91-9fd2-ff2818994ac7" />
+<img width="466" height="315" alt="image" src="https://github.com/user-attachments/assets/7310a33d-0822-4a25-9b33-12d9f9f751b9" />
+
+6. Skapa en ny branch (testa CI/CD till denna branch innan merger med dev och main)
+
+   ```
+   --- git checkout -b CI-build-test
+   ```
+
+7. Commita workflow filen
+
+```
+# Stage workflow-filen
+  --- git add .github/workflows/integration.yml
+
+Git commit -m “Add CI/CD workflow with Github Actions
+```
+
+8. Pusha till GitHub
+
+```
+          --- git push origin CI-build-test
+```
+
+<img width="602" height="192" alt="image" src="https://github.com/user-attachments/assets/758c83f0-41c6-4c2b-a227-8c96b0aec83a" />
+
+9. Gå till zoplanner-api repository
+
+10. Klicka på  “Actions” tab
+
+<img width="602" height="133" alt="image" src="https://github.com/user-attachments/assets/3e5dd248-00ad-42ff-8aeb-c9471886ea1e" />
+
+11. Här du kan se att workflow körs 
+
+När workflow körs
+
+<img width="602" height="199" alt="image" src="https://github.com/user-attachments/assets/7bdad17c-e671-4f5d-b23b-4eed48d37f3d" />                    
+
+
+När Workflow Lyckades:
+
+<img width="602" height="188" alt="image" src="https://github.com/user-attachments/assets/6928feba-ee1c-4e4f-b09c-a86dbc121009" />
+<img width="602" height="504" alt="image" src="https://github.com/user-attachments/assets/ff3120c9-6405-4a4e-b911-8d0afbe5457a" />
+
+När workflow failade: 
+
+<img width="602" height="355" alt="image" src="https://github.com/user-attachments/assets/1df068a2-ea9a-4706-9ed2-d4df6e291039" />
+<img width="602" height="494" alt="image" src="https://github.com/user-attachments/assets/8db5b002-f6fa-40ee-9f81-6f2a50b5922f" />
+<img width="602" height="330" alt="image" src="https://github.com/user-attachments/assets/bc5fa55a-5fff-474f-947b-822d29edf6b3" />
+<img width="602" height="291" alt="image" src="https://github.com/user-attachments/assets/b3c79988-b8c3-4969-9970-6378ee55a770" />
+
+Se **Publish test results**:
+
+<img width="602" height="263" alt="image" src="https://github.com/user-attachments/assets/7504af3c-e178-4cd7-bb36-99422f6f0278" />
+
+Klicka på URL-> ladda ner zip fil (test results)-> extracthera filen lokalt
+
+<img width="602" height="198" alt="image" src="https://github.com/user-attachments/assets/2b1d518b-d8a0-4e8f-886e-6fd0817f15f3" />
+
+Öppna TEST*.xml för att se detaljerade rapporter
+
+<img width="602" height="515" alt="image" src="https://github.com/user-attachments/assets/0b4488a9-6106-45be-8651-ac492d258ec8" />
+
+.XML --
+
+<img width="602" height="543" alt="image" src="https://github.com/user-attachments/assets/4fb181f8-e096-4919-b597-f083a8118047" />
+
+Workflow-Konfiguration Förklarat:
+
+Triggers- När körs workflow??
+
+<img width="585" height="143" alt="image" src="https://github.com/user-attachments/assets/abdf3d2d-80f9-468a-9054-4ce17cb20be6" />
+
+Environmental Variables: 
+
+<img width="496" height="142" alt="image" src="https://github.com/user-attachments/assets/4d9db2cd-584f-4836-8771-ae08710f382f" />
+
+Build-steg förklarning:
+
+<img width="602" height="595" alt="image" src="https://github.com/user-attachments/assets/c08fbcc5-4d57-43f8-a795-dd4163d9885e" />
+<img width="602" height="127" alt="image" src="https://github.com/user-attachments/assets/b0d3db8f-d3be-429a-9000-ab959671e9a9" />
+
 
   
 
