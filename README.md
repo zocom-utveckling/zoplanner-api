@@ -369,6 +369,93 @@ POSTGRES_DB=zoplanner
 
 <img width="980" height="512" alt="image" src="https://github.com/user-attachments/assets/23723d2b-ffd9-4086-8ab1-58ec393ce019" />
 
+# HUR SKA IMPLEMENTERA CI/CD MED GITHUB ACTIONS 
+
+~Guiden för att sätta upp CI/CD Pipeline för zoplanner-api (Manuell med Shell kommand)~
+
+1.Navigera till projekt och skapa workflow
+```
+cd ~/zoplanner-api
+```
+2.Skapa `.github/workflow –` 
+          ```
+          mkdir  -p .github/workflow
+          ```
+3. Skapa `integration.yml` 
+   ```
+   touch .github/workflows/integration.yml
+   ```
+4.
+   <img width="374" height="152" alt="image" src="https://github.com/user-attachments/assets/2a95ee3c-a6a2-4bc3-a19c-45265223e96b" />
+              
+
+5. Öppna `.github/workflows/integration.yml` och skriva denna configuration   
+<img width="478" height="691" alt="image" src="https://github.com/user-attachments/assets/dab3df3c-a72b-4cd0-a7b9-cf0323ebab5e" />
+<img width="486" height="493" alt="image" src="https://github.com/user-attachments/assets/a8345eb5-f258-4e91-9fd2-ff2818994ac7" />
+<img width="466" height="315" alt="image" src="https://github.com/user-attachments/assets/7310a33d-0822-4a25-9b33-12d9f9f751b9" />
+
+6.Skapa en ny branch (testa CI/CD till denna branch innan merger med dev och main)
+   ```
+   --- git checkout -b CI-build-test
+   ```
+
+7.Commita workflow filen
+```
+# Stage workflow-filen
+  --- git add .github/workflows/integration.yml
+
+Git commit -m “Add CI/CD workflow with Github Actions
+```
+8.Pusha till GitHub
+   ```
+          --- git push origin CI-build-test
+```
+<img width="602" height="192" alt="image" src="https://github.com/user-attachments/assets/758c83f0-41c6-4c2b-a227-8c96b0aec83a" />
+
+9. Gå till zoplanner-api repository
+10. Klicka på  “Actions” tab
+<img width="602" height="133" alt="image" src="https://github.com/user-attachments/assets/3e5dd248-00ad-42ff-8aeb-c9471886ea1e" />
+
+11. Här du kan se att workflow körs 
+
+När workflow körs
+<img width="602" height="199" alt="image" src="https://github.com/user-attachments/assets/7bdad17c-e671-4f5d-b23b-4eed48d37f3d" />                    
+
+
+När Workflow Lyckades:
+<img width="602" height="188" alt="image" src="https://github.com/user-attachments/assets/6928feba-ee1c-4e4f-b09c-a86dbc121009" />
+<img width="602" height="504" alt="image" src="https://github.com/user-attachments/assets/ff3120c9-6405-4a4e-b911-8d0afbe5457a" />
+
+När workflow failade: 
+<img width="602" height="355" alt="image" src="https://github.com/user-attachments/assets/1df068a2-ea9a-4706-9ed2-d4df6e291039" />
+<img width="602" height="494" alt="image" src="https://github.com/user-attachments/assets/8db5b002-f6fa-40ee-9f81-6f2a50b5922f" />
+<img width="602" height="330" alt="image" src="https://github.com/user-attachments/assets/bc5fa55a-5fff-474f-947b-822d29edf6b3" />
+<img width="602" height="291" alt="image" src="https://github.com/user-attachments/assets/b3c79988-b8c3-4969-9970-6378ee55a770" />
+
+Se **Publish test results**:
+<img width="602" height="263" alt="image" src="https://github.com/user-attachments/assets/7504af3c-e178-4cd7-bb36-99422f6f0278" />
+
+Klicka på URL-> ladda ner zip fil (test results)-> extracthera filen lokalt
+<img width="602" height="198" alt="image" src="https://github.com/user-attachments/assets/2b1d518b-d8a0-4e8f-886e-6fd0817f15f3" />
+
+Öppna TEST*.xml för att se detaljerade rapporter
+<img width="602" height="515" alt="image" src="https://github.com/user-attachments/assets/0b4488a9-6106-45be-8651-ac492d258ec8" />
+
+.XML --
+<img width="602" height="543" alt="image" src="https://github.com/user-attachments/assets/4fb181f8-e096-4919-b597-f083a8118047" />
+
+Workflow-Konfiguration Förklarat:
+Triggers- När körs workflow??
+<img width="585" height="143" alt="image" src="https://github.com/user-attachments/assets/abdf3d2d-80f9-468a-9054-4ce17cb20be6" />
+
+Environmental Variables: 
+<img width="496" height="142" alt="image" src="https://github.com/user-attachments/assets/4d9db2cd-584f-4836-8771-ae08710f382f" />
+
+Build-steg förklarning:
+<img width="602" height="595" alt="image" src="https://github.com/user-attachments/assets/c08fbcc5-4d57-43f8-a795-dd4163d9885e" />
+<img width="602" height="127" alt="image" src="https://github.com/user-attachments/assets/b0d3db8f-d3be-429a-9000-ab959671e9a9" />
+
+
   
 
 
