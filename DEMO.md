@@ -62,6 +62,7 @@ Innan du börjar, installera följande program:
 - 📥 **Ladda ner:** [https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/)
 - ✅ Installera och starta Docker Desktop
 - 🔍 Verifiera installation: Öppna terminal och kör `docker --version`
+- ☝️ Man behöver skapa ett konto eller logga in
 
 ### 2. Git (KRÄVS)
 - 📥 **Ladda ner:** [https://git-scm.com/downloads](https://git-scm.com/downloads)
