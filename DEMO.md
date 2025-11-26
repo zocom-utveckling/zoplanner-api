@@ -69,9 +69,17 @@ Innan du börjar, installera följande program:
 - ✅ Installera Git
 - 🔍 Verifiera installation: Öppna terminal och kör `git --version`
 
-### 3. Postgres (KRÄVS)
+### 3. Postgres 18 (KRÄVS)
 - 📥 **Ladda ner:** [https://www.postgresql.org/download/](https://www.postgresql.org/download)
-- ✅ Installera Postgres och pgAdmin 4
+- ✅ Installera Postgres Server och pgAdmin 4
+
+<img width="571" height="452" alt="image" src="https://github.com/user-attachments/assets/1cfc99e1-689e-46ab-b99c-142a95d170a5" />
+
+- 🖊️Skriv ner och kom ihåg ditt användarnamn och lösenord. Standardanvändarnamnet är *postgres* och vi använder lösenordet *test123* för projektet
+
+<img width="585" height="551" alt="image" src="https://github.com/user-attachments/assets/7b8ef6b6-ab19-47e5-b51b-bff9e9f903e0" />
+
+
 - 🔍 Verifiera installation: Öppna terminal och kör `psql --version`
 
 ### 4. Valfritt (för utveckling)
