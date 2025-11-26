@@ -76,8 +76,11 @@ Innan du börjar, installera följande program:
 <img width="571" height="452" alt="image" src="https://github.com/user-attachments/assets/1cfc99e1-689e-46ab-b99c-142a95d170a5" />
 
 - 🖊️Skriv ner och kom ihåg ditt användarnamn och lösenord. Standardanvändarnamnet är *postgres* och vi använder lösenordet *test123* för projektet
-
 <img width="585" height="551" alt="image" src="https://github.com/user-attachments/assets/7b8ef6b6-ab19-47e5-b51b-bff9e9f903e0" />
+- 🔑Man måste också känna till porten för att databasen – det är bättre om den är densamma för alla: 5432
+<img width="607" height="551" alt="image" src="https://github.com/user-attachments/assets/6d2b3e2f-51db-4590-a95e-33698426e1b7" />
+
+
 
 
 - 🔍 Verifiera installation: Öppna terminal och kör `psql --version`
