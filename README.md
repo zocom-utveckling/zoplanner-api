@@ -345,6 +345,9 @@ Deleting a customer deletes their classes, and in turn, all courses linked to cl
 
 <img width="1664" height="1232" alt="image" src="https://github.com/user-attachments/assets/7784d7c2-444e-4158-8e5e-44a970e883d9" />
 
+Se skapade tabeller
+<img width="421" height="533" alt="image" src="https://github.com/user-attachments/assets/ea25a6b9-0c71-4bae-accb-976da8c1ec18" />
+
 
 ## Hur man skapar docker image för bara databasen
 1. Installera Docker Desktop
