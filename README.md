@@ -183,6 +183,9 @@ CREATE DATABASE zoplanner;
 
 > Includes ENUMs, users, managers, consultants, customers, classes, courses, assignments, sessions, consultant_status
 
+<img width="1339" height="1158" alt="zoplannerdb" src="https://github.com/user-attachments/assets/af4c8763-4427-4c39-8018-33363911a2f3" />
+
+
 ```
 -- ============================
 -- 1. ENUMS
