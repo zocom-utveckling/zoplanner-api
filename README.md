@@ -157,7 +157,8 @@ Rekommenderat program pgAdmin 4
    
 4. Skriv in samma användarnamn/lösen som du skrev i din .env fil
 
-<img width="697" height="551" alt="image" src="https://github.com/user-attachments/assets/866de2b7-e738-48ac-9e1f-3005532aa661" />
+<img width="712" height="562" alt="image" src="https://github.com/user-attachments/assets/e4d92465-b3db-449e-b4fc-6bc55f993757" />
+
 
    
 Öppna Query Tool
