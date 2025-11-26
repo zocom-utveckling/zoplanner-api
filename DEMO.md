@@ -72,20 +72,72 @@ Innan du börjar, installera följande program:
 ### 3. Postgres 18 (KRÄVS)
 - 📥 **Ladda ner:** [https://www.postgresql.org/download/](https://www.postgresql.org/download)
 - ✅ Installera Postgres Server och pgAdmin 4
-
 <img width="571" height="452" alt="image" src="https://github.com/user-attachments/assets/1cfc99e1-689e-46ab-b99c-142a95d170a5" />
 
 - 🖊️Skriv ner och kom ihåg ditt användarnamn och lösenord. Standardanvändarnamnet är *postgres* och vi använder lösenordet *test123* för projektet
 <img width="585" height="551" alt="image" src="https://github.com/user-attachments/assets/7b8ef6b6-ab19-47e5-b51b-bff9e9f903e0" />
+
 - 🔑Man måste också känna till porten för att databasen – det är bättre om den är densamma för alla: 5432
 <img width="607" height="551" alt="image" src="https://github.com/user-attachments/assets/6d2b3e2f-51db-4590-a95e-33698426e1b7" />
+
+### 4. Skapa databas (KRÄVS)
+
+För tillfället rekommenderar vi att ni använder den gamla versionen av databasen, eftersom det är den som fungerar med koden i `dev`. Vi föreslår att ni använder `zoplanner-old` som namn på den gamla databasen för att undvika förvirring i framtiden. Servern namn kan vara `zoplanner`, eftersom man kan ha flera databas på samma servern. Vi meddelar er när systemet har byggts om för att fungera med den nya databasen. Då måste man upprepa detta steg igen.
+
+Skript för att skapa gammal version ov databas (📢beskrivningen i länken i punkt 7 använder ett annat skript för den nya versionen av databasen)
+
+```
+-- Create customers table
+CREATE TABLE customers (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255),
+    city VARCHAR(255)
+);
+
+-- Create classes table
+CREATE TABLE classes (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255),
+    customer_id BIGINT REFERENCES customers(id)
+);
+
+-- Create users table
+CREATE TABLE users (
+    id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(255),
+    password VARCHAR(255),
+    role VARCHAR(255),
+    city VARCHAR(255),
+    name VARCHAR(255)
+);
+
+-- Create assignments table
+CREATE TABLE assignments (
+    id BIGSERIAL PRIMARY KEY,
+    course_name VARCHAR(255),
+    consultant_id BIGINT REFERENCES users(id),
+    date_start DATE,
+    date_end DATE,
+    class_id BIGINT REFERENCES classes(id)   
+);
+
+-- Create sessions table
+CREATE TABLE sessions (
+    id BIGSERIAL PRIMARY KEY,
+    assignment_id BIGINT REFERENCES assignments(id),
+    time_start TIMESTAMP,
+    time_end TIMESTAMP
+);
+```
+
+Följ länken för att hitta instruktioner om hur man skapar en databas via pgAdmin 4: [https://github.com/zocom-utveckling/zoplanner-api?tab=readme-ov-file#skapa-databas](https://github.com/zocom-utveckling/zoplanner-api?tab=readme-ov-file#skapa-databas)
 
 
 
 
 - 🔍 Verifiera installation: Öppna terminal och kör `psql --version`
 
-### 4. Valfritt (för utveckling)
+### 5. Valfritt (för utveckling)
 - **Java JDK 21+** - Om du vill bygga Spring Boot lokalt
 - **Maven** - Om du vill bygga projektet lokalt
 - **IntelliJ IDEA** - Rekommenderad IDE för Java-utveckling
