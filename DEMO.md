@@ -132,7 +132,7 @@ CREATE TABLE sessions (
 
 Följ länken för att hitta instruktioner om hur man skapar en databas via pgAdmin 4: [https://github.com/zocom-utveckling/zoplanner-api?tab=readme-ov-file#skapa-databas](https://github.com/zocom-utveckling/zoplanner-api?tab=readme-ov-file#skapa-databas)
 
-### 5. Skapa databas (valfritt, man kan ange data senare via Swagger, men det tar längre tid)
+### 5. Skapa data (valfritt, man kan ange data senare via Swagger, men det tar längre tid)
 
 ```
 -- ============================
@@ -280,14 +280,30 @@ Navigera till `zoplanner-api/webapi` mappen och skapa en fil som heter `.env`:
 cd zoplanner-api/webapi
 ```
 
-Skapa filen `.env` med följande innehåll (använd Notepad eller VS Code):
+### Skapa filen `.env` 
 
-```env
+Windows
+
+```
+# Alternativ A – via PowerShell
+New-Item -Path .env -ItemType File
+
+# Alternativ B – via vanlig CMD
+type nul > .env
+
+# Kontrollera innehållet
+notepad .env
+
+# Notepad öppnas – klistra in följande:
+
 HOST=zoplanner-database
 PORT=5432
-POSTGRES_USER=<your_username>
-POSTGRES_PASSWORD=<your_password>
-POSTGRES_DB=zoplanner
+POSTGRES_USER=your_username
+POSTGRES_PASSWORD=your_password
+POSTGRES_DB=zoplanner-old(your database name)
+
+# Spara filen → stäng Notepad.
+
 ```
 
 > ⚠️ **VIKTIGT:** Byt ut `<your_username>` och `<your_password>` till dina egna valfria värden. Kommittera ALDRIG denna fil till Git!
