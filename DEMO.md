@@ -1,7 +1,6 @@
 # 🚀 ZoPlanner Demo Guide
 
 > **Komplett guide för att starta hela ZoPlanner-systemet med Docker**  
-> Perfekt för konsultchefer och nya teammedlemmar som vill testa systemet.
 
 ---
 
