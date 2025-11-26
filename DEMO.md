@@ -69,7 +69,12 @@ Innan du börjar, installera följande program:
 - ✅ Installera Git
 - 🔍 Verifiera installation: Öppna terminal och kör `git --version`
 
-### 3. Valfritt (för utveckling)
+### 3. Postgres (KRÄVS)
+- 📥 **Ladda ner:** [https://www.postgresql.org/download/](https://www.postgresql.org/download)
+- ✅ Installera Postgres och pgAdmin 4
+- 🔍 Verifiera installation: Öppna terminal och kör `psql --version`
+
+### 4. Valfritt (för utveckling)
 - **Java JDK 21+** - Om du vill bygga Spring Boot lokalt
 - **Maven** - Om du vill bygga projektet lokalt
 - **IntelliJ IDEA** - Rekommenderad IDE för Java-utveckling
