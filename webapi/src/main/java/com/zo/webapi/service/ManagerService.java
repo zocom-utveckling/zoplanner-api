@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -30,6 +31,7 @@ public class ManagerService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
+        // Validate role
         if (user.getRole() != UserRole.MANAGER && user.getRole() != UserRole.BOTH) {
             throw new RuntimeException("User must have MANAGER or BOTH role");
         }
@@ -39,6 +41,7 @@ public class ManagerService {
             throw new RuntimeException("User is already a manager");
         }
 
+        // Create and save manager
         Manager manager = new Manager(user);
         managerRepository.save(manager);
 
@@ -51,27 +54,59 @@ public class ManagerService {
     }
 
     //READ
-    public Manager getManagerById(Long id) {
-        return managerRepository.findById(id)
+
+    public ManagerResponseDTO getManagerById(Long id) {
+        Manager manager = managerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Manager not found with id: " + id));
+
+        User user = manager.getUser();
+
+        return new ManagerResponseDTO(
+                manager.getId(),
+                user.getId(),
+                user.getUsername(),
+                user.getRole().name()
+        );
     }
 
-    public List<Manager> getAllManagers() {
-        return managerRepository.findAll();
+    public List<ManagerResponseDTO> getAllManagers() {
+        return managerRepository.findAll()
+                .stream()
+                .map(manager -> {
+                    User user = manager.getUser();
+                    return new ManagerResponseDTO(
+                            manager.getId(),
+                            user.getId(),
+                            user.getUsername(),
+                            user.getRole().name()
+                    );
+                })
+                .collect(Collectors.toList());
     }
 
-    public Manager getManagerByUserId(Long userId) {
-        return managerRepository.findByUserId(userId)
+    public ManagerResponseDTO getManagerByUserId(Long userId) {
+        Manager manager = managerRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Manager not found with user id: " + userId));
+
+        User user = manager.getUser();
+
+        return new ManagerResponseDTO(
+                manager.getId(),
+                user.getId(),
+                user.getUsername(),
+                user.getRole().name()
+        );
     }
 
     public List<?> getConsultantsForManager(Long managerId) {
-        Manager manager = getManagerById(managerId);
+        Manager manager = managerRepository.findById(managerId)
+                .orElseThrow(() -> new RuntimeException("Manager not found with id: " + managerId));
         return manager.getConsultants();
     }
 
     public List<?> getCustomersForManager(Long managerId) {
-        Manager manager = getManagerById(managerId);
+        Manager manager = managerRepository.findById(managerId)
+                .orElseThrow(() -> new RuntimeException("Manager not found with id: " + managerId));
         return manager.getCustomers();
     }
 
@@ -80,7 +115,8 @@ public class ManagerService {
     @Transactional
     public ManagerResponseDTO updateManagerUser(Long managerId, Long newUserId) {
 
-        Manager manager = getManagerById(managerId);
+        Manager manager = managerRepository.findById(managerId)
+                .orElseThrow(() -> new RuntimeException("Manager not found with id: " + managerId));
 
         User newUser = userRepository.findById(newUserId)
                 .orElseThrow(() -> new RuntimeException("User not found: " + newUserId));
@@ -109,16 +145,17 @@ public class ManagerService {
     //DELETE : delete manager and set NULL for associated consultants and customers
     @Transactional
     public void deleteManager(Long id) {
-        Manager manager = getManagerById(id);
+        Manager manager = managerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Manager not found with id: " + id));
 
         // SET NULL for consultants
         if (manager.getConsultants() != null) {
-            manager.getConsultants().forEach(c -> c.setManager(null));
+            manager.getConsultants().forEach(consultant -> consultant.setManager(null));
         }
 
         // SET NULL for customers
         if (manager.getCustomers() != null) {
-            manager.getCustomers().forEach(c -> c.setManager(null));
+            manager.getCustomers().forEach(customer -> customer.setManager(null));
         }
 
         managerRepository.delete(manager);

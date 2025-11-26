@@ -14,42 +14,48 @@ public class ManagerController {
     private final ManagerService managerService;
 
     public ManagerController(ManagerService managerService) {
+
         this.managerService = managerService;
     }
 
     // CREATE
     @PostMapping
-    public ManagerResponseDTO create(@RequestParam Long userId) {
+    public ManagerResponseDTO createManager(@RequestParam Long userId) {
+
         return managerService.createManager(userId);
     }
 
     // GET manager by id
     @GetMapping("/{id}")
-    public Manager getById(@PathVariable Long id) {
+    public ManagerResponseDTO getManagerById(@PathVariable Long id) {
+
         return managerService.getManagerById(id);
     }
 
     // GET all managers
     @GetMapping
-    public List<Manager> getAll() {
+    public List<ManagerResponseDTO> getAllManagers() {
+
         return managerService.getAllManagers();
     }
 
     // GET manager by user id
     @GetMapping("/user/{userId}")
-    public Manager getByUserId(@PathVariable Long userId) {
+    public ManagerResponseDTO getManagerByUserId(@PathVariable Long userId) {
         return managerService.getManagerByUserId(userId);
     }
 
     // GET associated consultants
     @GetMapping("/{id}/consultants")
-    public List<?> getConsultants(@PathVariable Long id) {
+    public List<?> getConsultantsForManager(@PathVariable Long id) {
+
         return managerService.getConsultantsForManager(id);
     }
 
     // GET associated customers
     @GetMapping("/{id}/customers")
-    public List<?> getCustomers(@PathVariable Long id) {
+    public List<?> getCustomersForManager(@PathVariable Long id) {
+
         return managerService.getCustomersForManager(id);
     }
 
