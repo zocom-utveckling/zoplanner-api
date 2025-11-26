@@ -63,7 +63,7 @@ public class UserController {
             return ResponseEntity.ok(updateUser);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("User with id " + id + " not found: " + e.getMessage());
+                    .body("User not found: " + e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error updating user: " + e.getMessage());
@@ -79,7 +79,7 @@ public class UserController {
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("User with id " + id + " not found: " + e.getMessage());
+                    .body("User not found: " + e.getMessage());
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -96,7 +96,7 @@ public class UserController {
             return ResponseEntity.ok(user);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("User with id " + id + " not found: " + e.getMessage());
+                    .body("User not found: " + e.getMessage());
         }
     }
 
@@ -108,7 +108,7 @@ public class UserController {
             return ResponseEntity.ok(user);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("User with name " + username + " not found: " + e.getMessage());
+                    .body("User not found: " + e.getMessage());
         }
     }
 }

@@ -2,6 +2,7 @@ package com.zo.webapi.controller;
 
 import com.zo.webapi.model.User;
 import com.zo.webapi.service.UserService;
+import enums.UserRole;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -32,9 +33,8 @@ public class UserControllerTest {
         user.setId(1L);
         user.setUsername("testuser");
         user.setPassword("testpassword");
-        user.setRole("admin");
+        user.setRole(UserRole.CONSULTANT);
         user.setName("Test User");
-        user.setCity("Stockholm");
         users.add(user);
 
         when(userService.getAllUsers()).thenReturn(users);
@@ -54,9 +54,8 @@ public class UserControllerTest {
         user.setId(1L);
         user.setUsername("testuser");
         user.setPassword("testpassword");
-        user.setRole("admin");
+        user.setRole(UserRole.MANAGER);
         user.setName("Test User");
-        user.setCity("Stockholm");
 
         when(userService.getUserById(1L)).thenReturn(user);
 
@@ -99,16 +98,15 @@ public class UserControllerTest {
         user.setId(1L);
         user.setUsername("newuser");
         user.setPassword("password123");
-        user.setRole("USER");
+        user.setRole(UserRole.BOTH);
         user.setName("New User");
-        user.setCity("Malmo");
 
         when(userService.usernameExists("newuser")).thenReturn(false);
         when(userService.createUser(any(User.class))).thenReturn(user);
 
         mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"username\":\"newuser\",\"password\":\"password123\",\"role\":\"USER\",\"name\":\"New User\",\"city\":\"Malmo\"}"))
+                .content("{\"username\":\"newuser\",\"password\":\"password123\",\"role\":\"BOTH\",\"name\":\"New User\"}"))
                 .andExpect(jsonPath("$.username").value("newuser"))
                 .andExpect(jsonPath("$.name").value("New User"));
     }
