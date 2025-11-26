@@ -7,12 +7,15 @@ public class ManagerResponseDTO {
     private String username;
     private String role;
 
+    public ManagerResponseDTO() {}
+
     public ManagerResponseDTO(Long id, Long userId, String username, String role) {
         this.id = id;
         this.userId = userId;
         this.username = username;
         this.role = role;
     }
+
 
     public Long getId() { return id; }
     public Long getUserId() { return userId; }
