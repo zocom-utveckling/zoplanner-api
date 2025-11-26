@@ -244,11 +244,11 @@ Kontrollera att uppgifterna har fyllts i korrekt med hjälp av förfrågningar s
 SELECT * FROM table-name;
 ```
 
-### 6. Valfritt (för utveckling)
+### 6. För utveckling (men man kan starta hela systemet utan det)
 - **Java JDK 21+** - Om du vill bygga Spring Boot lokalt
 - **Maven** - Om du vill bygga projektet lokalt
-- **IntelliJ IDEA** - Rekommenderad IDE för Java-utveckling
-- **pgAdmin 4** - För databashantering
+- **IntelliJ IDEA** - Rekommenderad IDE för Java-utveckling - våra inskruktioner [https://github.com/zocom-utveckling/zoplanner-api/blob/dev/README.md#hur-man-laddar-ner-och-k%C3%B6r-repot-i-intellij-idea](https://github.com/zocom-utveckling/zoplanner-api/blob/dev/README.md#hur-man-laddar-ner-och-k%C3%B6r-repot-i-intellij-idea)
+- **Visual Studio Code** - För .Net och React
 
 ---
 
