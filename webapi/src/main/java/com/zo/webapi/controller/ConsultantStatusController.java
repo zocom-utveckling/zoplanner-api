@@ -1,7 +1,6 @@
 package com.zo.webapi.controller;
 
 import com.zo.webapi.model.ConsultantStatus;
-import com.zo.webapi.model.ConsultantStatusType;
 import com.zo.webapi.service.ConsultantStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

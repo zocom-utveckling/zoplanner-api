@@ -2,7 +2,6 @@ package com.zo.webapi.service;
 
 import com.zo.webapi.model.ConsultantStatus;
 import com.zo.webapi.model.Consultant;
-import com.zo.webapi.model.ConsultantStatusType;
 import com.zo.webapi.repository.ConsultantRepository;
 import com.zo.webapi.repository.ConsultantStatusRepository;
 import lombok.RequiredArgsConstructor;
