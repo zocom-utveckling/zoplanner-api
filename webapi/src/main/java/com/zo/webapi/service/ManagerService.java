@@ -1,12 +1,11 @@
 package com.zo.webapi.service;
 import com.zo.webapi.dto.ManagerResponseDTO;
-import com.zo.webapi.model.Consultant;
 
 import com.zo.webapi.model.Manager;
 import com.zo.webapi.model.User;
 import com.zo.webapi.repository.ManagerRepository;
 import com.zo.webapi.repository.UserRepository;
-import enums.UserRole;
+import com.zo.webapi.enums.UserRole;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

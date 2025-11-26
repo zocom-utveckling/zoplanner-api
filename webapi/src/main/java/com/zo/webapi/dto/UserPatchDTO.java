@@ -1,6 +1,6 @@
 package com.zo.webapi.dto;
 
-import com.zo.webapi.model.UserRole;
+import com.zo.webapi.enums.UserRole;
 
 public class UserPatchDTO {
     private String username;

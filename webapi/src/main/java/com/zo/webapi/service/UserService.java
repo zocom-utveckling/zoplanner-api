@@ -1,30 +1,32 @@
 package com.zo.webapi.service;
 
 import com.zo.webapi.dto.UserPatchDTO;
+import com.zo.webapi.model.Consultant;
+import com.zo.webapi.model.Manager;
 import com.zo.webapi.model.User;
-import com.zo.webapi.model.UserRole;
+import com.zo.webapi.repository.ConsultantRepository;
+import com.zo.webapi.repository.ManagerRepository;
 import com.zo.webapi.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.zo.webapi.enums.UserRole;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
 
-    //TODO:
-    // private final ManagerRepository managerRepository;
-    // private final ConsultantRepository consultantRepository;
+    private final ManagerRepository managerRepository;
+    private final ConsultantRepository consultantRepository;
 
     //Constructor
-    public UserService(UserRepository userRepository
-                        /*, ManagerRepository managerRepository,
-                        ConsultantRepository consultantRepository*/) {
+    public UserService(UserRepository userRepository, ManagerRepository managerRepository,
+                        ConsultantRepository consultantRepository) {
 
         this.userRepository = userRepository;
-        // this.managerRepository = managerRepository;
-        // this.consultantRepository = consultantRepository
+        this.managerRepository = managerRepository;
+        this.consultantRepository = consultantRepository;
     }
 
     //Gets all users
@@ -51,42 +53,50 @@ public class UserService {
     }
 
     //Creates a user
+    @Transactional
     public User createUser(User user) {
         User savedUser = userRepository.save(user);
-
-        // -----------------------------
-        // TODO: Create entries in managers / consultants
-        // if (user.getRole() == UserRole.MANAGER) {...}
-        // if (user.getRole() == UserRole.CONSULTANT) {...}
-        // if (user.getRole() == UserRole.BOTH) {...}
-        //------------------------------
+        handleRoleCreation(savedUser);
 
         return savedUser;
     }
 
-    //Updates all columns in a user
-    public User updateUser(Long id, User userDetails) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id " + id));
+    private void handleRoleCreation(User user) {
+        UserRole role = user.getRole();
 
-        user.setUsername(userDetails.getUsername());
-        user.setPassword(userDetails.getPassword());
-        user.setName(userDetails.getName());
+        if (role == UserRole.MANAGER || role == UserRole.BOTH) {
+            Manager manager = new Manager(user);
+            managerRepository.save(manager);
+        }
 
-        UserRole oldRole = user.getRole();
-        UserRole newRole = userDetails.getRole();
-        user.setRole(newRole);
-
-        User updatedUser = userRepository.save(user);
-
-        // --------------------------
-        // TODO: Handle role changes
-        // handleRoleChanges(updateUser, oldRole, newRole);
-        // --------------------------
-
-        return updatedUser;
+        if (role == UserRole.CONSULTANT ||  role == UserRole.BOTH) {
+            Consultant consultant = new Consultant();
+            consultant.setUser(user);
+            consultant.setCity("Unknown");
+            consultantRepository.save(consultant);
+        }
     }
 
+    //Updates all columns in a user
+    @Transactional
+    public User updateUser(Long id, User userDetails) {
+       User user = getUserById(id);
+
+       UserRole oldRole = user.getRole();
+
+       user.setUsername(userDetails.getUsername());
+       user.setPassword(userDetails.getPassword());
+       user.setName(userDetails.getName());
+       user.setRole(userDetails.getRole());
+
+       User updatedUser = userRepository.save(user);
+
+       handleRoleChanges(updatedUser, oldRole, updatedUser.getRole());
+       return updatedUser;
+
+    }
+
+    // Updates only the fields provided
     public User patchUser(Long id, UserPatchDTO dto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id " + id));
@@ -100,32 +110,58 @@ public class UserService {
 
         User updatedUser = userRepository.save(user);
 
-        // TODO: handle role changes
-        // handleRoleChanges(updateUser, oldRole, updatedUser.getRole());
+        if (dto.getRole() != null) {
+            handleRoleChanges(updatedUser, oldRole, dto.getRole());
+        }
 
         return updatedUser;
     }
 
     //Deletes a user
+    @Transactional
     public void deleteUser(Long id) {
        if (!userRepository.existsById(id)) {
            throw new IllegalArgumentException("User not found with id " + id);
        }
 
-       // ---------------------------
-        // TODO: Delete related manage / consultant
-        // --------------------------
+       managerRepository.findByUserId(id).ifPresent(managerRepository::delete);
+       consultantRepository.findByUserId(id).ifPresent(consultantRepository::delete);
 
         userRepository.deleteById(id);
 
     }
 
-    // Private helper for role changes
-    /*
-        private void handleRoleChanges(User user, UserRole oldRole, UserRole newRole) {
-            // TODO: Implement role sync
+    private void handleRoleChanges(User user, UserRole oldRole, UserRole newRole) {
+        boolean wasManager = oldRole == UserRole.MANAGER || oldRole == UserRole.BOTH;
+        boolean wasConsultant = oldRole == UserRole.CONSULTANT ||  oldRole == UserRole.BOTH;
+
+        boolean isManager = newRole == UserRole.MANAGER || newRole == UserRole.BOTH;
+        boolean isConsultant = newRole == UserRole.CONSULTANT ||  newRole == UserRole.BOTH;
+
+        // Remove manager role
+        if (wasManager && !isManager) {
+            managerRepository.findByUserId(user.getId()).ifPresent(managerRepository::delete);
+
         }
-     */
+
+        // add manager role
+        if (!wasManager && isManager) {
+            managerRepository.save(new Manager(user));
+        }
+
+        // Remove consultant role
+        if (wasConsultant && !isConsultant) {
+            consultantRepository.findByUserId(user.getId()).ifPresent(consultantRepository::delete);
+        }
+
+        // Add consultant role
+        if (!wasConsultant && isConsultant) {
+            Consultant consultant = new Consultant();
+            consultant.setUser(user);
+            consultant.setCity("Unknown");
+            consultantRepository.save(consultant);
+        }
+    }
 
 
 
