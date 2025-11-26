@@ -1,5 +1,6 @@
 package com.zo.webapi.controller;
 
+import com.zo.webapi.dto.UserPatchDTO;
 import com.zo.webapi.model.User;
 import com.zo.webapi.service.UserService;
 import jakarta.validation.Valid;
@@ -109,6 +110,20 @@ public class UserController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("User with name " + username + " not found: " + e.getMessage());
+        }
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> patchUser(@PathVariable Long id, @RequestBody UserPatchDTO dto) {
+        try {
+            User patchedUser = userService.patchUser(id, dto);
+            return ResponseEntity.ok(patchedUser);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("User with id " + id + " not found: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error updating user: " + e.getMessage());
         }
     }
 }
