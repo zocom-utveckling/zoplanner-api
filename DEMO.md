@@ -89,6 +89,9 @@ mkdir ZoPlanner
 cd ZoPlanner
 
 # Klona alla tre repositories
+# När man kör det här kommandot öppnas ett fönster där man behöver logga in på GitHub. Följ instruktionerna. 
+# Man måste logga in med ett konto som har åtkomst till alla repo som man klonar.
+
 git clone https://github.com/zocom-utveckling/zoplanner-api.git
 git clone https://github.com/zocom-utveckling/zoplanner-service.git
 git clone https://github.com/zocom-utveckling/zoplanner-frontend.git
