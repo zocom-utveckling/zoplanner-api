@@ -132,12 +132,119 @@ CREATE TABLE sessions (
 
 Följ länken för att hitta instruktioner om hur man skapar en databas via pgAdmin 4: [https://github.com/zocom-utveckling/zoplanner-api?tab=readme-ov-file#skapa-databas](https://github.com/zocom-utveckling/zoplanner-api?tab=readme-ov-file#skapa-databas)
 
+### 5. Skapa databas (valfritt, man kan ange data senare via Swagger, men det tar längre tid)
 
+```
+-- ============================
+-- CUSTOMERS (Yrkeshögskolor)
+-- ============================
+INSERT INTO customers (name, city) VALUES
+('Nackademin', 'Stockholm'),
+('Lexicon YH', 'Göteborg'),
+('Jensens YH', 'Malmö'),
+('EC Utbildning', 'Stockholm'),
+('Medieinstitutet', 'Stockholm');
 
+-- ============================
+-- CLASSES (programming tracks)
+-- ============================
+INSERT INTO classes (name, customer_id) VALUES
+('Java Developer 2025', 1),
+('Fullstack .NET 2025', 1),
+('Systemutvecklare Java', 2),
+('Frontendutvecklare React', 3),
+('Python Developer 2025', 4),
+('DevOps Engineer 2025', 5);
 
-- 🔍 Verifiera installation: Öppna terminal och kör `psql --version`
+-- ============================
+-- USERS (consultants/instructors)
+-- ============================
+INSERT INTO users (username, password, role, city, name) VALUES
+('anna.smith', 'pass', 'CONSULTANT', 'Stockholm', 'Anna Smith'),
+('mikael.lund', 'pass', 'CONSULTANT', 'Göteborg', 'Mikael Lund'),
+('sara.pettersson', 'pass', 'CONSULTANT', 'Malmö', 'Sara Pettersson'),
+('john.nilsson', 'pass', 'CONSULTANT', 'Stockholm', 'John Nilsson'),
+('lisa.karlsson', 'pass', 'CONSULTANT', 'Stockholm', 'Lisa Karlsson');
 
-### 5. Valfritt (för utveckling)
+-- ============================
+-- ASSIGNMENTS (courses taught)
+-- ============================
+INSERT INTO assignments (course_name, consultant_id, date_start, date_end, class_id) VALUES
+('Java Basics',                1, '2025-02-01', '2025-03-01', 1),
+('Object-Oriented Programming',1, '2025-03-05', '2025-04-20', 1),
+('.NET Core Introduction',     2, '2025-02-10', '2025-03-10', 2),
+('React Advanced',             3, '2025-01-20', '2025-02-28', 4),
+('Python for Data Analysis',   4, '2025-02-01', '2025-03-15', 5),
+('CI/CD Pipelines',            5, '2025-02-15', '2025-03-10', 6);
+
+-- ============================
+-- SESSIONS (daily schedule)
+-- Format: each assignment has multiple teaching days
+-- Example time: 09:00–16:00
+-- ============================
+
+-- Java Basics (assignment 1) — daily Mon–Fri for 5 days
+INSERT INTO sessions (assignment_id, time_start, time_end) VALUES
+(1, '2025-02-03 09:00', '2025-02-03 16:00'),
+(1, '2025-02-04 09:00', '2025-02-04 16:00'),
+(1, '2025-02-05 09:00', '2025-02-05 16:00'),
+(1, '2025-02-06 09:00', '2025-02-06 16:00'),
+(1, '2025-02-07 09:00', '2025-02-07 16:00');
+
+-- OOP (assignment 2) — 3 sessions per week
+INSERT INTO sessions (assignment_id, time_start, time_end) VALUES
+(2, '2025-03-05 09:00', '2025-03-05 16:00'),
+(2, '2025-03-07 09:00', '2025-03-07 16:00'),
+(2, '2025-03-10 09:00', '2025-03-10 16:00'),
+(2, '2025-03-12 09:00', '2025-03-12 16:00'),
+(2, '2025-03-14 09:00', '2025-03-14 16:00');
+
+-- .NET Core (assignment 3) — daily for 1 week
+INSERT INTO sessions (assignment_id, time_start, time_end) VALUES
+(3, '2025-02-10 09:00', '2025-02-10 16:00'),
+(3, '2025-02-11 09:00', '2025-02-11 16:00'),
+(3, '2025-02-12 09:00', '2025-02-12 16:00'),
+(3, '2025-02-13 09:00', '2025-02-13 16:00'),
+(3, '2025-02-14 09:00', '2025-02-14 16:00');
+
+-- React Advanced (assignment 4) — 2 times per week
+INSERT INTO sessions (assignment_id, time_start, time_end) VALUES
+(4, '2025-01-21 09:00', '2025-01-21 16:00'),
+(4, '2025-01-23 09:00', '2025-01-23 16:00'),
+(4, '2025-01-28 09:00', '2025-01-28 16:00'),
+(4, '2025-01-30 09:00', '2025-01-30 16:00'),
+(4, '2025-02-04 09:00', '2025-02-04 16:00'),
+(4, '2025-02-06 09:00', '2025-02-06 16:00');
+
+-- Python for Data Analysis (assignment 5) — Mon/Wed/Fri
+INSERT INTO sessions (assignment_id, time_start, time_end) VALUES
+(5, '2025-02-03 09:00', '2025-02-03 16:00'),
+(5, '2025-02-05 09:00', '2025-02-05 16:00'),
+(5, '2025-02-07 09:00', '2025-02-07 16:00'),
+(5, '2025-02-10 09:00', '2025-02-10 16:00'),
+(5, '2025-02-12 09:00', '2025-02-12 16:00'),
+(5, '2025-02-14 09:00', '2025-02-14 16:00');
+
+-- CI/CD Pipelines (assignment 6) — daily two weeks
+INSERT INTO sessions (assignment_id, time_start, time_end) VALUES
+(6, '2025-02-17 09:00', '2025-02-17 16:00'),
+(6, '2025-02-18 09:00', '2025-02-18 16:00'),
+(6, '2025-02-19 09:00', '2025-02-19 16:00'),
+(6, '2025-02-20 09:00', '2025-02-20 16:00'),
+(6, '2025-02-21 09:00', '2025-02-21 16:00'),
+(6, '2025-02-24 09:00', '2025-02-24 16:00'),
+(6, '2025-02-25 09:00', '2025-02-25 16:00'),
+(6, '2025-02-26 09:00', '2025-02-26 16:00'),
+(6, '2025-02-27 09:00', '2025-02-27 16:00'),
+(6, '2025-02-28 09:00', '2025-02-28 16:00');
+```
+Kontrollera att uppgifterna har fyllts i korrekt med hjälp av förfrågningar som
+
+```
+SELECT * FROM table-name;
+```
+
+### 6. Valfritt (för utveckling)
 - **Java JDK 21+** - Om du vill bygga Spring Boot lokalt
 - **Maven** - Om du vill bygga projektet lokalt
 - **IntelliJ IDEA** - Rekommenderad IDE för Java-utveckling
