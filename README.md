@@ -159,6 +159,11 @@ Rekommenderat program pgAdmin 4
 
 <img width="712" height="562" alt="image" src="https://github.com/user-attachments/assets/e4d92465-b3db-449e-b4fc-6bc55f993757" />
 
+5. Skapa databas
+
+<img width="620" height="500" alt="image" src="https://github.com/user-attachments/assets/fa0864a9-98ed-47da-99d6-97b3e8e5dd20" />
+
+<img width="699" height="550" alt="image" src="https://github.com/user-attachments/assets/ebebc67b-b90a-47b1-bad1-59d6dd329fbd" />
 
    
 Öppna Query Tool
