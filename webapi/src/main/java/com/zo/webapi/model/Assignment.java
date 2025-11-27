@@ -1,6 +1,5 @@
 package com.zo.webapi.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -16,36 +15,34 @@ public class Assignment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "course_name")
-    private String courseName;
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    private Course course;
 
-    @Column(name = "consultant_id")
-    private Long consultantId;
+    @ManyToOne
+    @JoinColumn(name = "consultant_id")
+    private Consultant consultant;
 
-    @Column(name = "date_start", nullable = false)
+    @Column(name = "date_start")
     private LocalDate dateStart;
 
-    @Column(name = "date_end", nullable = false)
+    @Column(name = "date_end")
     private LocalDate dateEnd;
 
-    @Column(name = "class_id")
-    private Long classId;
 
-
-    @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, orphanRemoval = false)
-    @JsonIgnoreProperties("sessions")
+    @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("assignment")
     @JsonManagedReference
-    private final List<Session> sessions = new ArrayList<>();
+    private List<Session> sessions = new ArrayList<>();
 
     // Constructors
     public Assignment() {}
 
-    public Assignment(String courseName, Long consultantId, LocalDate dateStart, LocalDate dateEnd, Long classId) {
-        this.courseName = courseName;
-        this.consultantId = consultantId;
+    public Assignment(Course course, Consultant consultant, LocalDate dateStart, LocalDate dateEnd) {
+        this.course = course;
+        this.consultant = consultant;
         this.dateStart = dateStart;
         this.dateEnd = dateEnd;
-        this.classId = classId;
     }
 
     // Getters
@@ -53,12 +50,12 @@ public class Assignment {
         return id;
     }
 
-    public String getCourseName() {
-        return courseName;
+    public Course getCourse() {
+        return course;
     }
 
-    public Long getConsultantId() {
-        return consultantId;
+    public Consultant getConsultant() {
+        return consultant;
     }
 
     public LocalDate getDateStart() {
@@ -69,8 +66,8 @@ public class Assignment {
         return dateEnd;
     }
 
-    public Long getClassId() {
-        return classId;
+    public List<Session> getSessions() {
+        return sessions;
     }
 
     // Setters
@@ -78,12 +75,12 @@ public class Assignment {
         this.id = id;
     }
 
-    public void setCourseName(String courseName) {
-        this.courseName = courseName;
+    public void setCourse(Course course) {
+        this.course = course;
     }
 
-    public void setConsultantId(Long consultantId) {
-        this.consultantId = consultantId;
+    public void setConsultant(Consultant consultant) {
+        this.consultant = consultant;
     }
 
     public void setDateStart(LocalDate dateStart) {
@@ -94,15 +91,12 @@ public class Assignment {
         this.dateEnd = dateEnd;
     }
 
-    public void setClassId(Long classId) {
-        this.classId = classId;
-    }
-
-    public List<Session> getSessions() {
-        return sessions;
+    public void setSessions(List<Session> sessions) {
+        this.sessions = sessions;
     }
 
     public void addSession(Session session) {
         sessions.add(session);
+        session.setAssignment(this);
     }
 }

@@ -46,6 +46,11 @@ public class AssignmentController {
         return ResponseEntity.ok(assignmentService.getAssignmentsByClass(classId));
     }
 
+    @GetMapping("/course/{courseId}")
+    public ResponseEntity<List<Assignment>> getAssignmentsByCourse(@PathVariable Long courseId) {
+        return ResponseEntity.ok(assignmentService.getAssignmentsByCourse(courseId));
+    }
+
     @PostMapping
     public ResponseEntity<Assignment> createAssignment(@RequestBody Assignment assignment) {
         Assignment created = assignmentService.createAssignment(assignment);
@@ -81,7 +86,7 @@ public class AssignmentController {
     }
 
     @PostMapping("/{id}/sessions")
-    public ResponseEntity<Session> addSession(@PathVariable Long id, Session session){
+    public ResponseEntity<Session> addSession(@PathVariable Long id, @RequestBody Session session){
         Session result = sessionService.createSession(id, session);
         if(result != null){
             return ResponseEntity.ok(result);
