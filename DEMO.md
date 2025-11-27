@@ -313,6 +313,8 @@ POSTGRES_DB=zoplanner-old(your database name)
 Öppna filen `zoplanner-api/webapi/docker-compose.yml` och uppdatera sökvägarna till .NET-tjänsten och frontend:
 
 ```yaml
+notepad docker-compose.yml
+
 # Ändra denna rad för .NET-tjänsten:
 context: ./path/to/dotnet-service
 # Till din faktiska sökväg, t.ex. (om repos ligger i samma mapp):
