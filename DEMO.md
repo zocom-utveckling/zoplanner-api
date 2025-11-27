@@ -244,9 +244,76 @@ Kontrollera att uppgifterna har fyllts i korrekt med hjälp av förfrågningar s
 SELECT * FROM table-name;
 ```
 
-### 6. För utveckling (men man kan starta hela systemet utan det)
-- **Java JDK 21+** - Om du vill bygga Spring Boot lokalt
-- **Maven** - Om du vill bygga projektet lokalt
+### 6. Maven och Java JDK 21
+Windows
+1. Öppna CMD som administratör
+
+2. Starta PowerShell från CMD (eller starta PowerShell direct utan CMD)
+
+```
+powershell
+```
+
+Nu kan du köra PowerShell-kommandon direkt i CMD.
+
+3. Tillåt att skript körs
+
+```
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+```
+Detta behövs för att kunna installera Scoop.
+
+4. Installera Scoop
+
+```
+iwr -useb get.scoop.sh | iex
+```
+
+Scoop installerar sig själv och uppdaterar PATH automatiskt.
+
+5. Installera Maven
+
+```
+scoop install maven
+```
+<img width="438" height="43" alt="image" src="https://github.com/user-attachments/assets/5918feb5-6245-4b09-8a2e-ef44f9350cc4" />
+
+6. Lägg till Java-bucket
+
+```
+scoop bucket add java
+```
+
+7. Installera Java 21
+
+```
+scoop install openjdk21
+```
+
+Detta installerar Java 21 och sätter JAVA_HOME automatiskt.
+
+8. Kontrollera Java
+
+```
+java -version
+```
+Du ska se något som:
+
+<img width="638" height="114" alt="image" src="https://github.com/user-attachments/assets/f011a3b5-c6ac-478d-b7a8-d0e90aa6732a" />
+
+
+9. Kontrollera Maven
+
+```
+mvn -v
+```
+
+Du ska se något som
+
+<img width="936" height="79" alt="image" src="https://github.com/user-attachments/assets/e3b2c0cd-18ba-4a60-850f-85cb9c828d2a" />
+
+
+### 7. För utveckling (men man kan starta hela systemet utan det)
 - **IntelliJ IDEA** - Rekommenderad IDE för Java-utveckling - våra inskruktioner [https://github.com/zocom-utveckling/zoplanner-api/blob/dev/README.md#hur-man-laddar-ner-och-k%C3%B6r-repot-i-intellij-idea](https://github.com/zocom-utveckling/zoplanner-api/blob/dev/README.md#hur-man-laddar-ner-och-k%C3%B6r-repot-i-intellij-idea)
 - **Visual Studio Code** - För .Net och React
 
