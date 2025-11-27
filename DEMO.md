@@ -18,6 +18,7 @@
 
 - 📖 [README.md](./README.md) - Detaljerad guide för utvecklare (databas setup, IntelliJ, Swagger, CI/CD)
 - 🐳 [DOCKER_INSTRUCTIONS.md](./webapi/DOCKER_INSTRUCTIONS.md) - Detaljerade Docker-kommandon och nätverksarkitektur
+- [HUR KOPPLAS SPRING BOOT OCH >NET](https://github.com/zocom-utveckling/zoplanner-service/blob/dev/README.md)
 
 ---
 
