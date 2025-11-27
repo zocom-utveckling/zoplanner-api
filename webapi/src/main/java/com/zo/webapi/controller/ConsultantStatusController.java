@@ -2,10 +2,11 @@ package com.zo.webapi.controller;
 
 import com.zo.webapi.model.ConsultantStatus;
 import com.zo.webapi.service.ConsultantStatusService;
+import enums.ConsultantStatusType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-        import java.time.LocalDate;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
