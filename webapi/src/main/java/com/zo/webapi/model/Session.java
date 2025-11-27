@@ -3,6 +3,8 @@ package com.zo.webapi.model;
 import com.fasterxml.jackson.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
@@ -29,6 +31,14 @@ public class Session {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @Column(name = "time_end")
     private LocalDateTime timeEnd;
+
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "location", columnDefinition = "session_location")
+    private SessionLocation location;
+
+    @Column(name = "comment")
+    private String comment;
 
     @ManyToOne
     @JoinColumn(name = "assignment_id", nullable = false)
@@ -80,5 +90,21 @@ public class Session {
 
     public void setAssignment(Assignment assignment) {
         this.assignment = assignment;
+    }
+
+    public SessionLocation getLocation() {
+        return location;
+    }
+
+    public void setLocation(SessionLocation location) {
+        this.location = location;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }
