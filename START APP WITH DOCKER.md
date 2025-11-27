@@ -272,6 +272,12 @@ docker-compose up -d --build
 | **Se status** | `docker-compose ps` |
 | **Se loggar** | `docker-compose logs -f` |
 | **Starta om alla** | `docker-compose restart` |
+| **Lägg till data manuelt i databasen** | `docker exec -it din-container-namn psql -U postgres -d zoplanner -c "skriv sql kodan här"` |
+| **Lägg till data manuelt från fil** | ` Kopiera SQL-filen till containern docker cp uppdatering.sql din-container-namn:/tmp/`
+| **Kör filen** | ` Kör SQL-filen docker exec -it din-container-namn psql -U postgres -d ditt-db-namn -f /tmp/uppdatering.sql`
+ 
+# Kör SQL-filen
+docker exec -it din-container-namn psql -U postgres -d ditt-db-namn -f /tmp/uppdatering.sql` |
 
 ### Starta enskilda containers
 
