@@ -1,6 +1,5 @@
 package com.zo.webapi.service;
 
-
 import com.zo.webapi.model.Assignment;
 import com.zo.webapi.repository.AssignmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +31,12 @@ public class AssignmentService {
     }
 
     public List<Assignment> getAssignmentsByClass(Long classId) {
-        return assignmentRepository.findByClassId(classId);
+        return assignmentRepository.findByCourseClassId(classId);
     }
 
+    public List<Assignment> getAssignmentsByCourse(Long courseId) {
+        return assignmentRepository.findByCourseId(courseId);
+    }
 
     @Transactional
     public Assignment createAssignment(Assignment assignment) {
@@ -46,11 +48,10 @@ public class AssignmentService {
         Assignment assignment = assignmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Assignment not found with id: " + id));
 
-        assignment.setCourseName(assignmentDetails.getCourseName());
-        assignment.setConsultantId(assignmentDetails.getConsultantId());
+        assignment.setCourse(assignmentDetails.getCourse());
+        assignment.setConsultant(assignmentDetails.getConsultant());
         assignment.setDateStart(assignmentDetails.getDateStart());
         assignment.setDateEnd(assignmentDetails.getDateEnd());
-        assignment.setClassId(assignmentDetails.getClassId());
 
         return assignmentRepository.save(assignment);
     }
