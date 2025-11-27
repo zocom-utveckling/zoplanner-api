@@ -33,7 +33,7 @@ public class UserService {
         user.setUsername(userDetails.getUsername());
         user.setPassword(userDetails.getPassword());
         user.setRole(userDetails.getRole());
-        user.setCity(userDetails.getCity());
+        //user.setCity(userDetails.getCity()); (city not in user table)
         user.setName(userDetails.getName());
 
         return userRepository.save(user);

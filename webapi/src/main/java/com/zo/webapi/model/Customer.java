@@ -1,6 +1,10 @@
 package com.zo.webapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="customers")
@@ -17,6 +21,10 @@ public class Customer {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id", nullable = true, foreignKey = @ForeignKey(name = "fk_customer_manager"))
     private Manager manager;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<ClassGroup> classes = new ArrayList<>();
 
     //Constructors
     public Customer(Long id, String name, String city, Manager manager) {
