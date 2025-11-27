@@ -85,7 +85,7 @@ Innan du börjar, installera följande program:
 - ✅ Installera Git
 - 🔍 Verifiera installation: Öppna terminal och kör `git --version`
 
-### 3. Maven och Java JDK 21
+### 3. Maven och Java JDK 21 (KRÄVS)
 Windows
 1. Öppna CMD som administratör
 
