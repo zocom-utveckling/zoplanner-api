@@ -1,6 +1,8 @@
 package com.zo.webapi.controller;
 
 import com.zo.webapi.dto.ManagerResponseDTO;
+import com.zo.webapi.model.Consultant;
+import com.zo.webapi.model.Customer;
 import com.zo.webapi.model.Manager;
 import com.zo.webapi.service.ManagerService;
 import org.springframework.web.bind.annotation.*;
@@ -47,14 +49,14 @@ public class ManagerController {
 
     // GET associated consultants
     @GetMapping("/{id}/consultants")
-    public List<?> getConsultantsForManager(@PathVariable Long id) {
+    public List<Consultant> getConsultantsForManager(@PathVariable Long id) {
 
         return managerService.getConsultantsForManager(id);
     }
 
     // GET associated customers
     @GetMapping("/{id}/customers")
-    public List<?> getCustomersForManager(@PathVariable Long id) {
+    public List<Customer> getCustomersForManager(@PathVariable Long id) {
 
         return managerService.getCustomersForManager(id);
     }

@@ -2,6 +2,7 @@ package com.zo.webapi.service;
 import com.zo.webapi.dto.ManagerResponseDTO;
 import com.zo.webapi.model.Consultant;
 
+import com.zo.webapi.model.Customer;
 import com.zo.webapi.model.Manager;
 import com.zo.webapi.model.User;
 import com.zo.webapi.repository.ManagerRepository;
@@ -98,13 +99,13 @@ public class ManagerService {
         );
     }
 
-    public List<?> getConsultantsForManager(Long managerId) {
+    public List<Consultant> getConsultantsForManager(Long managerId) {
         Manager manager = managerRepository.findById(managerId)
                 .orElseThrow(() -> new RuntimeException("Manager not found with id: " + managerId));
         return manager.getConsultants();
     }
 
-    public List<?> getCustomersForManager(Long managerId) {
+    public List<Customer> getCustomersForManager(Long managerId) {
         Manager manager = managerRepository.findById(managerId)
                 .orElseThrow(() -> new RuntimeException("Manager not found with id: " + managerId));
         return manager.getCustomers();

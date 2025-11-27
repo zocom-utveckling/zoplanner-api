@@ -19,7 +19,7 @@ public class ClassGroup {
 
     // Relationship: Many classes have ONE customer
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
+    @JoinColumn(name = "customer_id", nullable = false, foreignKey = @ForeignKey(name = "fk_class_customer"))
     private Customer customer;
 
     // Relationship: One class has MANY courses
