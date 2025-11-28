@@ -35,7 +35,7 @@ import static org.mockito.Mockito.*;
     void testCreateCustomer() {
         Customer customer = new Customer();
         when(customerRepository.save(any(Customer.class))).thenReturn(customer);
-        Customer created = customerService.createCustomer("Test", "Paris");
+        Customer created = customerService.createCustomer("Test", "Paris", null);
         assertNotNull(created);
         verify(customerRepository).save(any(Customer.class));
     }

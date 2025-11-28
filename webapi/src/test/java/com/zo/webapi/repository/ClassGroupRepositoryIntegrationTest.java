@@ -1,3 +1,4 @@
+/*
 package com.zo.webapi.repository;
 
 import com.zo.webapi.model.ClassGroup;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
-/*@DataJpaTest
+@DataJpaTest
 public class ClassGroupRepositoryIntegrationTest {
     @Autowired
     private ClassGroupRepository classGroupRepository;
@@ -82,4 +83,5 @@ public class ClassGroupRepositoryIntegrationTest {
         assertThat(classGroup).isEmpty();
     }
 }
+
 */

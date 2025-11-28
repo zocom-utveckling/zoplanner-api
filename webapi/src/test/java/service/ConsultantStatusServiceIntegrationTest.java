@@ -1,3 +1,4 @@
+/*
 package com.zo.webapi.service;
 
 import com.zo.webapi.WebapiApplication;
@@ -18,7 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/*@ActiveProfiles("test")
+@ActiveProfiles("test")
 @SpringBootTest(classes = WebapiApplication.class)
 @Transactional
 public class ConsultantStatusServiceIntegrationTest {
@@ -75,4 +76,5 @@ public class ConsultantStatusServiceIntegrationTest {
         assertEquals(1, statuses.size());
         assertEquals(ConsultantStatusType.BOOKED, statuses.get(0).getStatus());
     }
-}*/
+}
+*/

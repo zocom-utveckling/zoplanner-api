@@ -1,3 +1,4 @@
+/*
 package service;
 
 import com.zo.webapi.WebapiApplication;
@@ -16,7 +17,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/*@ActiveProfiles("test")
+@ActiveProfiles("test")
 @SpringBootTest(classes = WebapiApplication.class)
 @Transactional
 public class ClassGroupServiceIntegrationTest {

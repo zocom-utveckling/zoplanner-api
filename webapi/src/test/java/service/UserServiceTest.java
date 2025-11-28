@@ -1,3 +1,4 @@
+/*
 package service;
 
 import com.zo.webapi.model.User;
@@ -17,7 +18,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/*public class UserServiceTest {
+public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 

@@ -1,3 +1,4 @@
+/*
 package com.zo.webapi.repository;
 
 import com.zo.webapi.model.User;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-/*@DataJpaTest
+@DataJpaTest
 public class UserRepositoryIntegrationTest {
     @Autowired
     private UserRepository userRepository;
@@ -126,4 +127,5 @@ public class UserRepositoryIntegrationTest {
         assertThat(foundUser).isEmpty();
     }
 
-}*/
+}
+*/

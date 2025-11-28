@@ -32,8 +32,8 @@ services:
   # .NET Application
   dotnet-service:
     build:
-      context: ../../zoplanner-service  # Sökväg till .NET-tjänstens mapp som innehåller Dockerfile
-      dockerfile: zoplannerservice/Dockerfile
+      context: ../../zoplanner-service/zoplannerservice  # Sökväg till .NET-tjänstens mapp som innehåller Dockerfile
+      dockerfile: Dockerfile
     container_name: zoplanner-dotnet
     networks:
       - zoplanner

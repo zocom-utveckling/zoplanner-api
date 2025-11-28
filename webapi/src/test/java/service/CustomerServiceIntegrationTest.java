@@ -31,7 +31,7 @@ public class CustomerServiceIntegrationTest {
     @BeforeEach
     void setup() {
         customerRepository.deleteAll();
-        testCustomer = customerService.createCustomer("John", "London");
+        testCustomer = customerService.createCustomer("John", "London", null);
 
     }
 

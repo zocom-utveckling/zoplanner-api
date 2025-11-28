@@ -1,3 +1,4 @@
+/*
 package service;
 
 import com.zo.webapi.model.ClassGroup;
@@ -11,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
-/*public class ClassGroupServiceTest {
+public class ClassGroupServiceTest {
     @Mock
     private ClassGroupRepository classGroupRepository;
 
