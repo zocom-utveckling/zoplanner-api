@@ -16,8 +16,9 @@ public class Assignment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "course_id")
-    private String courseid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id", nullable = false)
+    private Course course;
 
     @Column(name = "consultant_id")
     private Long consultantId;
@@ -37,8 +38,8 @@ public class Assignment {
     // Constructors
     public Assignment() {}
 
-    public Assignment(String courseName, Long consultantId, LocalDate dateStart, LocalDate dateEnd, Long classId) {
-        this.courseid = courseName;
+    public Assignment(Course course, Long consultantId, LocalDate dateStart, LocalDate dateEnd) {
+        this.course = course;
         this.consultantId = consultantId;
         this.dateStart = dateStart;
         this.dateEnd = dateEnd;
@@ -49,9 +50,14 @@ public class Assignment {
         return id;
     }
 
-    public String getCourseName() {
-        return courseid;
+    public Course getCourse() {
+        return course;
     }
+
+    public void setCourse(Course course) {
+        this.course = course;
+    }
+
 
     public Long getConsultantId() {
         return consultantId;
@@ -68,10 +74,6 @@ public class Assignment {
     // Setters
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public void setCourseName(String courseName) {
-        this.courseid = courseName;
     }
 
     public void setConsultantId(Long consultantId) {

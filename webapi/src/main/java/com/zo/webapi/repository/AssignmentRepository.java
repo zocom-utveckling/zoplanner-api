@@ -11,7 +11,7 @@ public interface AssignmentRepository extends JpaRepository<Assignment, Long> {
 
     List<Assignment> findByConsultantId(Long consultantId);
 
-    List<Assignment> findByCourseName(String courseName);
+    List<Assignment> findByCourse_Name(String courseName);
 
     List<Assignment> findByDateStartBetween(LocalDate startDate, LocalDate endDate);
 

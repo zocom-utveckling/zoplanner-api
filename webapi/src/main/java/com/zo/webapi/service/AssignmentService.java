@@ -43,7 +43,7 @@ public class AssignmentService {
         Assignment assignment = assignmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Assignment not found with id: " + id));
 
-        assignment.setCourseName(assignmentDetails.getCourseName());
+        assignment.setCourse(assignmentDetails.getCourse());
         assignment.setConsultantId(assignmentDetails.getConsultantId());
         assignment.setDateStart(assignmentDetails.getDateStart());
         assignment.setDateEnd(assignmentDetails.getDateEnd());
