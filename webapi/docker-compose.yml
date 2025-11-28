@@ -32,7 +32,7 @@ services:
   # .NET Application
   dotnet-service:
     build:
-      context: ./path/to/dotnet-service  # Sökväg till .NET-tjänstens mapp som innehåller Dockerfile
+      context: ../../zoplanner-service/zoplannerservice  # Sökväg till .NET-tjänstens mapp som innehåller Dockerfile
       dockerfile: Dockerfile
     container_name: zoplanner-dotnet
     networks:
@@ -48,7 +48,7 @@ services:
   # Frontend Application
   frontend:
     build:
-      context: ./path/to/frontend  # Sökväg till frontend-mappen som innehåller Dockerfile
+      context: ../../zoplanner-frontend  # Sökväg till frontend-mappen som innehåller Dockerfile
       dockerfile: Dockerfile
     container_name: zoplanner-frontend
     networks:

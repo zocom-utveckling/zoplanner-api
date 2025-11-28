@@ -1,7 +1,10 @@
 package com.zo.webapi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.zo.webapi.dto.ManagerResponseDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,18 +16,16 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    @Column(name = "name")
+
+    @Column(name = "name", nullable = false, length = 255)
     private String name;
-    @Column(name = "city")
+
+    @Column(name = "city", nullable = false, length = 255)
     private String city;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id", nullable = true, foreignKey = @ForeignKey(name = "fk_customer_manager"))
     private Manager manager;
-
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<ClassGroup> classes = new ArrayList<>();
 
     //Constructors
     public Customer(Long id, String name, String city, Manager manager) {

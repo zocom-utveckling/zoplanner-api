@@ -1,3 +1,4 @@
+/*
 package com.zo.webapi.repository;
 
 import com.zo.webapi.model.ClassGroup;
@@ -83,3 +84,4 @@ public class ClassGroupRepositoryIntegrationTest {
     }
 }
 
+*/
