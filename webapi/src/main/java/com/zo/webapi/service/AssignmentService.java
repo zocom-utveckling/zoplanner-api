@@ -31,9 +31,6 @@ public class AssignmentService {
         return assignmentRepository.findByConsultantId(consultantId);
     }
 
-    public List<Assignment> getAssignmentsByClass(Long classId) {
-        return assignmentRepository.findByClassId(classId);
-    }
 
 
     @Transactional
@@ -50,7 +47,6 @@ public class AssignmentService {
         assignment.setConsultantId(assignmentDetails.getConsultantId());
         assignment.setDateStart(assignmentDetails.getDateStart());
         assignment.setDateEnd(assignmentDetails.getDateEnd());
-        assignment.setClassId(assignmentDetails.getClassId());
 
         return assignmentRepository.save(assignment);
     }

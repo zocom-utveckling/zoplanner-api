@@ -16,8 +16,8 @@ public class Assignment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "course_name")
-    private String courseName;
+    @Column(name = "course_id")
+    private String courseid;
 
     @Column(name = "consultant_id")
     private Long consultantId;
@@ -27,9 +27,6 @@ public class Assignment {
 
     @Column(name = "date_end", nullable = false)
     private LocalDate dateEnd;
-
-    @Column(name = "class_id")
-    private Long classId;
 
 
     @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, orphanRemoval = false)
@@ -41,11 +38,10 @@ public class Assignment {
     public Assignment() {}
 
     public Assignment(String courseName, Long consultantId, LocalDate dateStart, LocalDate dateEnd, Long classId) {
-        this.courseName = courseName;
+        this.courseid = courseName;
         this.consultantId = consultantId;
         this.dateStart = dateStart;
         this.dateEnd = dateEnd;
-        this.classId = classId;
     }
 
     // Getters
@@ -54,7 +50,7 @@ public class Assignment {
     }
 
     public String getCourseName() {
-        return courseName;
+        return courseid;
     }
 
     public Long getConsultantId() {
@@ -69,17 +65,13 @@ public class Assignment {
         return dateEnd;
     }
 
-    public Long getClassId() {
-        return classId;
-    }
-
     // Setters
     public void setId(Long id) {
         this.id = id;
     }
 
     public void setCourseName(String courseName) {
-        this.courseName = courseName;
+        this.courseid = courseName;
     }
 
     public void setConsultantId(Long consultantId) {
@@ -92,10 +84,6 @@ public class Assignment {
 
     public void setDateEnd(LocalDate dateEnd) {
         this.dateEnd = dateEnd;
-    }
-
-    public void setClassId(Long classId) {
-        this.classId = classId;
     }
 
     public List<Session> getSessions() {
