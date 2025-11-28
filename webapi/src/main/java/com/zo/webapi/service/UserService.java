@@ -30,10 +30,14 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id " + id));
 
+        if (!user.getUsername().equals(userDetails.getUsername())) {
+            if (userRepository.existsByUsername(userDetails.getUsername())) {
+                throw new IllegalArgumentException("Username already exists: " +  userDetails.getUsername());
+            }
+        }
         user.setUsername(userDetails.getUsername());
         user.setPassword(userDetails.getPassword());
         user.setRole(userDetails.getRole());
-        //user.setCity(userDetails.getCity()); (city not in user table)
         user.setName(userDetails.getName());
 
         return userRepository.save(user);
