@@ -1,5 +1,7 @@
 package com.zo.webapi.controller;
 
+import com.zo.webapi.dto.ConsultantDTO;
+import com.zo.webapi.dto.CustomerDTO;
 import com.zo.webapi.dto.ManagerResponseDTO;
 import com.zo.webapi.model.Consultant;
 import com.zo.webapi.model.Customer;
@@ -49,16 +51,45 @@ public class ManagerController {
 
     // GET associated consultants
     @GetMapping("/{id}/consultants")
-    public List<Consultant> getConsultantsForManager(@PathVariable Long id) {
+    public List<ConsultantDTO> getConsultantsForManager(@PathVariable Long id) {
 
         return managerService.getConsultantsForManager(id);
     }
 
     // GET associated customers
     @GetMapping("/{id}/customers")
-    public List<Customer> getCustomersForManager(@PathVariable Long id) {
+    public List<CustomerDTO> getCustomersForManager(@PathVariable Long id) {
 
         return managerService.getCustomersForManager(id);
+    }
+
+    // ASSIGN consultant to manager
+    @PutMapping("/{managerId}/consultants/{consultantId}")
+    public void assignConsultant(@PathVariable Long managerId,
+                                 @PathVariable Long consultantId) {
+        managerService.assignConsultantToManager(managerId, consultantId);
+    }
+
+
+    // REMOVE consultant from manager
+    @DeleteMapping("/{managerId}/consultants/{consultantId}")
+    public void removeConsultant(@PathVariable Long managerId,
+                                 @PathVariable Long consultantId) {
+        managerService.removeConsultantFromManager(managerId, consultantId);
+    }
+
+    // ASSIGN customer to manager
+    @PutMapping("/{managerId}/customers/{customerId}")
+    public void assignCustomer(@PathVariable Long managerId,
+                               @PathVariable Long customerId) {
+        managerService.assignCustomerToManager(managerId, customerId);
+    }
+
+    // REMOVE customer from manager
+    @DeleteMapping("/{managerId}/customers/{customerId}")
+    public void removeCustomer(@PathVariable Long managerId,
+                               @PathVariable Long customerId) {
+        managerService.removeCustomerFromManager(managerId, customerId);
     }
 
     // UPDATE change associated user to this manager

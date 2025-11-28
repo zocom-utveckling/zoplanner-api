@@ -17,6 +17,7 @@ public class Manager {
 
     // Relationship: One manager has ONE user(NOT NULL in db)
     @OneToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "user_id", nullable = false, unique = true,foreignKey = @ForeignKey(name = "fk_manager_user"))
     private User user;
 

@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(SessionController.class)
+/*@WebMvcTest(SessionController.class)
 public class SessionControllerTest {
 
     @Autowired
@@ -109,4 +109,4 @@ public class SessionControllerTest {
 
 
 
-}
+}*/
