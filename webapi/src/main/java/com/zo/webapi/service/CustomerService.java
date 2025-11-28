@@ -1,7 +1,9 @@
 package com.zo.webapi.service;
 
 import com.zo.webapi.dto.CustomerUpdateDTO;
+import com.zo.webapi.dto.ManagerResponseDTO;
 import com.zo.webapi.model.Customer;
+import com.zo.webapi.model.Manager;
 import com.zo.webapi.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,10 +28,11 @@ public class CustomerService {
         return customerRepository.findById(id);
     }
 
-    public Customer createCustomer(String name, String city) {
+    public Customer createCustomer(String name, String city, Manager manager) {
         Customer customer = new Customer();
         customer.setName(name);
         customer.setCity(city);
+        customer.setManager(manager);
         return customerRepository.save(customer);
     }
 

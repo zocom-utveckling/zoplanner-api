@@ -3,6 +3,7 @@ package com.zo.webapi.model;
 import enums.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name="users")
@@ -24,9 +25,10 @@ public class User {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @NotNull(message = "Role is required")
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private UserRole role;
+    private UserRole role = UserRole.CONSULTANT;
 
 
     //Constructors
@@ -35,7 +37,7 @@ public class User {
         this.username = username;
         this.password = password;
         this.name = name;
-        this.role = role;
+        this.role = role != null ? role:  UserRole.CONSULTANT;
     }
 
     public User() {}

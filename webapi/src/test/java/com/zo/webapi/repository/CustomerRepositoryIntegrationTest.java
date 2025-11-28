@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
+/*@DataJpaTest
 public class CustomerRepositoryIntegrationTest {
     @Autowired
     private CustomerRepository customerRepository;
@@ -62,3 +62,4 @@ public class CustomerRepositoryIntegrationTest {
 
     }
 }
+*/

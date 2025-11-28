@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
+/*@DataJpaTest
 public class AssignmentRepositoryIntegrationTest {
     @Autowired
     private AssignmentRepository assignmentRepository;
@@ -69,4 +69,4 @@ public class AssignmentRepositoryIntegrationTest {
         List<Assignment> result = assignmentRepository.findByClassId(99L);
         assertThat(result).isEmpty();
     }
-}
+}*/

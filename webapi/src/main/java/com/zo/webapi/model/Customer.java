@@ -13,13 +13,16 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
     @Column(name = "name")
     private String name;
+
     @Column(name = "city")
     private String city;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id", nullable = true, foreignKey = @ForeignKey(name = "fk_customer_manager"))
+    @JsonIgnore
     private Manager manager;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -67,5 +70,13 @@ public class Customer {
 
     public void setManager(Manager manager) {
         this.manager = manager;
+    }
+
+    public List<ClassGroup> getClasses() {
+        return classes;
+    }
+
+    public void setClasses(List<ClassGroup> classes) {
+        this.classes = classes;
     }
 }
