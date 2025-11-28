@@ -70,6 +70,12 @@ public class ManagerService {
         );
     }
 
+    public Manager findManagerById(Long managerId) {
+        Manager manager = managerRepository.findById(managerId)
+                .orElseThrow(() -> new RuntimeException("Manager not found with id: " + managerId));
+        return manager;
+    }
+
     public List<ManagerResponseDTO> getAllManagers() {
         return managerRepository.findAll()
                 .stream()
@@ -169,6 +175,8 @@ public class ManagerService {
                 .orElseThrow(() -> new RuntimeException("Manager not found with user id: " + userId));
         deleteManager(manager.getId());
     }
+
+
 }
 
 
