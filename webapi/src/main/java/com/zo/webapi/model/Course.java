@@ -1,4 +1,5 @@
 package com.zo.webapi.model;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -15,6 +16,7 @@ public class Course {
     // Relationship: Many courses have ONE class
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private ClassGroup classGroup;
 
     @Column(name = "date_start")

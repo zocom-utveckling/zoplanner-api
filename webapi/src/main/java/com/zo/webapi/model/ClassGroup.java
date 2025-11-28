@@ -1,5 +1,7 @@
 package com.zo.webapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.util.List;
 import java.util.ArrayList;
@@ -20,10 +22,12 @@ public class ClassGroup {
     // Relationship: Many classes have ONE customer
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false, foreignKey = @ForeignKey(name = "fk_class_customer"))
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Customer customer;
 
     // Relationship: One class has MANY courses
     @OneToMany(mappedBy = "classGroup", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Course> courses = new ArrayList<>();
 
     // Constructors
