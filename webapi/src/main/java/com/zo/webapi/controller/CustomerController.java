@@ -1,10 +1,13 @@
 package com.zo.webapi.controller;
 
+import com.zo.webapi.dto.CustomerCreateDTO;
+import com.zo.webapi.dto.CustomerResponseDTO;
 import com.zo.webapi.dto.CustomerUpdateDTO;
 import com.zo.webapi.model.Customer;
 import com.zo.webapi.model.Manager;
 import com.zo.webapi.service.CustomerService;
 import com.zo.webapi.service.ManagerService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
@@ -28,26 +31,21 @@ public class CustomerController {
     }
 
     @GetMapping
-    public List<Customer> showAllCustomers() {
-        return customerService.getAllCustomers();
+    public List<CustomerResponseDTO> showAllCustomers() {
+        return customerService.getAllCustomersDto();
     }
 
+
     @GetMapping("/{id}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
-        Optional<Customer> customer = customerService.getCustomerById(id);
-        return customer.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<CustomerResponseDTO> getById(@PathVariable Long id) {
+        CustomerResponseDTO dto = customerService.getCustomerByIdDto(id);
+        return dto == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
     }
 
     @PostMapping
-    public ResponseEntity<?> createCustomer(
-            @RequestParam @NotBlank(message = "name must not be blank") @Size(max = 255, message = "name must be at most 255 characters") String name,
-            @RequestParam @NotBlank(message = "city must not be blank") @Size(max = 255, message = "city must be at most 255 characters") String city,
-            @RequestParam(required = false) Long managerId) {
-
-        Manager manager = (managerId != null) ? managerService.findManagerById(managerId) : null;
-        Customer customer = customerService.createCustomer(name, city, manager);
-        return ResponseEntity.status(HttpStatus.CREATED).body(customer);
+    public ResponseEntity<CustomerResponseDTO> createCustomer(@Valid @RequestBody CustomerCreateDTO dto) {
+        CustomerResponseDTO created = customerService.createCustomer(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @DeleteMapping("/{id}")
@@ -63,12 +61,14 @@ public class CustomerController {
     }
 
 
+
     @PatchMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(
+    public ResponseEntity<CustomerResponseDTO> updateCustomer(
             @PathVariable Long id,
-            @RequestBody CustomerUpdateDTO updateDto) {
-        Customer updatedCustomer = customerService.updateCustomer(id, updateDto);
-        return ResponseEntity.ok(updatedCustomer);
+            @RequestBody CustomerUpdateDTO customerUpdateDTO) {
+
+        CustomerResponseDTO updated = customerService.updateCustomer(id, customerUpdateDTO);
+        return updated == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(updated);
     }
 
 
