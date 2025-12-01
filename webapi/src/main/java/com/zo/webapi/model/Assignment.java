@@ -31,7 +31,6 @@ public class Assignment {
     @Column(name = "class_id")
     private Long classId;
 
-
     @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, orphanRemoval = false)
     @JsonIgnoreProperties("sessions")
     @JsonManagedReference

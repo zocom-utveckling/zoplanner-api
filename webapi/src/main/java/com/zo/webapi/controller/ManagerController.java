@@ -70,19 +70,19 @@ public class ManagerController {
         managerService.assignConsultantToManager(managerId, consultantId);
     }
 
+    // ASSIGN customer to manager
+    @PutMapping("/{managerId}/customers/{customerId}")
+    public void assignCustomer(@PathVariable Long managerId,
+                               @PathVariable Long customerId) {
+        managerService.assignCustomerToManager(managerId, customerId);
+    }
+
 
     // REMOVE consultant from manager
     @DeleteMapping("/{managerId}/consultants/{consultantId}")
     public void removeConsultant(@PathVariable Long managerId,
                                  @PathVariable Long consultantId) {
         managerService.removeConsultantFromManager(managerId, consultantId);
-    }
-
-    // ASSIGN customer to manager
-    @PutMapping("/{managerId}/customers/{customerId}")
-    public void assignCustomer(@PathVariable Long managerId,
-                               @PathVariable Long customerId) {
-        managerService.assignCustomerToManager(managerId, customerId);
     }
 
     // REMOVE customer from manager
@@ -97,6 +97,9 @@ public class ManagerController {
     public ManagerResponseDTO updateManagerUser(@PathVariable Long id, @PathVariable Long newUserId) {
         return managerService.updateManagerUser(id, newUserId);
     }
+
+
+
 
     // DELETE
     @DeleteMapping("/{id}")
