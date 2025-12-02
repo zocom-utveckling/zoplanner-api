@@ -1,4 +1,3 @@
-/*
 package service;
 
 import com.zo.webapi.model.User;
@@ -6,6 +5,7 @@ import com.zo.webapi.repository.UserRepository;
 import com.zo.webapi.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import enums.UserRole;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -30,14 +30,15 @@ public class UserServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        sampleUser = new User(1L, "john_doe", "password", "USER", "Los Angeles", "John Doe");
-
+        MockitoAnnotations.openMocks(this);
+        sampleUser = new User(1L, "john_doe", "password123", "John Doe", UserRole.CONSULTANT);
     }
 
     @Test
     void testGetAllUsers() {
         when(userRepository.findAll()).thenReturn(Arrays.asList(sampleUser));
         List<User> users = userService.getAllUsers();
+
         assertEquals(1, users.size());
         assertEquals("john_doe", users.get(0).getUsername());
         verify(userRepository, times(1)).findAll();
@@ -51,6 +52,7 @@ public class UserServiceTest {
 
         assertNotNull(created);
         assertEquals("john_doe", created.getUsername());
+        assertEquals(UserRole.CONSULTANT, created.getRole());
         verify(userRepository, times(1)).save(sampleUser);
     }
 
@@ -109,4 +111,4 @@ public class UserServiceTest {
         assertEquals("User not found with name john_doe", exception.getMessage());
     }
 }
-*/
+

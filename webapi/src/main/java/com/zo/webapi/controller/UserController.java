@@ -1,5 +1,6 @@
 package com.zo.webapi.controller;
 
+import com.zo.webapi.dto.CreateUserRequestDTO;
 import com.zo.webapi.model.User;
 import com.zo.webapi.service.UserService;
 import jakarta.validation.Valid;
@@ -33,15 +34,22 @@ public class UserController {
     //database: not null missing -- null and empty data gets accepted.
     //Creates a user
     @PostMapping
-    public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserRequestDTO request) {
         try {
-            if (userService.usernameExists(user.getUsername())) {
+            if (userService.usernameExists(request.getUsername())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("Username already exists " + user.getUsername());
+                        .body("Username already exists " + request.getUsername());
             }
+
+            User user = new User();
+            user.setUsername(request.getUsername());
+            user.setPassword(request.getPassword());
+            user.setName(request.getName());
+            user.setRole(request.getRole());
 
             User createdUser = userService.createUser(user);
             return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
