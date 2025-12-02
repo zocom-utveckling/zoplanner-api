@@ -41,10 +41,6 @@ public class AssignmentController {
         return ResponseEntity.ok(assignmentService.getAssignmentsByConsultant(consultantId));
     }
 
-    @GetMapping("/class/{classId}")
-    public ResponseEntity<List<Assignment>> getAssignmentsByClass(@PathVariable Long classId) {
-        return ResponseEntity.ok(assignmentService.getAssignmentsByClass(classId));
-    }
 
     @PostMapping
     public ResponseEntity<Assignment> createAssignment(@RequestBody Assignment assignment) {

@@ -31,9 +31,6 @@ public class AssignmentService {
         return assignmentRepository.findByConsultantId(consultantId);
     }
 
-    public List<Assignment> getAssignmentsByClass(Long classId) {
-        return assignmentRepository.findByClassId(classId);
-    }
 
 
     @Transactional
@@ -46,11 +43,10 @@ public class AssignmentService {
         Assignment assignment = assignmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Assignment not found with id: " + id));
 
-        assignment.setCourseName(assignmentDetails.getCourseName());
+        assignment.setCourse(assignmentDetails.getCourse());
         assignment.setConsultantId(assignmentDetails.getConsultantId());
         assignment.setDateStart(assignmentDetails.getDateStart());
         assignment.setDateEnd(assignmentDetails.getDateEnd());
-        assignment.setClassId(assignmentDetails.getClassId());
 
         return assignmentRepository.save(assignment);
     }

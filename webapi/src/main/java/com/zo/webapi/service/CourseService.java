@@ -48,7 +48,11 @@ public class CourseService {
         course.setDateEnd(updatedCourse.getDateEnd());
 
         if (updatedCourse.getClassGroup() != null) {
-            course.setClassGroup(updatedCourse.getClassGroup());
+            Long newClassGroupId = updatedCourse.getClassGroup().getId();
+
+            ClassGroup classGroup = classGroupRepository.findById(newClassGroupId)
+                    .orElseThrow(() -> new IllegalArgumentException("Class group not found with id: " + newClassGroupId));
+            course.setClassGroup(classGroup);
         }
 
         return courseRepository.save(course);
