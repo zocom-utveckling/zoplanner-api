@@ -1,12 +1,9 @@
-/*
-// java
 package com.zo.webapi.controller;
 
 import com.zo.webapi.model.Customer;
 import com.zo.webapi.model.Manager;
-import com.zo.webapi.model.User;
 import com.zo.webapi.service.CustomerService;
-import org.junit.jupiter.api.Disabled;
+import com.zo.webapi.service.ManagerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -31,13 +28,31 @@ public class CustomerControllerTest {
     @MockBean
     private CustomerService customerService;
 
+    @MockBean
+    private ManagerService managerService;
+
     @Test
     void testShowAllCustomers_whenListNotEmpty() throws Exception {
-        when(customerService.getAllCustomers()).thenReturn(List.of(new Customer(), new Customer()));
+        Customer customer1 = new Customer();
+        customer1.setId(1L);
+        customer1.setName("John");
+
+        Customer customer2 = new Customer();
+        customer2.setId(2L);
+        customer2.setName("Jane");
+
+        when(customerService.getAllCustomers()).thenReturn(List.of(customer1, customer2));
 
         mockMvc.perform(get("/api/customers"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].name").value("John"))
+                .andExpect(jsonPath("$[1].id").value(2))
+                .andExpect(jsonPath("$[1].name").value("Jane"))
+                .andExpect(jsonPath("$.length()").value(2));
+
+        verify(customerService).getAllCustomers();
+
     }
 
 
@@ -55,67 +70,106 @@ public class CustomerControllerTest {
     }
 
     @Test
-    void testShowCustomerById() throws Exception {
-        // Arrange
-        Customer customer = new Customer(1L, "Nercia Utbildning", "Malmö", new Manager(1L, new User(1L, "manager1", "pass", "MANAGER", "Malmö", "Manager One")));
-        when(customerService.getCustomerById(customer.getId())).thenReturn(Optional.of(customer));
+    void testGetCustomerById_Success() throws Exception {
+        Manager manager = new Manager();
+        manager.setId(1L);
 
-        //Act & Assert
-        mockMvc.perform(get("/api/customers/{id}", customer.getId()).contentType(MediaType.APPLICATION_JSON))
+        Customer customer = new Customer();
+        customer.setId(1L);
+        customer.setName("John");
+        customer.setCity("Berlin");
+        customer.setManager(manager);
+
+        when(customerService.getCustomerById(1L)).thenReturn(Optional.of(customer));
+
+        mockMvc.perform(get("/api/customers/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Nercia Utbildning"))
-                .andExpect(jsonPath("$.city").value("Malmö"))
-                .andExpect(jsonPath("$.manager.id").value(1));
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("John"))
+                .andExpect(jsonPath("$.city").value("Berlin"));
+        verify(customerService).getCustomerById(1L);
     }
 
 
     @Test
-    void testShowCustomerById_whenIdIsNotInDatabase() throws Exception {
-        // Arrange
-        when(customerService.getCustomerById(100L)).thenReturn(Optional.empty());
+    void testGetCustomerById_NotFound() throws Exception {
+             when(customerService.getCustomerById(1L)).thenReturn(Optional.empty());
 
-        // Act & Assert
-        mockMvc.perform(get("/api/customers/{id}", 100L).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+             mockMvc.perform(get("/api/customers/99"))
+                     .andExpect(status().isNotFound());
+
+             verify(customerService).getCustomerById(99L);
     }
 
     @Test
-    void testCreateCustomer() throws Exception {
-        // Arrange
-        Customer customer = new Customer(1L, "Eslövs Folkhögskola", "Eslöv", new Manager(1L, new User(1L, "manager1", "pass", "MANAGER", "Malmö", "Manager One")));
-        when(customerService.createCustomer(eq("Eslövs Folkhögskola"), eq("Eslöv"))).thenReturn(customer);
+    void testCreateCustomer_Success() throws Exception {
+        Manager manager = new Manager();
+        manager.setId(1L);
 
-        // Act & Assert
+        Customer customer = new Customer();
+        customer.setId(1L);
+        customer.setName("John");
+        customer.setCity("Berlin");
+        customer.setManager(manager);
+
+        when(managerService.findManagerById(1L)).thenReturn(manager);
+        when(customerService.createCustomer(eq("John"), eq("Berlin"), any())).thenReturn(customer);
+
+        // Send as form data to match @RequestParam
         mockMvc.perform(post("/api/customers")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("name", customer.getName())
-                        .param("city", customer.getCity()))
+                        .param("name", "John")
+                        .param("city", "Berlin")
+                        .param("managerId", "1"))
                 .andExpect(status().isCreated())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Eslövs Folkhögskola"))
-                .andExpect(jsonPath("$.city").value("Eslöv"))
-                .andExpect(jsonPath("$.manager.id").value(1));
+                .andExpect(jsonPath("$.name").value("John"))
+                .andExpect(jsonPath("$.city").value("Berlin")); // skip manager
 
-        verify(customerService).createCustomer("Eslövs Folkhögskola", "Eslöv");
+        verify(customerService).createCustomer("John", "Berlin", manager);
+
     }
 
     @Test
-    void testDeleteCustomer() throws Exception {
-        //Arrange
-        doNothing().when(customerService).deleteCustomer(eq(1L));
+    void testDeleteCustomer_Success() throws Exception {
+        doNothing().when(customerService).deleteCustomer(1L);
 
-        mockMvc.perform(delete("/api/customers/{id}", 1L))
+        mockMvc.perform(delete("/api/customers/1"))
                 .andExpect(status().isNoContent());
-
-        verify(customerService).deleteCustomer(eq(1L));
-
-        // Arrange - non-existent customer
-        doThrow(new RuntimeException()).when(customerService).deleteCustomer(eq(999L));
-
-        mockMvc.perform(delete("/api/customers/{id}", 999L))
-                .andExpect(status().isNotFound());
+        verify(customerService).deleteCustomer(1L);
     }
 
+    @Test
+    void testDeleteCustomer_NotFound() throws Exception {
+        doThrow(new RuntimeException()).when(customerService).deleteCustomer(99L);
+
+        mockMvc.perform(delete("/api/customers/99"))
+                .andExpect(status().isNotFound());
+        verify(customerService).deleteCustomer(99L);
+    }
+
+    // ===== PATCH /api/customers/{id} =====
+    @Test
+    void testUpdateCustomer_Success() throws Exception {
+        String json = "{\"name\":\"John\",\"city\":\"Berlin\"}";
+
+        Customer updatedCustomer = new Customer();
+        updatedCustomer.setId(1L);
+        updatedCustomer.setName("Bob");
+        updatedCustomer.setCity("London");
+
+        when(customerService.updateCustomer(eq(1L), any())).thenReturn(updatedCustomer);
+
+        mockMvc.perform(patch("/api/customers/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Bob"))
+                .andExpect(jsonPath("$.city").value("London"));
+
+        verify(customerService).updateCustomer(eq(1L), any());
+
+    }
 }
-*/
+

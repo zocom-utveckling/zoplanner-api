@@ -45,6 +45,8 @@ public class ClassGroupService {
         classGroup.setName(requestDTO.getName());
         classGroup.setCustomer(customer);
 
+        ClassGroup saved = classGroupRepository.save(classGroup);
+
         // return DTO
         return new ClassGroupResponseDTO(
                 classGroup.getId(),
