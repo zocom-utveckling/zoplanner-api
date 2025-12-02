@@ -3,19 +3,14 @@ package com.zo.webapi.controller;
 import com.zo.webapi.dto.CustomerCreateDTO;
 import com.zo.webapi.dto.CustomerResponseDTO;
 import com.zo.webapi.dto.CustomerUpdateDTO;
-import com.zo.webapi.model.Customer;
-import com.zo.webapi.model.Manager;
 import com.zo.webapi.service.CustomerService;
 import com.zo.webapi.service.ManagerService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/customers")

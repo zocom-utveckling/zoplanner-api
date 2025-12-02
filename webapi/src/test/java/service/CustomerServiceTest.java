@@ -62,11 +62,18 @@ public class CustomerServiceTest {
     @Test
     void testCreateCustomer() {
         Customer customer = new Customer();
+        customer.setId(1L);
         customer.setName("John Doe");
+        customer.setCity("Paris");
 
         when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
-        Customer created = customerService.createCustomer("Test", "Paris", null);
+        com.zo.webapi.dto.CustomerCreateDTO dto = new com.zo.webapi.dto.CustomerCreateDTO();
+        dto.setName("John Doe");
+        dto.setCity("Paris");
+        dto.setManagerId(null);
+
+        com.zo.webapi.dto.CustomerResponseDTO created = customerService.createCustomer(dto);
 
         assertNotNull(created);
         assertEquals("John Doe", created.getName());
@@ -105,22 +112,24 @@ public class CustomerServiceTest {
         customerUpdateDTO.setName("John Doe");
         customerUpdateDTO.setCity("Paris");
 
-        Customer updated = customerService.updateCustomer(1L, customerUpdateDTO);
+        com.zo.webapi.dto.CustomerResponseDTO updated = customerService.updateCustomer(1L, customerUpdateDTO);
 
         assertEquals("John Doe", updated.getName());
         assertEquals("Paris", updated.getCity());
         verify(customerRepository).save(customer);
     }
 
+
     @Test
     void testUpdateCustomer_NotFound() {
-        when(customerRepository.findById(99L)).thenReturn(Optional.empty());
+        long id = 99L;
+        when(customerRepository.findById(id)).thenReturn(Optional.empty());
 
         CustomerUpdateDTO customerUpdateDTO = new CustomerUpdateDTO();
         customerUpdateDTO.setName("John Doe");
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> customerService.updateCustomer(99L, customerUpdateDTO));
-        assertEquals("Customer not found", exception.getMessage());
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> customerService.updateCustomer(id, customerUpdateDTO));
+        assertEquals("Customer not found with id: " + id, exception.getMessage());
         verify(customerRepository, never()).save(any());
     }
 

@@ -1,10 +1,15 @@
 package com.zo.webapi.controller;
 
+import com.zo.webapi.dto.CustomerCreateDTO;
+import com.zo.webapi.dto.CustomerResponseDTO;
+import com.zo.webapi.dto.CustomerUpdateDTO;
+import com.zo.webapi.dto.ManagerResponseToCustomerDTO;
 import com.zo.webapi.model.Customer;
 import com.zo.webapi.model.Manager;
 import com.zo.webapi.service.CustomerService;
 import com.zo.webapi.service.ManagerService;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -12,9 +17,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -33,26 +38,19 @@ public class CustomerControllerTest {
 
     @Test
     void testShowAllCustomers_whenListNotEmpty() throws Exception {
-        Customer customer1 = new Customer();
-        customer1.setId(1L);
-        customer1.setName("John");
+        ManagerResponseToCustomerDTO mgr = null;
+        CustomerResponseDTO customer1 = new CustomerResponseDTO(1L, "John", "City1", mgr);
+        CustomerResponseDTO customer2 = new CustomerResponseDTO(2L, "Jane", "City2", mgr);
 
-        Customer customer2 = new Customer();
-        customer2.setId(2L);
-        customer2.setName("Jane");
+        when(customerService.getAllCustomersDto()).thenReturn(List.of(customer1, customer2));
 
-        when(customerService.getAllCustomers()).thenReturn(List.of(customer1, customer2));
-
-        mockMvc.perform(get("/api/customers"))
+        mockMvc.perform(get("/api/customers").contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].name").value("John"))
-                .andExpect(jsonPath("$[1].id").value(2))
-                .andExpect(jsonPath("$[1].name").value("Jane"))
-                .andExpect(jsonPath("$.length()").value(2));
+                .andExpect(jsonPath("$[1].name").value("Jane"));
 
-        verify(customerService).getAllCustomers();
-
+        verify(customerService).getAllCustomersDto();
     }
 
 
@@ -71,34 +69,29 @@ public class CustomerControllerTest {
 
     @Test
     void testGetCustomerById_Success() throws Exception {
-        Manager manager = new Manager();
-        manager.setId(1L);
+        ManagerResponseToCustomerDTO mgrDto = new ManagerResponseToCustomerDTO(1L, "mgrUser", "MANAGER");
+        CustomerResponseDTO response = new CustomerResponseDTO(1L, "John", "Berlin", mgrDto);
 
-        Customer customer = new Customer();
-        customer.setId(1L);
-        customer.setName("John");
-        customer.setCity("Berlin");
-        customer.setManager(manager);
-
-        when(customerService.getCustomerById(1L)).thenReturn(Optional.of(customer));
+        when(customerService.getCustomerByIdDto(1L)).thenReturn(response);
 
         mockMvc.perform(get("/api/customers/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("John"))
-                .andExpect(jsonPath("$.city").value("Berlin"));
-        verify(customerService).getCustomerById(1L);
-    }
+                .andExpect(jsonPath("$.city").value("Berlin"))
+                .andExpect(jsonPath("$.manager.id").value(1));
 
+        verify(customerService).getCustomerByIdDto(1L);
+    }
 
     @Test
     void testGetCustomerById_NotFound() throws Exception {
-             when(customerService.getCustomerById(1L)).thenReturn(Optional.empty());
+        when(customerService.getCustomerByIdDto(99L)).thenReturn(null);
 
-             mockMvc.perform(get("/api/customers/99"))
-                     .andExpect(status().isNotFound());
+        mockMvc.perform(get("/api/customers/99"))
+                .andExpect(status().isNotFound());
 
-             verify(customerService).getCustomerById(99L);
+        verify(customerService).getCustomerByIdDto(99L);
     }
 
     @Test
@@ -106,28 +99,28 @@ public class CustomerControllerTest {
         Manager manager = new Manager();
         manager.setId(1L);
 
-        Customer customer = new Customer();
-        customer.setId(1L);
-        customer.setName("John");
-        customer.setCity("Berlin");
-        customer.setManager(manager);
+        ManagerResponseToCustomerDTO mgrDto = new ManagerResponseToCustomerDTO(1L, "mgrUser", "MANAGER");
+        CustomerResponseDTO response = new CustomerResponseDTO(1L, "John", "Berlin", mgrDto);
 
         when(managerService.findManagerById(1L)).thenReturn(manager);
-        when(customerService.createCustomer(eq("John"), eq("Berlin"), any())).thenReturn(customer);
+        when(customerService.createCustomer(any(CustomerCreateDTO.class))).thenReturn(response);
 
-        // Send as form data to match @RequestParam
+        String json = "{\"name\":\"John\",\"city\":\"Berlin\",\"managerId\":1}";
+
         mockMvc.perform(post("/api/customers")
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("name", "John")
-                        .param("city", "Berlin")
-                        .param("managerId", "1"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("John"))
-                .andExpect(jsonPath("$.city").value("Berlin")); // skip manager
+                .andExpect(jsonPath("$.city").value("Berlin"));
 
-        verify(customerService).createCustomer("John", "Berlin", manager);
-
+        ArgumentCaptor<CustomerCreateDTO> captor = ArgumentCaptor.forClass(CustomerCreateDTO.class);
+        verify(customerService).createCustomer(captor.capture());
+        CustomerCreateDTO dto = captor.getValue();
+        assertEquals("John", dto.getName());
+        assertEquals("Berlin", dto.getCity());
+        assertEquals(1L, dto.getManagerId());
     }
 
     @Test
@@ -153,23 +146,23 @@ public class CustomerControllerTest {
     void testUpdateCustomer_Success() throws Exception {
         String json = "{\"name\":\"John\",\"city\":\"Berlin\"}";
 
-        Customer updatedCustomer = new Customer();
-        updatedCustomer.setId(1L);
-        updatedCustomer.setName("Bob");
-        updatedCustomer.setCity("London");
+        CustomerResponseDTO response = new CustomerResponseDTO(1L, "Bob", "London", null);
 
-        when(customerService.updateCustomer(eq(1L), any())).thenReturn(updatedCustomer);
+        when(customerService.updateCustomer(eq(1L), any(CustomerUpdateDTO.class))).thenReturn(response);
 
         mockMvc.perform(patch("/api/customers/1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(json))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("Bob"))
                 .andExpect(jsonPath("$.city").value("London"));
 
-        verify(customerService).updateCustomer(eq(1L), any());
-
+        ArgumentCaptor<CustomerUpdateDTO> captor = ArgumentCaptor.forClass(CustomerUpdateDTO.class);
+        verify(customerService).updateCustomer(eq(1L), captor.capture());
+        CustomerUpdateDTO sent = captor.getValue();
+        assertEquals("John", sent.getName());
+        assertEquals("Berlin", sent.getCity());
     }
 }
 

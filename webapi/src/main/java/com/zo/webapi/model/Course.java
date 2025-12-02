@@ -1,7 +1,11 @@
 package com.zo.webapi.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "courses")
@@ -24,6 +28,11 @@ public class Course {
 
     @Column(name = "date_end")
     private LocalDate dateEnd;
+
+    // Relationship: One course has MANY assignments
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Assignment> assignments = new ArrayList<>();
 
     // Constructors
 

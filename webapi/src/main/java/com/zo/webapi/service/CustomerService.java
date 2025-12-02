@@ -8,9 +8,8 @@ import com.zo.webapi.repository.ManagerRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -58,7 +57,10 @@ public class CustomerService {
         Manager manager = null;
         if (dto.getManagerId() != null) {
             manager = managerRepository.findById(dto.getManagerId())
-                    .orElseThrow(() -> new RuntimeException("Manager not found with id: " + + dto.getManagerId()));
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "Manager not found with id: " + dto.getManagerId()
+                    ));
         }
 
         // Create and save customer
@@ -74,7 +76,7 @@ public class CustomerService {
     @Transactional
     public CustomerResponseDTO updateCustomer(Long id, CustomerUpdateDTO updateDTO) {
         Customer customer = customerRepository.findById(id)
-                .orElse(null);
+                .orElseThrow(() -> new RuntimeException("Customer not found with id: " + id));
         if (customer == null) {
             return null;
         }
@@ -92,7 +94,10 @@ public class CustomerService {
         // Update manager, if not null
         if (updateDTO.getManagerId() != null) {
             Manager manager = managerRepository.findById(updateDTO.getManagerId())
-                    .orElseThrow(() -> new RuntimeException("Manager not found with id: " + updateDTO.getManagerId()));
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "Manager not found with id: " + updateDTO.getManagerId()
+                    ));
             customer.setManager(manager);
         }
 
