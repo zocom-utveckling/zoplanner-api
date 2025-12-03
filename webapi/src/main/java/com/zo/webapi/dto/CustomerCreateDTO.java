@@ -1,6 +1,7 @@
 package com.zo.webapi.dto;
 
-public class CustomerUpdateDTO {
+public class CustomerCreateDTO {
+
     private String name;
     private String city;
     private Long managerId;

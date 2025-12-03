@@ -24,39 +24,41 @@ public class ClassGroupController {
 
     // CREATE
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ClassGroupResponseDTO createClass(@Valid @RequestBody CreateClassGroupRequestDTO requestDTO) {
-        return classGroupService.createClass(requestDTO);
+    public ResponseEntity<ClassGroupResponseDTO> createClass(@RequestBody CreateClassGroupRequestDTO requestDTO) {
+        ClassGroupResponseDTO response = classGroupService.createClass(requestDTO);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    // READ
+    // READ BY id
     @GetMapping("/{id}")
-    public ClassGroupResponseDTO getClassById(@PathVariable Long id) {
-        return classGroupService.getClassById(id);
+    public ResponseEntity<ClassGroupResponseDTO> getClassById(@PathVariable Long id) {
+        return ResponseEntity.ok(classGroupService.getClassById(id));
     }
 
+    // READ ALL
     @GetMapping
-    public List<ClassGroupResponseDTO> getAllClasses() {
-        return classGroupService.getAllClasses();
+    public ResponseEntity<List<ClassGroupResponseDTO>> getAllClasses() {
+        return ResponseEntity.ok(classGroupService.getAllClasses());
     }
 
+    // READ BY customerId
     @GetMapping("/customer/{customerId}")
-    public List<ClassGroupResponseDTO> getClassesByCustomerId(@PathVariable Long customerId){
-        return classGroupService.getClassesByCustomerId(customerId);
+    public ResponseEntity<List<ClassGroupResponseDTO>> getClassesByCustomerId(@PathVariable Long customerId) {
+        return ResponseEntity.ok(classGroupService.getClassesByCustomerId(customerId));
     }
 
     // UPDATE
     @PutMapping("/{id}")
-    public ClassGroupResponseDTO updateClass(
+    public ResponseEntity<ClassGroupResponseDTO> updateClass(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateClassGroupRequestDTO requestDTO) {
-        return classGroupService.updateClass(id, requestDTO);
+            @RequestBody UpdateClassGroupRequestDTO requestDTO) {
+        return ResponseEntity.ok(classGroupService.updateClass(id, requestDTO));
     }
 
     // DELETE
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteClass(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteClass(@PathVariable Long id) {
         classGroupService.deleteClass(id);
+        return ResponseEntity.noContent().build();
     }
 }

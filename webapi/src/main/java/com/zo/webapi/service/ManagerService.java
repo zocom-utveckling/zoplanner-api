@@ -1,9 +1,9 @@
 package com.zo.webapi.service;
+
 import com.zo.webapi.dto.ConsultantDTO;
 import com.zo.webapi.dto.CustomerDTO;
 import com.zo.webapi.dto.ManagerResponseDTO;
 import com.zo.webapi.model.Consultant;
-
 import com.zo.webapi.model.Customer;
 import com.zo.webapi.model.Manager;
 import com.zo.webapi.model.User;
@@ -14,10 +14,11 @@ import com.zo.webapi.repository.UserRepository;
 import com.zo.webapi.enums.UserRole;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 @Service
 public class ManagerService {
@@ -38,16 +39,17 @@ public class ManagerService {
     @Transactional
     public ManagerResponseDTO createManager(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: " + userId));
 
         // Validate role
         if (user.getRole() != UserRole.MANAGER && user.getRole() != UserRole.BOTH) {
-            throw new RuntimeException("User must have MANAGER or BOTH role");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User must have MANAGER or BOTH role");
         }
 
         //Prevent duplicate manager
         if (managerRepository.existsByUserId(userId)) {
-            throw new RuntimeException("User is already a manager");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User is already a manager");
+
         }
 
         // Create and save manager
@@ -62,11 +64,13 @@ public class ManagerService {
         );
     }
 
+
+
     //READ
 
     public ManagerResponseDTO getManagerById(Long id) {
         Manager manager = managerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Manager not found with id: " + id));
+                .orElseThrow(() ->  new ResponseStatusException(HttpStatus.NOT_FOUND, "Manager not found with id: " + id));
 
         User user = manager.getUser();
 
@@ -80,7 +84,7 @@ public class ManagerService {
 
     public Manager findManagerById(Long managerId) {
         Manager manager = managerRepository.findById(managerId)
-                .orElseThrow(() -> new RuntimeException("Manager not found with id: " + managerId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Manager not found with id: " + managerId));
         return manager;
     }
 
@@ -101,7 +105,7 @@ public class ManagerService {
 
     public ManagerResponseDTO getManagerByUserId(Long userId) {
         Manager manager = managerRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Manager not found with user id: " + userId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Manager not found with user id: " + userId));
 
         User user = manager.getUser();
 
@@ -117,7 +121,7 @@ public class ManagerService {
 
         // verify manager exists
         if(!managerRepository.existsById(managerId)) {
-            throw new RuntimeException("Manager not found with id: " + managerId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Manager not found with id: " + managerId);
         }
         return consultantRepository.findByManagerId(managerId)
                 .stream()
@@ -133,7 +137,7 @@ public class ManagerService {
 
         //verify manager exists
         if(!managerRepository.existsById(managerId)) {
-            throw new RuntimeException("Manager not found with id: " + managerId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Manager not found with id: " + managerId);
         }
         return customerRepository.findByManagerId(managerId)
                 .stream()
@@ -149,10 +153,10 @@ public class ManagerService {
     @Transactional
     public void assignConsultantToManager(Long managerId, Long consultantId) {
         Manager manager = managerRepository.findById(managerId)
-                .orElseThrow(() -> new RuntimeException("Manager not found with id: " + managerId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Manager not found with id: " + managerId));
 
         Consultant consultant = consultantRepository.findById(consultantId)
-                .orElseThrow(() -> new RuntimeException("Consultant not found with id: " + consultantId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Consultant not found with id: " + consultantId));
 
         consultant.setManager(manager);
         consultantRepository.save(consultant);
@@ -160,13 +164,13 @@ public class ManagerService {
 
     @Transactional
     public void removeConsultantFromManager(Long managerId, Long consultantId) {
-        // we don't really need manager here, but can verify it exists
+        // we don't really need a manager here, but can verify it exists
         if (!managerRepository.existsById(managerId)) {
-            throw new RuntimeException("Manager not found with id: " + managerId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Manager not found with id: " + managerId);
         }
 
         Consultant consultant = consultantRepository.findById(consultantId)
-                .orElseThrow(() -> new RuntimeException("Consultant not found with id: " + consultantId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Consultant not found with id: " + consultantId));
 
         consultant.setManager(null);
         consultantRepository.save(consultant);
@@ -176,10 +180,10 @@ public class ManagerService {
     @Transactional
     public void assignCustomerToManager(Long managerId, Long customerId) {
         Manager manager = managerRepository.findById(managerId)
-                .orElseThrow(() -> new RuntimeException("Manager not found with id: " + managerId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Manager not found with id: " + managerId));
 
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new RuntimeException("Customer not found with id: " + customerId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found with id: " + customerId));
 
         customer.setManager(manager);
         customerRepository.save(customer);
@@ -188,11 +192,11 @@ public class ManagerService {
     @Transactional
     public void removeCustomerFromManager(Long managerId, Long customerId) {
         if (!managerRepository.existsById(managerId)) {
-            throw new RuntimeException("Manager not found with id: " + managerId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Manager not found with id: " + managerId);
         }
 
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new RuntimeException("Customer not found with id: " + customerId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found with id: " + customerId));
 
         customer.setManager(null);
         customerRepository.save(customer);
@@ -203,19 +207,19 @@ public class ManagerService {
     public ManagerResponseDTO updateManagerUser(Long managerId, Long newUserId) {
 
         Manager manager = managerRepository.findById(managerId)
-                .orElseThrow(() -> new RuntimeException("Manager not found with id: " + managerId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Manager not found with id: " + managerId));
 
         User newUser = userRepository.findById(newUserId)
-                .orElseThrow(() -> new RuntimeException("User not found: " + newUserId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: " + newUserId));
 
         // Validate new role
         if (newUser.getRole() != UserRole.MANAGER && newUser.getRole() != UserRole.BOTH) {
-            throw new RuntimeException("User must have MANAGER or BOTH role");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User must have MANAGER or BOTH role");
         }
 
         // Ensure the new user is not already a manager
         if (managerRepository.existsByUserId(newUserId)) {
-            throw new RuntimeException("This user is already a manager");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "This user is already a manager");
         }
 
         manager.setUser(newUser);
@@ -233,7 +237,7 @@ public class ManagerService {
     @Transactional
     public void deleteManager(Long id) {
         Manager manager = managerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Manager not found with id: " + id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Manager not found with id: " + id));
 
         // SET NULL for consultants
         if (manager.getConsultants() != null) {
@@ -252,11 +256,8 @@ public class ManagerService {
     @Transactional
     public void deleteByUserId(Long userId) {
         Manager manager = managerRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Manager not found with user id: " + userId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Manager not found with user id: " + userId));
         deleteManager(manager.getId());
     }
 
-
 }
-
-
