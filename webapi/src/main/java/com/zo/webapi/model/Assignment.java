@@ -1,6 +1,6 @@
 package com.zo.webapi.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -21,8 +21,10 @@ public class Assignment {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Course course;
 
-    @Column(name = "consultant_id")
-    private Long consultantId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "consultant_id", nullable = false)
+    @JsonBackReference
+    private Consultant consultant;
 
     @Column(name = "date_start", nullable = false)
     private LocalDate dateStart;
@@ -30,23 +32,13 @@ public class Assignment {
     @Column(name = "date_end", nullable = false)
     private LocalDate dateEnd;
 
-
     @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, orphanRemoval = false)
-    @JsonIgnoreProperties("sessions")
     @JsonManagedReference
     private final List<Session> sessions = new ArrayList<>();
 
-    // Constructors
+
     public Assignment() {}
 
-    public Assignment(Course course, Long consultantId, LocalDate dateStart, LocalDate dateEnd) {
-        this.course = course;
-        this.consultantId = consultantId;
-        this.dateStart = dateStart;
-        this.dateEnd = dateEnd;
-    }
-
-    // Getters
     public Long getId() {
         return id;
     }
@@ -55,13 +47,12 @@ public class Assignment {
         return course;
     }
 
-    public void setCourse(Course course) {
-        this.course = course;
+    public Consultant getConsultant() {
+        return consultant;
     }
 
-
     public Long getConsultantId() {
-        return consultantId;
+        return consultant != null ? consultant.getId() : null;
     }
 
     public LocalDate getDateStart() {
@@ -72,13 +63,16 @@ public class Assignment {
         return dateEnd;
     }
 
-    // Setters
     public void setId(Long id) {
         this.id = id;
     }
 
-    public void setConsultantId(Long consultantId) {
-        this.consultantId = consultantId;
+    public void setCourse(Course course) {
+        this.course = course;
+    }
+
+    public void setConsultant(Consultant consultant) {
+        this.consultant = consultant;
     }
 
     public void setDateStart(LocalDate dateStart) {
