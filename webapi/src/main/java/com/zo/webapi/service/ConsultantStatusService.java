@@ -4,7 +4,7 @@ import com.zo.webapi.model.Consultant;
 import com.zo.webapi.model.ConsultantStatus;
 import com.zo.webapi.repository.ConsultantRepository;
 import com.zo.webapi.repository.ConsultantStatusRepository;
-import enums.ConsultantStatusType;
+import com.zo.webapi.enums.ConsultantStatusType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

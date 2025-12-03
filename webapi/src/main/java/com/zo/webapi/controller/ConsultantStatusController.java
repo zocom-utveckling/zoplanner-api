@@ -2,7 +2,7 @@ package com.zo.webapi.controller;
 
 import com.zo.webapi.model.ConsultantStatus;
 import com.zo.webapi.service.ConsultantStatusService;
-import enums.ConsultantStatusType;
+import com.zo.webapi.enums.ConsultantStatusType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

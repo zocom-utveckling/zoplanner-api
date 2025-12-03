@@ -1,6 +1,6 @@
 package com.zo.webapi.model;
 
-import enums.UserRole;
+import com.zo.webapi.enums.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

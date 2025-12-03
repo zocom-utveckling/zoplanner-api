@@ -11,7 +11,7 @@ import com.zo.webapi.repository.ConsultantRepository;
 import com.zo.webapi.repository.CustomerRepository;
 import com.zo.webapi.repository.ManagerRepository;
 import com.zo.webapi.repository.UserRepository;
-import enums.UserRole;
+import com.zo.webapi.enums.UserRole;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

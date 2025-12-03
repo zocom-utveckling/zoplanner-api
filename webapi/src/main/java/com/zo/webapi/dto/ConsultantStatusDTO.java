@@ -1,6 +1,6 @@
 package com.zo.webapi.dto;
 
-import enums.ConsultantStatusType;
+import com.zo.webapi.enums.ConsultantStatusType;
 import java.time.LocalDate;
 
 public class ConsultantStatusDTO {
