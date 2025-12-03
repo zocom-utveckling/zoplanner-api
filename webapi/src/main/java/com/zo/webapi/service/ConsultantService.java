@@ -54,7 +54,7 @@ public class ConsultantService {
 
     @Transactional(readOnly = true)
     public List<ConsultantDTO> getConsultantsByCity(String city) {
-        return consultantRepository.findByCity(city)
+        return consultantRepository.findByCityIgnoreCase(city)  // Ändra här
                 .stream()
                 .map(ConsultantMapper::toDTO)
                 .toList();
