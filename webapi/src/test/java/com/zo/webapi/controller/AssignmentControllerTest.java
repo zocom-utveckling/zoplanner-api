@@ -7,6 +7,7 @@ import com.zo.webapi.service.SessionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
@@ -19,33 +20,30 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/*@WebMvcTest(AssignmentController.class)
+@WebMvcTest(AssignmentController.class)
 public class AssignmentControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean
+    @MockBean
     private AssignmentService assignmentService;
 
-    @MockitoBean
+    @MockBean
     private SessionService sessionService;
 
     @Test
-    void testGetAllAssignments() throws Exception {
-        // Create test data
-        List<Assignment> assignments = new ArrayList<>();
+    void testGetAllAssignments_Success() throws Exception {
         Assignment assignment = new Assignment();
         assignment.setId(1L);
-        assignments.add(assignment);
+        List<Assignment> assignments = List.of(assignment);
 
-        // Mock service
         when(assignmentService.getAllAssignments()).thenReturn(assignments);
 
         mockMvc.perform(get("/api/assignments"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1));
-
     }
+
 
     @Test
     void testGetAssignmentById_Success() throws Exception {
@@ -62,18 +60,9 @@ public class AssignmentControllerTest {
                 .andExpect(jsonPath("$.id").value(1));
     }
 
-    @Test
-    void testGetAssignmentById_NotFound() throws Exception {
-        // Mock service to return empty
-        when(assignmentService.getAssignmentById(999L)).thenReturn(Optional.empty());
-
-        // Call the endpoint and check response
-        mockMvc.perform(get("/api/assignments/999"))
-                .andExpect(status().isNotFound());
-    }
 
     @Test
-    void testCreateAssignment() throws Exception {
+    void testCreateAssignment_Success() throws Exception {
         // Create test data
         Assignment savedAssignment = new Assignment();
         savedAssignment.setId(1L);
@@ -90,8 +79,25 @@ public class AssignmentControllerTest {
 
     }
 
+
     @Test
-    void testDeleteAssignment() throws Exception {
+    void testUpdateAssignment_Success() throws Exception {
+        Assignment savedAssignment = new Assignment();
+        savedAssignment.setId(1L);
+
+        when(assignmentService.updateAssignment(eq(1L), any(Assignment.class))).thenReturn(savedAssignment);
+
+        mockMvc.perform(put("/api/assignments/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"id\":1}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1));
+    }
+
+
+
+    @Test
+    void testDeleteAssignment_Success() throws Exception {
         // Mock the service
         doNothing().when(assignmentService).deleteAssignment(1L);
 
@@ -101,54 +107,32 @@ public class AssignmentControllerTest {
     }
 
     @Test
-    void testGetAssignmentByConsultant() throws Exception {
-        // Create test data
-        List<Assignment> assignments = new ArrayList<>();
-        Assignment assignment = new Assignment();
-        assignment.setId(1L);
-        assignments.add(assignment);
+    void testGetAssignmentByConsultant_Success() throws Exception {
+       Assignment assignment = new Assignment();
+       assignment.setId(1L);
+       List<Assignment> assignments = List.of(assignment);
 
-        //Mock service to return one assignment for consultant 5
-        when(assignmentService.getAssignmentsByConsultant(5L)).thenReturn(assignments);
+       when(assignmentService.getAssignmentsByConsultant(5L)).thenReturn(assignments);
 
-        mockMvc.perform(get("/api/assignments/consultant/5"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1));
+       mockMvc.perform(get("/api/assignments/consultant/5"))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$[0].id").value(1));
     }
 
-    @Test
-    void testGetAssignmentByClass() throws Exception {
-        // Test data
-        List<Assignment> assignments = new ArrayList<>();
-        Assignment assignment = new Assignment();
-        assignment.setId(1L);
-        assignments.add(assignment);
-
-        // Mock service call
-        when(assignmentService.getAssignmentsByClass(5L)).thenReturn(assignments);
-
-        // Mock getting assignment for class 5
-        mockMvc.perform(get("/api/assignments/class/5"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1));
-    }
 
     @Test
-    void testGetSessionByAssignmentId() throws Exception {
-        // Test data
-        List<Session> sessions = new ArrayList<>();
+    void testGetSessionByAssignmentId_Success() throws Exception {
         Session session = new Session();
         session.setId(1L);
-        sessions.add(session);
+        List<Session> sessions = List.of(session);
 
-        // Mock session service to return the list when called with assignment ID
         when(sessionService.getSessionsByAssignmentId(1L)).thenReturn(sessions);
 
-        // Simulate getting session
         mockMvc.perform(get("/api/assignments/1/sessions"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1));
     }
+
 
     @Test
     void testAddSession_Success() throws Exception {
@@ -168,6 +152,37 @@ public class AssignmentControllerTest {
 
     }
 
+
+
+    @Test
+     void testGetAssignmentById_NotFound() throws Exception {
+        when(assignmentService.getAssignmentById(999L)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/api/assignments/999"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testUpdateAssignment_NotFound() throws Exception {
+        when(assignmentService.updateAssignment(eq(999L),  any(Assignment.class)))
+                .thenThrow(new RuntimeException("Assignment not found with id: 999"));
+
+        mockMvc.perform(put("/api/assignments/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"id\":999}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testDeleteAssignment_NotFound() throws Exception {
+        doThrow(new RuntimeException("Assignment not found with id: 999"))
+            .when(assignmentService).deleteAssignment(eq(999L));
+
+        mockMvc.perform(delete("/api/assignments/999"))
+                .andExpect(status().isNotFound());
+
+    }
+
     @Test
     void testAddSession_NotFound() throws Exception {
         // Return null to simulate assignment not existing
@@ -176,7 +191,9 @@ public class AssignmentControllerTest {
         // Simulate create
         mockMvc.perform(post("/api/assignments/999/sessions")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\":null}"))
+                .content("{\"id\":999}"))
             .andExpect(status().isNotFound());
     }
-}*/
+
+
+}
