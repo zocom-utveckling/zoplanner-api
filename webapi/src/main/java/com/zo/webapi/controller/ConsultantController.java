@@ -23,16 +23,26 @@ public class ConsultantController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ConsultantDTO> getConsultantById(@PathVariable Long id) {
-        return ResponseEntity.ok(consultantService.getConsultantById(id));
+        try {
+            ConsultantDTO dto = consultantService.getConsultantById(id);
+            return ResponseEntity.ok(dto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<ConsultantDTO> getConsultantByUserId(@PathVariable Long userId) {
-        return ResponseEntity.ok(consultantService.getConsultantByUserId(userId));
+        try {
+            ConsultantDTO dto = consultantService.getConsultantByUserId(userId);
+            return ResponseEntity.ok(dto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/manager/{managerId}")
-    public ResponseEntity<List<ConsultantDTO>> getConsultantsByManager(@PathVariable Long managerId) {
+    public ResponseEntity<List<ConsultantDTO>> getConsultantsByManagerId(@PathVariable Long managerId) {
         return ResponseEntity.ok(consultantService.getConsultantsByManagerId(managerId));
     }
 
@@ -42,21 +52,34 @@ public class ConsultantController {
     }
 
     @PostMapping
-    public ResponseEntity<ConsultantDTO> createConsultant(@RequestBody ConsultantDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(consultantService.createConsultant(dto));
+    public ResponseEntity<ConsultantDTO> createConsultant(@RequestBody ConsultantDTO consultantDTO) {
+        try {
+            ConsultantDTO created = consultantService.createConsultant(consultantDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ConsultantDTO> updateConsultant(
             @PathVariable Long id,
-            @RequestBody ConsultantDTO dto) {
-        return ResponseEntity.ok(consultantService.updateConsultant(id, dto));
+            @RequestBody ConsultantDTO consultantDTO) {
+        try {
+            ConsultantDTO updated = consultantService.updateConsultant(id, consultantDTO);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteConsultant(@PathVariable Long id) {
-        consultantService.deleteConsultant(id);
-        return ResponseEntity.noContent().build();
+        try {
+            consultantService.deleteConsultant(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
