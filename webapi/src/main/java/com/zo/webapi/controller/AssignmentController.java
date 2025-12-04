@@ -1,9 +1,11 @@
 package com.zo.webapi.controller;
 
 import com.zo.webapi.dto.AssignmentDTO;
+import com.zo.webapi.exception.ResourceNotFoundException;
 import com.zo.webapi.model.Assignment;
 import com.zo.webapi.service.AssignmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,9 +30,9 @@ public class AssignmentController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Assignment> getAssignmentById(@PathVariable Long id) {
-        return assignmentService.getAssignmentById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Assignment assignment = assignmentService.getAssignmentById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Assignment", "id", id));
+        return ResponseEntity.ok(assignment);
     }
 
     @GetMapping("/consultant/{consultantId}")
@@ -42,7 +44,7 @@ public class AssignmentController {
     @PostMapping
     public ResponseEntity<Assignment> createAssignment(@RequestBody AssignmentDTO assignmentDto) {
         Assignment createdAssignment = assignmentService.createAssignment(assignmentDto);
-        return ResponseEntity.ok(createdAssignment);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdAssignment);
     }
 
     @PutMapping("/{id}")

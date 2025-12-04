@@ -1,6 +1,8 @@
 package com.zo.webapi.service;
 
 import com.zo.webapi.dto.ConsultantDTO;
+import com.zo.webapi.exception.InvalidDataException;
+import com.zo.webapi.exception.ResourceNotFoundException;
 import com.zo.webapi.mapper.ConsultantMapper;
 import com.zo.webapi.model.Consultant;
 import com.zo.webapi.model.Manager;
@@ -34,18 +36,23 @@ public class ConsultantService {
     public ConsultantDTO getConsultantById(Long id) {
         return consultantRepository.findById(id)
                 .map(ConsultantMapper::toDTO)
-                .orElseThrow(() -> new RuntimeException("Consultant not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Consultant", "id", id));
     }
 
     @Transactional(readOnly = true)
     public ConsultantDTO getConsultantByUserId(Long userId) {
         return consultantRepository.findByUserId(userId)
                 .map(ConsultantMapper::toDTO)
-                .orElseThrow(() -> new RuntimeException("Consultant not found for user: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("Consultant", "userId", userId));
     }
 
     @Transactional(readOnly = true)
     public List<ConsultantDTO> getConsultantsByManagerId(Long managerId) {
+        // Verifiera att managern existerar
+        if (!managerRepository.existsById(managerId)) {
+            throw new ResourceNotFoundException("Manager", "id", managerId);
+        }
+
         return consultantRepository.findByManagerId(managerId)
                 .stream()
                 .map(ConsultantMapper::toDTO)
@@ -54,7 +61,11 @@ public class ConsultantService {
 
     @Transactional(readOnly = true)
     public List<ConsultantDTO> getConsultantsByCity(String city) {
-        return consultantRepository.findByCityIgnoreCase(city)  // Ändra här
+        if (city == null || city.trim().isEmpty()) {
+            throw new InvalidDataException("City cannot be null or empty");
+        }
+
+        return consultantRepository.findByCityIgnoreCase(city)
                 .stream()
                 .map(ConsultantMapper::toDTO)
                 .toList();
@@ -62,14 +73,24 @@ public class ConsultantService {
 
     @Transactional
     public ConsultantDTO createConsultant(ConsultantDTO dto) {
+        // Validering
+        validateConsultantDTO(dto);
+
+        // Kontrollera om användaren redan har en konsult
+        if (consultantRepository.findByUserId(dto.getUserId()).isPresent()) {
+            throw new InvalidDataException("User already has a consultant profile");
+        }
+
         Consultant consultant = ConsultantMapper.toEntity(dto);
 
         User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", dto.getUserId()));
 
-        Manager manager = dto.getManagerId() != null
-                ? managerRepository.findById(dto.getManagerId()).orElse(null)
-                : null;
+        Manager manager = null;
+        if (dto.getManagerId() != null) {
+            manager = managerRepository.findById(dto.getManagerId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Manager", "id", dto.getManagerId()));
+        }
 
         consultant.setUser(user);
         consultant.setManager(manager);
@@ -80,14 +101,19 @@ public class ConsultantService {
 
     @Transactional
     public ConsultantDTO updateConsultant(Long id, ConsultantDTO dto) {
+        // Validering
+        if (dto.getCity() == null || dto.getCity().trim().isEmpty()) {
+            throw new InvalidDataException("City cannot be null or empty");
+        }
+
         Consultant existing = consultantRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Consultant not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Consultant", "id", id));
 
         existing.setCity(dto.getCity());
 
         if (dto.getManagerId() != null) {
             Manager manager = managerRepository.findById(dto.getManagerId())
-                    .orElseThrow(() -> new RuntimeException("Manager not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Manager", "id", dto.getManagerId()));
             existing.setManager(manager);
         } else {
             existing.setManager(null);
@@ -99,6 +125,21 @@ public class ConsultantService {
 
     @Transactional
     public void deleteConsultant(Long id) {
+        if (!consultantRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Consultant", "id", id);
+        }
         consultantRepository.deleteById(id);
+    }
+
+    private void validateConsultantDTO(ConsultantDTO dto) {
+        if (dto == null) {
+            throw new InvalidDataException("Consultant data cannot be null");
+        }
+        if (dto.getUserId() == null) {
+            throw new InvalidDataException("User ID is required");
+        }
+        if (dto.getCity() == null || dto.getCity().trim().isEmpty()) {
+            throw new InvalidDataException("City is required");
+        }
     }
 }

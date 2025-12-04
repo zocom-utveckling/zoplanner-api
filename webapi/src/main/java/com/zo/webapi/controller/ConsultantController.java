@@ -18,68 +18,51 @@ public class ConsultantController {
 
     @GetMapping
     public ResponseEntity<List<ConsultantDTO>> getAllConsultants() {
-        return ResponseEntity.ok(consultantService.getAllConsultants());
+        List<ConsultantDTO> consultants = consultantService.getAllConsultants();
+        return ResponseEntity.ok(consultants);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ConsultantDTO> getConsultantById(@PathVariable Long id) {
-        try {
-            ConsultantDTO dto = consultantService.getConsultantById(id);
-            return ResponseEntity.ok(dto);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        ConsultantDTO dto = consultantService.getConsultantById(id);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<ConsultantDTO> getConsultantByUserId(@PathVariable Long userId) {
-        try {
-            ConsultantDTO dto = consultantService.getConsultantByUserId(userId);
-            return ResponseEntity.ok(dto);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        ConsultantDTO dto = consultantService.getConsultantByUserId(userId);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/manager/{managerId}")
     public ResponseEntity<List<ConsultantDTO>> getConsultantsByManagerId(@PathVariable Long managerId) {
-        return ResponseEntity.ok(consultantService.getConsultantsByManagerId(managerId));
+        List<ConsultantDTO> consultants = consultantService.getConsultantsByManagerId(managerId);
+        return ResponseEntity.ok(consultants);
     }
 
     @GetMapping("/city/{city}")
     public ResponseEntity<List<ConsultantDTO>> getConsultantsByCity(@PathVariable String city) {
-        return ResponseEntity.ok(consultantService.getConsultantsByCity(city));
+        List<ConsultantDTO> consultants = consultantService.getConsultantsByCity(city);
+        return ResponseEntity.ok(consultants);
     }
 
     @PostMapping
     public ResponseEntity<ConsultantDTO> createConsultant(@RequestBody ConsultantDTO consultantDTO) {
-        try {
-            ConsultantDTO created = consultantService.createConsultant(consultantDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(created);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        ConsultantDTO created = consultantService.createConsultant(consultantDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ConsultantDTO> updateConsultant(
             @PathVariable Long id,
             @RequestBody ConsultantDTO consultantDTO) {
-        try {
-            ConsultantDTO updated = consultantService.updateConsultant(id, consultantDTO);
-            return ResponseEntity.ok(updated);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        ConsultantDTO updated = consultantService.updateConsultant(id, consultantDTO);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteConsultant(@PathVariable Long id) {
-        try {
-            consultantService.deleteConsultant(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        consultantService.deleteConsultant(id);
+        return ResponseEntity.noContent().build();
     }
 }
