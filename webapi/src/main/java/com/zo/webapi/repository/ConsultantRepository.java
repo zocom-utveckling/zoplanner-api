@@ -16,7 +16,7 @@ public interface ConsultantRepository extends JpaRepository<Consultant, Long> {
 
     List<Consultant> findByManagerId(Long managerId);
 
-    List<Consultant> findByCity(String city);
+    List<Consultant> findByCityIgnoreCase(String city);
 
     @Query("SELECT c FROM Consultant c WHERE c.manager.id = :managerId AND c.city = :city")
     List<Consultant> findByManagerIdAndCity(@Param("managerId") Long managerId,
