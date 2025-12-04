@@ -1,6 +1,6 @@
 package com.zo.webapi.controller;
 
-import com.zo.webapi.model.Consultant;
+import com.zo.webapi.dto.ConsultantDTO;
 import com.zo.webapi.service.ConsultantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,52 +17,58 @@ public class ConsultantController {
     private final ConsultantService consultantService;
 
     @GetMapping
-    public ResponseEntity<List<Consultant>> getAllConsultants() {
+    public ResponseEntity<List<ConsultantDTO>> getAllConsultants() {
         return ResponseEntity.ok(consultantService.getAllConsultants());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Consultant> getConsultantById(@PathVariable Long id) {
-        return consultantService.getConsultantById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ConsultantDTO> getConsultantById(@PathVariable Long id) {
+        try {
+            ConsultantDTO dto = consultantService.getConsultantById(id);
+            return ResponseEntity.ok(dto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<Consultant> getConsultantByUserId(@PathVariable Long userId) {
-        return consultantService.getConsultantByUserId(userId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ConsultantDTO> getConsultantByUserId(@PathVariable Long userId) {
+        try {
+            ConsultantDTO dto = consultantService.getConsultantByUserId(userId);
+            return ResponseEntity.ok(dto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/manager/{managerId}")
-    public ResponseEntity<List<Consultant>> getConsultantsByManagerId(@PathVariable Long managerId) {
+    public ResponseEntity<List<ConsultantDTO>> getConsultantsByManagerId(@PathVariable Long managerId) {
         return ResponseEntity.ok(consultantService.getConsultantsByManagerId(managerId));
     }
 
     @GetMapping("/city/{city}")
-    public ResponseEntity<List<Consultant>> getConsultantsByCity(@PathVariable String city) {
+    public ResponseEntity<List<ConsultantDTO>> getConsultantsByCity(@PathVariable String city) {
         return ResponseEntity.ok(consultantService.getConsultantsByCity(city));
     }
 
     @PostMapping
-    public ResponseEntity<Consultant> createConsultant(@RequestBody Consultant consultant) {
+    public ResponseEntity<ConsultantDTO> createConsultant(@RequestBody ConsultantDTO consultantDTO) {
         try {
-            Consultant created = consultantService.createConsultant(consultant);
+            ConsultantDTO created = consultantService.createConsultant(consultantDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
-        } catch (IllegalArgumentException e) {
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Consultant> updateConsultant(
+    public ResponseEntity<ConsultantDTO> updateConsultant(
             @PathVariable Long id,
-            @RequestBody Consultant consultant) {
+            @RequestBody ConsultantDTO consultantDTO) {
         try {
-            Consultant updated = consultantService.updateConsultant(id, consultant);
+            ConsultantDTO updated = consultantService.updateConsultant(id, consultantDTO);
             return ResponseEntity.ok(updated);
-        } catch (IllegalArgumentException e) {
+        } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -72,7 +78,7 @@ public class ConsultantController {
         try {
             consultantService.deleteConsultant(id);
             return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
+        } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }

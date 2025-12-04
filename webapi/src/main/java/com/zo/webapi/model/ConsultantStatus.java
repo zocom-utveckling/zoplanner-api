@@ -1,6 +1,6 @@
 package com.zo.webapi.model;
 
-import enums.ConsultantStatusType;
+import com.zo.webapi.enums.ConsultantStatusType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

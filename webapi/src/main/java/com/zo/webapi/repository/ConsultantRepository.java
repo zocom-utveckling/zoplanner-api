@@ -2,6 +2,8 @@ package com.zo.webapi.repository;
 
 import com.zo.webapi.model.Consultant;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,7 +16,9 @@ public interface ConsultantRepository extends JpaRepository<Consultant, Long> {
 
     List<Consultant> findByManagerId(Long managerId);
 
-    List<Consultant> findByCity(String city);
+    List<Consultant> findByCityIgnoreCase(String city);
 
-    boolean existsByUserId(Long userId);
+    @Query("SELECT c FROM Consultant c WHERE c.manager.id = :managerId AND c.city = :city")
+    List<Consultant> findByManagerIdAndCity(@Param("managerId") Long managerId,
+                                            @Param("city") String city);
 }
