@@ -157,7 +157,13 @@ Rekommenderat program pgAdmin 4
    
 4. Skriv in samma användarnamn/lösen som du skrev i din .env fil
 
-<img width="697" height="551" alt="image" src="https://github.com/user-attachments/assets/866de2b7-e738-48ac-9e1f-3005532aa661" />
+<img width="712" height="562" alt="image" src="https://github.com/user-attachments/assets/e4d92465-b3db-449e-b4fc-6bc55f993757" />
+
+5. Skapa databas
+
+<img width="620" height="500" alt="image" src="https://github.com/user-attachments/assets/fa0864a9-98ed-47da-99d6-97b3e8e5dd20" />
+
+<img width="699" height="550" alt="image" src="https://github.com/user-attachments/assets/ebebc67b-b90a-47b1-bad1-59d6dd329fbd" />
 
    
 Öppna Query Tool
@@ -182,6 +188,9 @@ CREATE DATABASE zoplanner;
 > All table creation queries are in the correct order
 
 > Includes ENUMs, users, managers, consultants, customers, classes, courses, assignments, sessions, consultant_status
+
+<img width="1339" height="1158" alt="zoplannerdb" src="https://github.com/user-attachments/assets/af4c8763-4427-4c39-8018-33363911a2f3" />
+
 
 ```
 -- ============================
@@ -335,6 +344,9 @@ Deleting a consultant removes all their status records.
 Deleting a customer deletes their classes, and in turn, all courses linked to classes.
 
 <img width="1664" height="1232" alt="image" src="https://github.com/user-attachments/assets/7784d7c2-444e-4158-8e5e-44a970e883d9" />
+
+Se skapade tabeller
+<img width="421" height="533" alt="image" src="https://github.com/user-attachments/assets/ea25a6b9-0c71-4bae-accb-976da8c1ec18" />
 
 
 ## Hur man skapar docker image för bara databasen
