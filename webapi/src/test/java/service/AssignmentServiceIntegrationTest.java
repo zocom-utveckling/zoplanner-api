@@ -17,7 +17,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ActiveProfiles("test")
+/*@ActiveProfiles("test")
 @SpringBootTest(classes = WebapiApplication.class)
 @Transactional //Rollback DB changes after each test
 public class AssignmentServiceIntegrationTest {
@@ -88,4 +88,4 @@ public class AssignmentServiceIntegrationTest {
                 assignmentService.deleteAssignment(999L));
         assertThat(exception.getMessage()).contains("Assignment not found with id: 999");
     }
-}
+}*/

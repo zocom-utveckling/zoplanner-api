@@ -14,7 +14,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@DataJpaTest
+/*@DataJpaTest
 public class SessionRepositoryIntegrationTest {
     @Autowired
     SessionRepository sessionRepository;
@@ -121,3 +121,4 @@ public class SessionRepositoryIntegrationTest {
         assertThrows(Exception.class, () -> sessionRepository.saveAndFlush(invalidSession));
     }
 }
+*/

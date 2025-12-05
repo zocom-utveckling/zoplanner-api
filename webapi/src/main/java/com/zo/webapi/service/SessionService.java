@@ -50,6 +50,8 @@ public class SessionService {
         //Update the fields with the new data
         updatedSession.setTimeStart(session.getTimeStart());
         updatedSession.setTimeEnd(session.getTimeEnd());
+        updatedSession.setComment(session.getComment());
+        updatedSession.setLocation(session.getLocation());
         return sessionRepository.save(updatedSession);
     }
 

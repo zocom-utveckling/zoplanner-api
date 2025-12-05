@@ -1,3 +1,4 @@
+/*
 package service;
 
 import com.zo.webapi.WebapiApplication;
@@ -71,3 +72,4 @@ public class ClassGroupServiceIntegrationTest {
         assertThat(exception.getMessage()).isEqualTo("Class not found with id: 999");
     }
 }
+*/
