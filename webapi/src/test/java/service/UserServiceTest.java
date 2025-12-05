@@ -5,7 +5,7 @@ import com.zo.webapi.repository.UserRepository;
 import com.zo.webapi.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import enums.UserRole;
+import com.zo.webapi.enums.UserRole;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;

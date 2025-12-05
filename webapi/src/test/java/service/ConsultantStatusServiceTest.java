@@ -1,10 +1,10 @@
-package com.zo.webapi.service;
+//package com.zo.webapi.service;
 
 import com.zo.webapi.model.Consultant;
 import com.zo.webapi.model.ConsultantStatus;
 import com.zo.webapi.repository.ConsultantRepository;
 import com.zo.webapi.repository.ConsultantStatusRepository;
-import enums.ConsultantStatusType;
+import com.zo.webapi.enums.ConsultantStatusType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
