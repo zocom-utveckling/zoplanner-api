@@ -6,8 +6,9 @@ import com.zo.webapi.model.ConsultantStatus;
 import com.zo.webapi.repository.ConsultantRepository;
 import com.zo.webapi.repository.ConsultantStatusRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -18,12 +19,14 @@ public class ConsultantStatusService {
     private final ConsultantStatusRepository statusRepository;
     private final ConsultantRepository consultantRepository;
 
-    @Transactional
+    // CREATE
     public ConsultantStatus createStatus(ConsultantStatusDTO dto) {
-        validateDates(dto);
 
         Consultant consultant = consultantRepository.findById(dto.getConsultantId())
-                .orElseThrow(() -> new IllegalArgumentException("Consultant not found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Consultant with ID " + dto.getConsultantId() + " not found"
+                ));
 
         ConsultantStatus status = new ConsultantStatus();
         status.setConsultant(consultant);
@@ -35,17 +38,15 @@ public class ConsultantStatusService {
         return statusRepository.save(status);
     }
 
-    @Transactional
+    // UPDATE
     public ConsultantStatus updateStatus(Long id, ConsultantStatusDTO dto) {
-        validateDates(dto);
 
         ConsultantStatus existing = statusRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Status not found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Consultant status with ID " + id + " not found"
+                ));
 
-        Consultant consultant = consultantRepository.findById(dto.getConsultantId())
-                .orElseThrow(() -> new IllegalArgumentException("Consultant not found"));
-
-        existing.setConsultant(consultant);
         existing.setStatus(dto.getStatus());
         existing.setDateStart(dto.getDateStart());
         existing.setDateEnd(dto.getDateEnd());
@@ -54,33 +55,42 @@ public class ConsultantStatusService {
         return statusRepository.save(existing);
     }
 
-    @Transactional(readOnly = true)
-    public List<ConsultantStatus> getStatusesByConsultant(Long consultantId) {
-        return statusRepository.findByConsultantId(consultantId);
-    }
-
-    @Transactional(readOnly = true)
+    // GET BY ID
     public ConsultantStatus getStatusById(Long id) {
         return statusRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Status not found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Status with ID " + id + " not found"
+                ));
     }
 
-    @Transactional(readOnly = true)
+    // GET BY CONSULTANT
+    public List<ConsultantStatus> getStatusesByConsultant(Long consultantId) {
+        List<ConsultantStatus> list = statusRepository.findByConsultantId(consultantId);
+
+        if (list.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "No statuses found for consultant ID " + consultantId
+            );
+        }
+
+        return list;
+    }
+
+    // GET ALL
     public List<ConsultantStatus> getAllStatuses() {
         return statusRepository.findAll();
     }
 
-    @Transactional
+    // DELETE
     public void deleteStatus(Long id) {
-        if (!statusRepository.existsById(id)) {
-            throw new IllegalArgumentException("Status not found");
-        }
-        statusRepository.deleteById(id);
-    }
+        ConsultantStatus existing = statusRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Status with ID " + id + " not found"
+                ));
 
-    private void validateDates(ConsultantStatusDTO dto) {
-        if (dto.getDateEnd().isBefore(dto.getDateStart())) {
-            throw new IllegalArgumentException("End date cannot be before start date");
-        }
+        statusRepository.delete(existing);
     }
 }
