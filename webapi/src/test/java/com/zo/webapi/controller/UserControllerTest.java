@@ -1,5 +1,6 @@
 package com.zo.webapi.controller;
 
+import com.zo.webapi.enums.UserRole;
 import com.zo.webapi.model.User;
 import com.zo.webapi.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
 import java.util.ArrayList;
 import java.util.List;
-import enums.UserRole;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
