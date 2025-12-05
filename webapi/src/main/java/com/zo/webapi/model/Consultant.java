@@ -2,15 +2,12 @@ package com.zo.webapi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Entity
 @Table(name = "consultants")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Consultant {
 
     @Id
@@ -19,14 +16,20 @@ public class Consultant {
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
-    @JsonIgnore
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "manager_id")
-    @JsonIgnore
     private Manager manager;
 
     @Column(nullable = false)
     private String city;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "consultant", cascade = CascadeType.ALL)
+    private List<Assignment> assignments;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "consultant", cascade = CascadeType.ALL)
+    private List<ConsultantStatus> statuses;
 }

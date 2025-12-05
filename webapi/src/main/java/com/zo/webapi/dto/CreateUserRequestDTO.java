@@ -1,14 +1,13 @@
 package com.zo.webapi.dto;
 
-import enums.UserRole;
+import com.zo.webapi.enums.UserRole;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public class CreateUserRequestDTO {
-    @NotBlank(message = "Username is requiered")
+    @NotBlank(message = "Username is required")
     private String username;
 
-    @NotBlank(message = "Password is requiered")
+    @NotBlank(message = "Password is required")
     private String password;
 
     @NotBlank(message = "Name is required")
@@ -35,7 +34,6 @@ public class CreateUserRequestDTO {
 
     public String getPassword() {
         return password;
-
     }
 
     public void setPassword(String password) {
@@ -57,6 +55,4 @@ public class CreateUserRequestDTO {
     public void setRole(UserRole role) {
         this.role = role;
     }
-
-
 }

@@ -1,4 +1,4 @@
-package enums;
+package com.zo.webapi.enums;
 
 public enum ConsultantStatusType {
     AVAILABLE,
@@ -8,4 +8,3 @@ public enum ConsultantStatusType {
     STUDYING,
     UNAVAILABLE
 }
-

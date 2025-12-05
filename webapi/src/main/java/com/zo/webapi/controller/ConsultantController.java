@@ -1,6 +1,6 @@
 package com.zo.webapi.controller;
 
-import com.zo.webapi.model.Consultant;
+import com.zo.webapi.dto.ConsultantDTO;
 import com.zo.webapi.service.ConsultantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,63 +17,52 @@ public class ConsultantController {
     private final ConsultantService consultantService;
 
     @GetMapping
-    public ResponseEntity<List<Consultant>> getAllConsultants() {
-        return ResponseEntity.ok(consultantService.getAllConsultants());
+    public ResponseEntity<List<ConsultantDTO>> getAllConsultants() {
+        List<ConsultantDTO> consultants = consultantService.getAllConsultants();
+        return ResponseEntity.ok(consultants);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Consultant> getConsultantById(@PathVariable Long id) {
-        return consultantService.getConsultantById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ConsultantDTO> getConsultantById(@PathVariable Long id) {
+        ConsultantDTO dto = consultantService.getConsultantById(id);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<Consultant> getConsultantByUserId(@PathVariable Long userId) {
-        return consultantService.getConsultantByUserId(userId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ConsultantDTO> getConsultantByUserId(@PathVariable Long userId) {
+        ConsultantDTO dto = consultantService.getConsultantByUserId(userId);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/manager/{managerId}")
-    public ResponseEntity<List<Consultant>> getConsultantsByManagerId(@PathVariable Long managerId) {
-        return ResponseEntity.ok(consultantService.getConsultantsByManagerId(managerId));
+    public ResponseEntity<List<ConsultantDTO>> getConsultantsByManagerId(@PathVariable Long managerId) {
+        List<ConsultantDTO> consultants = consultantService.getConsultantsByManagerId(managerId);
+        return ResponseEntity.ok(consultants);
     }
 
     @GetMapping("/city/{city}")
-    public ResponseEntity<List<Consultant>> getConsultantsByCity(@PathVariable String city) {
-        return ResponseEntity.ok(consultantService.getConsultantsByCity(city));
+    public ResponseEntity<List<ConsultantDTO>> getConsultantsByCity(@PathVariable String city) {
+        List<ConsultantDTO> consultants = consultantService.getConsultantsByCity(city);
+        return ResponseEntity.ok(consultants);
     }
 
     @PostMapping
-    public ResponseEntity<Consultant> createConsultant(@RequestBody Consultant consultant) {
-        try {
-            Consultant created = consultantService.createConsultant(consultant);
-            return ResponseEntity.status(HttpStatus.CREATED).body(created);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<ConsultantDTO> createConsultant(@RequestBody ConsultantDTO consultantDTO) {
+        ConsultantDTO created = consultantService.createConsultant(consultantDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Consultant> updateConsultant(
+    public ResponseEntity<ConsultantDTO> updateConsultant(
             @PathVariable Long id,
-            @RequestBody Consultant consultant) {
-        try {
-            Consultant updated = consultantService.updateConsultant(id, consultant);
-            return ResponseEntity.ok(updated);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+            @RequestBody ConsultantDTO consultantDTO) {
+        ConsultantDTO updated = consultantService.updateConsultant(id, consultantDTO);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteConsultant(@PathVariable Long id) {
-        try {
-            consultantService.deleteConsultant(id);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+        consultantService.deleteConsultant(id);
+        return ResponseEntity.noContent().build();
     }
 }

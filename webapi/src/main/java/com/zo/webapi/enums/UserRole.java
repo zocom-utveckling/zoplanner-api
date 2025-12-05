@@ -1,4 +1,4 @@
-package enums;
+package com.zo.webapi.enums;
 
 public enum UserRole {
     MANAGER,
