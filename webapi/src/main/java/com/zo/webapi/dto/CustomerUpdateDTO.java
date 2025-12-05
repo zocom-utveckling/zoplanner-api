@@ -3,6 +3,7 @@ package com.zo.webapi.dto;
 public class CustomerUpdateDTO {
     private String name;
     private String city;
+    private Long managerId;
 
     public String getName() {
         return name;
@@ -18,5 +19,13 @@ public class CustomerUpdateDTO {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public Long getManagerId() {
+        return managerId;
+    }
+
+    public void setManagerId(Long managerId) {
+        this.managerId = managerId;
     }
 }

@@ -5,11 +5,13 @@ import com.zo.webapi.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
 import java.util.ArrayList;
 import java.util.List;
+import com.zo.webapi.enums.UserRole;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -22,19 +24,14 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean
+    @MockBean
     private UserService userService;
 
     @Test
     void testShowAllUsers() throws Exception{
         List<User> users = new ArrayList<>();
-        User user = new User();
-        user.setId(1L);
-        user.setUsername("testuser");
-        user.setPassword("testpassword");
-        user.setRole("admin");
-        user.setName("Test User");
-        user.setCity("Stockholm");
+        User user = new User(1L, "testuser", "testpassword", "Test User", UserRole.MANAGER);
+
         users.add(user);
 
         when(userService.getAllUsers()).thenReturn(users);
@@ -43,20 +40,13 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].username").value("testuser"))
-                .andExpect(jsonPath("$[0].name").value("Test User"));
-
-
+                .andExpect(jsonPath("$[0].name").value("Test User"))
+                .andExpect(jsonPath("$[0].role").value("MANAGER"));
     }
 
     @Test
     void testGetUserById_Success() throws Exception{
-        User user = new User();
-        user.setId(1L);
-        user.setUsername("testuser");
-        user.setPassword("testpassword");
-        user.setRole("admin");
-        user.setName("Test User");
-        user.setCity("Stockholm");
+        User user = new User(1L, "testuser", "testpassword", "Test User", UserRole.MANAGER);
 
         when(userService.getUserById(1L)).thenReturn(user);
 
@@ -64,7 +54,9 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.username").value("testuser"))
-                .andExpect(jsonPath("$.name").value("Test User"));
+                .andExpect(jsonPath("$.name").value("Test User"))
+                .andExpect(jsonPath("$.role").value("MANAGER"));
+
     }
 
     @Test
@@ -95,23 +87,27 @@ public class UserControllerTest {
 
     @Test
     void testCreateUser_Success() throws Exception{
-        User user = new User();
-        user.setId(1L);
-        user.setUsername("newuser");
-        user.setPassword("password123");
-        user.setRole("USER");
-        user.setName("New User");
-        user.setCity("Malmo");
+        User user = new User(1L, "testuser", "testpassword", "Test User", UserRole.CONSULTANT);
 
-        when(userService.usernameExists("newuser")).thenReturn(false);
+        when(userService.usernameExists("testuser")).thenReturn(false);
         when(userService.createUser(any(User.class))).thenReturn(user);
+
+        String requestJson = """
+            {
+                "username": "testuser",
+                "password": "testpassword",
+                "name": "Test User",
+                "role": "CONSULTANT"
+            }
+        """;
 
         mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"username\":\"newuser\",\"password\":\"password123\",\"role\":\"USER\",\"name\":\"New User\",\"city\":\"Malmo\"}"))
-                .andExpect(jsonPath("$.username").value("newuser"))
-                .andExpect(jsonPath("$.name").value("New User"));
+                .content(requestJson))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.username").value("testuser"))
+                .andExpect(jsonPath("$.name").value("Test User"))
+                .andExpect(jsonPath("$.role").value("CONSULTANT"));
     }
 }
-
 
