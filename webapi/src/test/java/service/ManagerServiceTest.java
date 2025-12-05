@@ -1,6 +1,7 @@
 package service;
 
 import com.zo.webapi.dto.ManagerResponseDTO;
+import com.zo.webapi.enums.UserRole;
 import com.zo.webapi.model.Consultant;
 import com.zo.webapi.model.Customer;
 import com.zo.webapi.model.Manager;
@@ -10,7 +11,6 @@ import com.zo.webapi.repository.CustomerRepository;
 import com.zo.webapi.repository.ManagerRepository;
 import com.zo.webapi.repository.UserRepository;
 import com.zo.webapi.service.ManagerService;
-import enums.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
