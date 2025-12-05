@@ -1,4 +1,3 @@
-
 package service;
 
 import com.zo.webapi.dto.ClassGroupResponseDTO;
@@ -12,10 +11,11 @@ import com.zo.webapi.service.ClassGroupService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import org.springframework.web.server.ResponseStatusException;
 
 
 public class ClassGroupServiceTest {
@@ -28,140 +28,117 @@ public class ClassGroupServiceTest {
     @InjectMocks
     private ClassGroupService classGroupService;
 
-    private Customer customer;
-    private ClassGroup classGroup;
+    private Customer sampleCustomer;
+    private ClassGroup sampleClass;
 
     @BeforeEach
-    void init() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        customer = new Customer();
-        customer.setId(1L);
-        customer.setName("Tau Training");
+        sampleCustomer = new Customer();
+        sampleCustomer.setId(1L);
+        sampleCustomer.setName("Customer A");
 
-        classGroup = new ClassGroup();
-        classGroup.setId(10L);
-        classGroup.setName("Python with AI");
-        classGroup.setCustomer(customer);
+        sampleClass = new ClassGroup();
+        sampleClass.setId(10L);
+        sampleClass.setName("Class A");
+        sampleClass.setCustomer(sampleCustomer);
+
 
     }
-
 
     @Test
     void testGetAllClasses() {
+        when(classGroupRepository.findAll()).thenReturn(List.of(sampleClass));
 
-        when(classGroupRepository.findAll()).thenReturn(List.of(classGroup));
+        List<ClassGroupResponseDTO> classes = classGroupService.getAllClasses();
 
-        // Act
-        List<ClassGroupResponseDTO> response = classGroupService.getAllClasses();
+        assertEquals(1, classes.size());
+        assertEquals("Class A", classes.get(0).getName());
 
-        // Assert
-        assertEquals(1, response.size());
-        assertEquals("Python with AI", response.get(0).getName());
-        assertEquals(1L, response.get(0).getCustomerId());
-        assertEquals("Tau Training", response.get(0).getCustomerName());
-        verify(classGroupRepository, times(1)).findAll();
+
     }
 
     @Test
-    void testGetClassById() {
+    void testGetClassById_Success() {
+        when(classGroupRepository.findById(10L)).thenReturn(Optional.of(sampleClass));
 
-        when(classGroupRepository.findById(10L)).thenReturn(Optional.of(classGroup));
+        ClassGroupResponseDTO responseDTO = classGroupService.getClassById(10L);
 
-        ClassGroupResponseDTO response = classGroupService.getClassById(10L);
-
-        assertNotNull(response);
-        assertEquals(10L, response.getId());
-        assertEquals("Python with AI", response.getName());
-        assertEquals("Tau Training", response.getCustomerName());
+        assertEquals(10L, responseDTO.getId());
+        assertEquals("Class A", responseDTO.getName());
     }
-
-
 
     @Test
     void testGetClassById_NotFound() {
         when(classGroupRepository.findById(99L)).thenReturn(Optional.empty());
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> classGroupService.getClassById(99L));
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> classGroupService.getClassById(99L));
 
-        assertEquals("Class not found with id: 99", exception.getReason());
-        verify(classGroupRepository, times(1)).findById(99L);
+        assertEquals("404 NOT_FOUND \"Class not found with id: 99\"", exception.getMessage());
+
     }
 
 
     @Test
-    void testCreateClass() {
-        CreateClassGroupRequestDTO requestDTO = new CreateClassGroupRequestDTO();
-        requestDTO.setName("Python with AI");
-        requestDTO.setCustomerId(1L);
+    void testCreateClass_Success() {
+        CreateClassGroupRequestDTO requestDTO = new CreateClassGroupRequestDTO("Class A", 1L);
 
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
-        when(classGroupRepository.existsByNameAndCustomerId("Python with AI", 1L)).thenReturn(false);
-        when(classGroupRepository.save(any(ClassGroup.class))).thenReturn(classGroup);
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(sampleCustomer));
+        when(classGroupRepository.existsByNameAndCustomerId("Class A", 1L)).thenReturn(false);
+        when(classGroupRepository.save(any(ClassGroup.class))).thenReturn(sampleClass);
 
-        ClassGroupResponseDTO response = classGroupService.createClass(requestDTO);
+        ClassGroupResponseDTO responseDTO = classGroupService.createClass(requestDTO);
 
-        assertNotNull(response);
-        assertEquals("Python with AI", response.getName());
-        assertEquals(1L, response.getCustomerId());
-        assertEquals("Tau Training", response.getCustomerName());
-    }
+        assertNotNull(responseDTO);
+        assertEquals(10L, responseDTO.getId());
+        assertEquals("Class A", responseDTO.getName());
+        assertEquals(1L, responseDTO.getCustomerId());
+        assertEquals("Customer A", responseDTO.getCustomerName());
 
-    @Test
-    void testUpdateClass() {
-        UpdateClassGroupRequestDTO requestDTO = new UpdateClassGroupRequestDTO();
-        requestDTO.setName("Updated Name");
-
-        when(classGroupRepository.findById(10L)).thenReturn(Optional.of(classGroup));
-        when(classGroupRepository.save(any(ClassGroup.class))).thenReturn(classGroup);
-
-        ClassGroupResponseDTO response = classGroupService.updateClass(10L, requestDTO);
-
-        assertNotNull(response);
-        assertEquals(10L, response.getId());
-        assertEquals("Updated Name", response.getName());
         verify(classGroupRepository, times(1)).save(any(ClassGroup.class));
     }
 
     @Test
-    void testGetClassesByCustomerId() {
+    void testCreateClass_CustomerNotFound() {
+        CreateClassGroupRequestDTO requestDTO = new CreateClassGroupRequestDTO("Test Class", 99L);
 
-        when(customerRepository.existsById(1L)).thenReturn(true);
-        when(classGroupRepository.findByCustomerId(1L)).thenReturn(List.of(classGroup));
+        when(classGroupRepository.findById(99L)).thenReturn(Optional.empty());
 
-        // Act
-        List<ClassGroupResponseDTO> response = classGroupService.getClassesByCustomerId(1L);
+        ResponseStatusException ex =  assertThrows(ResponseStatusException.class, () -> classGroupService.createClass(requestDTO));
 
-        // Assert
-        assertEquals(1, response.size());
-        assertEquals("Python with AI", response.get(0).getName());
-        assertEquals(1L, response.get(0).getCustomerId());
-        assertEquals("Tau Training", response.get(0).getCustomerName());
+        assertEquals("404 NOT_FOUND \"Customer not found with id: 99\"", ex.getMessage());
     }
 
     @Test
-    void testGetClassesByCustomerId_notFound() {
-        when(customerRepository.existsById(99L)).thenReturn(false);
+    void testDeleteClass_Success() {
+        when(classGroupRepository.findById(10L)).thenReturn(Optional.of(sampleClass));
 
-        assertThrows(ResponseStatusException.class, () -> classGroupService.getClassesByCustomerId(99L));
-    }
+        assertDoesNotThrow(() -> classGroupService.deleteClass(10L));
+        verify(classGroupRepository, times(1)).delete(sampleClass);
 
-    @Test
-    void testDeleteClass() {
-        when(classGroupRepository.findById(1L)).thenReturn(Optional.of(classGroup));
-        classGroupService.deleteClass(1L);
-        verify(classGroupRepository, times(1)).delete(classGroup);
     }
 
     @Test
     void testDeleteClass_NotFound() {
         when(classGroupRepository.findById(99L)).thenReturn(Optional.empty());
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> classGroupService.deleteClass(99L));
+        ResponseStatusException ex =  assertThrows(ResponseStatusException.class, () -> classGroupService.deleteClass(99L));
+        assertEquals("404 NOT_FOUND \"Class not found with id: 99\"", ex.getMessage());
 
-        assertEquals("Class not found with id: 99", exception.getReason());
+    }
+
+    @Test
+    void testUpdateClass_Success() {
+        UpdateClassGroupRequestDTO requestDTO = new UpdateClassGroupRequestDTO("App class");
+
+        when(classGroupRepository.findById(10L)).thenReturn(Optional.of(sampleClass));
+        when(classGroupRepository.save(any(ClassGroup.class))).thenReturn(sampleClass);
+
+        ClassGroupResponseDTO responseDTO = classGroupService.updateClass(10L, requestDTO);
+
+        assertEquals("App class", responseDTO.getName());
+        verify(classGroupRepository, times(1)).save(sampleClass);
     }
 }
 

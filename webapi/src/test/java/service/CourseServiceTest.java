@@ -19,7 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/*@ExtendWith(MockitoExtension.class)
+@ExtendWith(MockitoExtension.class)
 public class CourseServiceTest {
 
     @Mock
@@ -60,12 +60,10 @@ public class CourseServiceTest {
     void testGetCourseById_NotFound() {
         when(courseRepository.findById(999L)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            courseService.getCourseById(999L);
-        });
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> courseService.getCourseById(999L));
 
-        assertTrue(exception.getMessage().contains("Course not found"));
-
+        assertEquals("Course not found with id: 999", exception.getMessage());
 
     }
 
@@ -92,32 +90,56 @@ public class CourseServiceTest {
         Course course = new Course("Web Applications", null, LocalDate.now(), LocalDate.now().plusDays(5));
         when(classGroupRepository.findById(999L)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            courseService.createCourse(999L, course);
-        });
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> courseService.createCourse(999L, course)
+        );
 
-        assertTrue(exception.getMessage().contains("Classgroup not found"));
+        assertEquals("Class group not found with id: 999", exception.getMessage());
     }
 
     @Test
     void testUpdateCourse_Success() {
-        ClassGroup classGroup = new ClassGroup();
-        classGroup.setId(1L);
+        ClassGroup oldGroup = new ClassGroup();
+        oldGroup.setId(1L);
 
-        Course existing = new Course("Old Name", classGroup, LocalDate.now(), LocalDate.now().plusDays(5));
+        Course existing = new Course("Old Name", oldGroup, LocalDate.now(), LocalDate.now().plusDays(5));
         existing.setId(1L);
 
-        Course updatedDetails = new Course("Updated Details", classGroup, LocalDate.now(), LocalDate.now().plusDays(10));
+        Course updatedDetails = new Course("Updated Details", oldGroup, LocalDate.now(), LocalDate.now().plusDays(10));
 
         when(courseRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(classGroupRepository.findById(1L)).thenReturn(Optional.of(oldGroup));
         when(courseRepository.save(existing)).thenReturn(existing);
 
         Course result = courseService.updateCourse(1L, updatedDetails);
 
         assertEquals("Updated Details", result.getName());
         assertEquals(existing.getId(), result.getId());
-        assertEquals(classGroup, result.getClassGroup());
-        verify(courseRepository, times(1)).save(existing);
+        assertEquals(oldGroup, result.getClassGroup());
+        verify(courseRepository).save(existing);
+    }
+
+    @Test
+    void testUpdateCourse_ChangeClassGroup() {
+        ClassGroup oldGroup = new ClassGroup();
+        oldGroup.setId(1L);
+
+        ClassGroup newGroup = new ClassGroup();
+        newGroup.setId(2L);
+
+        Course existing = new Course("Old Name", oldGroup, LocalDate.now(), LocalDate.now().plusDays(5));
+        existing.setId(1L);
+
+        Course updated = new Course("Updated Name", newGroup, LocalDate.now(), LocalDate.now().plusDays(10));
+
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(classGroupRepository.findById(2L)).thenReturn(Optional.of(newGroup));
+        when(courseRepository.save(existing)).thenReturn(existing);
+
+        Course result = courseService.updateCourse(1L, updated);
+
+        assertEquals("Updated Name", result.getName());
+        assertEquals(newGroup, result.getClassGroup());
     }
 
     @Test
@@ -125,11 +147,10 @@ public class CourseServiceTest {
         Course updatedDetails = new Course("Updated Details", null, LocalDate.now(), LocalDate.now().plusDays(10));
         when(courseRepository.findById(999L)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            courseService.updateCourse(999L, updatedDetails);
-        });
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> courseService.updateCourse(999L, updatedDetails));
 
-        assertTrue(exception.getMessage().contains("Course not found"));
+        assertEquals("Course not found with id: 999", exception.getMessage());
     }
 
     @Test
@@ -146,18 +167,14 @@ public class CourseServiceTest {
     void testDeleteCourse_NotFound() {
         when(courseRepository.existsById(999L)).thenReturn(false);
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            courseService.deleteCourse(999L);
-        });
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> courseService.deleteCourse(999L));
 
-        assertTrue(exception.getMessage().contains("Course not found"));
+        assertEquals("Course not found with id: 999", exception.getMessage());
     }
 
     @Test
     void testGetCoursesByClassId() {
-        ClassGroup classGroup = new ClassGroup();
-        classGroup.setId(1L);
-
         Course course1 = new Course("Java Basics", null, LocalDate.now(), LocalDate.now().plusDays(5));
         Course course2 = new Course("Testing 101", null, LocalDate.now(), LocalDate.now().plusDays(3));
 
@@ -171,4 +188,4 @@ public class CourseServiceTest {
         verify(courseRepository, times(1)).findByClassGroupId(1L);
     }
 
-}*/
+}

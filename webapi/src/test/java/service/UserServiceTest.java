@@ -5,11 +5,13 @@ import com.zo.webapi.repository.UserRepository;
 import com.zo.webapi.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import enums.UserRole;
+import com.zo.webapi.enums.UserRole;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +31,6 @@ public class UserServiceTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
         MockitoAnnotations.openMocks(this);
         sampleUser = new User(1L, "john_doe", "password123", "John Doe", UserRole.CONSULTANT);
     }

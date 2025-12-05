@@ -1,14 +1,12 @@
-/*package com.zo.webapi.service;
+//package com.zo.webapi.service;
 
-import com.zo.webapi.enums.ConsultantStatusType;
 import com.zo.webapi.model.Consultant;
 import com.zo.webapi.model.ConsultantStatus;
 import com.zo.webapi.repository.ConsultantRepository;
 import com.zo.webapi.repository.ConsultantStatusRepository;
-import com.zo.webapi.service.ConsultantStatusService;
+import com.zo.webapi.enums.ConsultantStatusType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import com.zo.webapi.enums.ConsultantStatusType;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -21,7 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class ConsultantStatusServiceTest {
+/*public class ConsultantStatusServiceTest {
 
     @Mock
     private ConsultantStatusRepository statusRepository;
@@ -99,5 +97,4 @@ public class ConsultantStatusServiceTest {
         verify(statusRepository, times(1)).findByConsultantId(1L);
     }
 }
-
- */
+*/
