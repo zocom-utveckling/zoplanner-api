@@ -1,5 +1,6 @@
 package com.zo.webapi.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,8 +32,19 @@ public class SessionController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/assignments/{id}/")
+    public ResponseEntity<List<Session>> getSessionsByAssignmentId(@PathVariable Long id){
+        return ResponseEntity.ok(sessionService.getSessionsByAssignmentId(id));
+    }
+
+    @PostMapping("/{assignmentId}")
+    public ResponseEntity<Session> createSession(@PathVariable Long assignmentId, @RequestBody Session session) {
+        Session createdSession = sessionService.createSession(assignmentId, session);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdSession);
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<Session> updateSession(@PathVariable Long id, @RequestBody Session session){
+    public ResponseEntity<Session> updateSession(@PathVariable Long id, @RequestBody Session session) {
         try {
             Session updatedSession = sessionService.updateSession(id, session);
             return ResponseEntity.ok(updatedSession);
