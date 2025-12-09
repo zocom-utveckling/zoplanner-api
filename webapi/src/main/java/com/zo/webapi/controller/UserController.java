@@ -4,6 +4,7 @@ import com.zo.webapi.dto.CreateUserRequestDTO;
 import com.zo.webapi.model.User;
 import com.zo.webapi.service.UserService;
 import jakarta.validation.Valid;
+import org.springdoc.core.service.GenericResponseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +15,11 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
-    public UserController(UserService userService) {
+    private final GenericResponseService responseBuilder;
+
+    public UserController(UserService userService, GenericResponseService responseBuilder) {
         this.userService = userService;
+        this.responseBuilder = responseBuilder;
     }
 
     //Gets all users
@@ -84,7 +88,8 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         try {
             userService.deleteUser(id);
-            return ResponseEntity.noContent().build();
+            /*return ResponseEntity.noContent().build();*/
+            return ResponseEntity.ok("User with id " + id + " deleted successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("User with id " + id + " not found: " + e.getMessage());
