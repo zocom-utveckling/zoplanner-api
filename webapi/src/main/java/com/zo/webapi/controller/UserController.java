@@ -83,13 +83,15 @@ public class UserController {
 
     }
 
+
+
     //Delete a user
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         try {
             userService.deleteUser(id);
-            /*return ResponseEntity.noContent().build();*/
-            return ResponseEntity.ok("User with id " + id + " deleted successfully.");
+            return ResponseEntity.noContent().build();
+            /*return ResponseEntity.ok("User with id " + id + " deleted successfully.");*/
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("User with id " + id + " not found: " + e.getMessage());
