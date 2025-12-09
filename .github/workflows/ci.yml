@@ -2,9 +2,9 @@ name: CI - Build, Test, and Publish Docker Image
 
 on:
   push:
-    branches: [ "feature/new-ci-with-publishing-docker-image" ]
+    branches: [ feature/new-ci-with-publishing-docker-image ]
   pull_request:
-    branches: [ "feature/new-ci-with-publishing-docker-image" ]
+    branches: [ feature/new-ci-with-publishing-docker-image ]
   workflow_dispatch:
 
 jobs:
