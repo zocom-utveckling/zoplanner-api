@@ -1,0 +1,91 @@
+name: CI - Build, Test, and Publish Docker Image
+
+on:
+  push:
+    branches: [ "feature/new-ci-with-publishing-docker-image" ]
+  pull_request:
+    branches: [ "feature/new-ci-with-publishing-docker-image" ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: zoplanner_user
+          POSTGRES_PASSWORD: zoplanner_password
+          POSTGRES_DB: zoplanner
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      HOST: localhost
+      PORT: 5432
+      POSTGRES_USER: zoplanner_user
+      POSTGRES_PASSWORD: zoplanner_password
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+
+      # Build and test your Java project
+      - name: Build and Test with Maven
+        run: mvn clean verify
+        working-directory: ./webapi
+
+      # Upload test results even if tests fail
+      - name: Publish test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: webapi/target/surefire-reports
+
+      - name: Display test results
+        if: success()
+        run: echo "Build and all tests passed!"
+
+  # ---------------------------------------------------------------------
+  # Docker build and push AFTER tests pass
+  # ---------------------------------------------------------------------
+  docker-publish:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Login to GHCR
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build Docker image
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t ghcr.io/${{ github.repository }}/app:latest \
+            .
+
+      # Push Docker image to GHCR
+      - name: Push Docker image
+        run: docker push ghcr.io/${{ github.repository }}/app:latest
