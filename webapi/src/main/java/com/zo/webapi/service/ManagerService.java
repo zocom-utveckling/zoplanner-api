@@ -64,10 +64,7 @@ public class ManagerService {
         );
     }
 
-
-
     //READ
-
     public ManagerResponseDTO getManagerById(Long id) {
         Manager manager = managerRepository.findById(id)
                 .orElseThrow(() ->  new ResponseStatusException(HttpStatus.NOT_FOUND, "Manager not found with id: " + id));

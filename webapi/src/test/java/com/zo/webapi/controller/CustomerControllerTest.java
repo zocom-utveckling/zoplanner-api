@@ -10,6 +10,7 @@ import com.zo.webapi.service.CustomerService;
 import com.zo.webapi.service.ManagerService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springdoc.core.service.GenericResponseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -35,6 +36,7 @@ public class CustomerControllerTest {
 
     @MockBean
     private ManagerService managerService;
+
 
     @Test
     void testShowAllCustomers_whenListNotEmpty() throws Exception {
