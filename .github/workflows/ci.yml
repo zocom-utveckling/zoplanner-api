@@ -2,9 +2,9 @@ name: CI - Build, Test, and Publish Docker Image
 
 on:
   push:
-    branches: [ feature/new-ci-with-publishing-docker-image ]
+    branches: [ dev ]
   pull_request:
-    branches: [ feature/new-ci-with-publishing-docker-image ]
+    branches: [ dev ]
   workflow_dispatch:
 
 jobs:
@@ -83,10 +83,10 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
-            -t ghcr.io/${{ github.repository }}/app:latest \
-            -f webapi/Dockerfile \
+             -t ghcr.io/${{ github.repository }}/app:latest \
+             -f webapi/Dockerfile \
             webapi
-            
+
 
       # Push Docker image to GHCR
       - name: Push Docker image
