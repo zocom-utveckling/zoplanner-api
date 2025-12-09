@@ -1,5 +1,6 @@
-//package com.zo.webapi.service;
+package com.zo.webapi.service;
 
+import com.zo.webapi.dto.ConsultantStatusDTO;
 import com.zo.webapi.model.Consultant;
 import com.zo.webapi.model.ConsultantStatus;
 import com.zo.webapi.repository.ConsultantRepository;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -19,7 +21,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/*public class ConsultantStatusServiceTest {
+public class ConsultantStatusServiceTest {
 
     @Mock
     private ConsultantStatusRepository statusRepository;
@@ -32,6 +34,7 @@ import static org.mockito.Mockito.*;
 
     private Consultant consultant;
     private ConsultantStatus status;
+    private ConsultantStatusDTO dto;
 
     @BeforeEach
     void setUp() {
@@ -40,13 +43,21 @@ import static org.mockito.Mockito.*;
         consultant = new Consultant();
         consultant.setId(1L);
 
+        dto =  new ConsultantStatusDTO();
+        dto.setConsultantId(1L);
+        dto.setStatus(ConsultantStatusType.AVAILABLE);
+        dto.setDateStart(LocalDate.now());
+        dto.setDateEnd(LocalDate.now().plusDays(5));
+        dto.setComment("Test comment");
+
         status = new ConsultantStatus();
         status.setId(10L);
         status.setConsultant(consultant);
-        status.setStatus(ConsultantStatusType.AVAILABLE);
-        status.setDateStart(LocalDate.of(2025, 1, 1));
-        status.setDateEnd(LocalDate.of(2025, 1, 31));
-        status.setComment("Ready for work");
+        status.setStatus(dto.getStatus());
+        status.setDateStart(dto.getDateStart());
+        status.setDateEnd(dto.getDateEnd());
+        status.setComment(dto.getComment());
+
     }
 
     @Test
@@ -54,47 +65,124 @@ import static org.mockito.Mockito.*;
         when(consultantRepository.findById(1L)).thenReturn(Optional.of(consultant));
         when(statusRepository.save(any())).thenReturn(status);
 
-        ConsultantStatus result = consultantStatusService.createStatus(
-                1L,
-                ConsultantStatusType.AVAILABLE,
-                LocalDate.of(2025, 1, 1),
-                LocalDate.of(2025, 1, 31),
-                "Ready for work"
-        );
+        ConsultantStatus result = consultantStatusService.createStatus(dto);
 
         assertNotNull(result);
-        assertEquals(ConsultantStatusType.AVAILABLE, result.getStatus());
+        assertEquals(10L, result.getId());
         verify(statusRepository, times(1)).save(any());
+
     }
 
     @Test
     void testCreateStatus_ConsultantNotFound() {
         when(consultantRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Exception ex = assertThrows(IllegalArgumentException.class, () ->
-                consultantStatusService.createStatus(
-                        1L,
-                        ConsultantStatusType.AVAILABLE,
-                        LocalDate.now(),
-                        LocalDate.now(),
-                        "test"
-                )
-        );
+        assertThrows(ResponseStatusException.class,
+                () ->  consultantStatusService.createStatus(dto));
 
-        assertTrue(ex.getMessage().contains("Consultant not found with id"));
-        verify(statusRepository, never()).save(any());
     }
 
     @Test
-    void testGetStatusesByConsultant() {
+    void testUpdateStatus_Success() {
+        when(statusRepository.findById(10L)).thenReturn(Optional.of(status));
+        when(statusRepository.save(any())).thenReturn(status);
+
+        ConsultantStatus result = consultantStatusService.updateStatus(10L, dto);
+
+        assertNotNull(result);
+        verify(statusRepository).save(status);
+
+    }
+
+
+    @Test
+    void testUpdateStatus_NotFound() {
+        when(statusRepository.findById(10L)).thenReturn(Optional.empty());
+
+        assertThrows(ResponseStatusException.class,
+                () -> consultantStatusService.updateStatus(10L, dto));
+
+
+    }
+
+
+    @Test
+    void testGetStatusById_Success() {
+        when(statusRepository.findById(10L)).thenReturn(Optional.of(status));
+
+        ConsultantStatus result = consultantStatusService.getStatusById(10L);
+
+        assertEquals(status, result);
+
+    }
+
+    @Test
+    void testGetStatusById_NotFound() {
+        when(statusRepository.findById(10L)).thenReturn(Optional.empty());
+
+        assertThrows(ResponseStatusException.class,
+                () -> consultantStatusService.getStatusById(10L));
+    }
+
+
+
+    @Test
+    void testGetStatusesByConsultant_Success() {
         when(statusRepository.findByConsultantId(1L))
-                .thenReturn(Arrays.asList(status));
+            .thenReturn(List.of(status));
 
-        List<ConsultantStatus> list = consultantStatusService.getStatusesByConsultant(1L);
+        List<ConsultantStatus> result = consultantStatusService.getStatusesByConsultant(1L);
 
-        assertEquals(1, list.size());
-        assertEquals(ConsultantStatusType.AVAILABLE, list.get(0).getStatus());
-        verify(statusRepository, times(1)).findByConsultantId(1L);
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void testGetStatusesByConsultant_NotFound() {
+        when(statusRepository.findByConsultantId(1L))
+            .thenReturn(List.of());
+
+        assertThrows(ResponseStatusException.class,
+                () -> consultantStatusService.getStatusesByConsultant(1L));
+
+    }
+
+    @Test
+    void testGetAllStatuses_Success() {
+        when(statusRepository.findAll()).thenReturn(List.of(status));
+
+        List<ConsultantStatus> result = consultantStatusService.getAllStatuses();
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void testGetAllStatuses_EmptyListAllowed() {
+        when(statusRepository.findAll()).thenReturn(List.of());
+
+        List<ConsultantStatus> result = consultantStatusService.getAllStatuses();
+
+        assertTrue(result.isEmpty());
+
+    }
+
+
+    @Test
+    void testDeleteStatusById_Success() {
+        when(statusRepository.findById(10L)).thenReturn(Optional.of(status));
+
+        consultantStatusService.deleteStatus(10L);
+
+        verify(statusRepository, times(1)).delete(status);
+    }
+
+    @Test
+    void testDeleteStatusById_NotFound() {
+        when(statusRepository.findById(10L)).thenReturn(Optional.empty());
+
+        assertThrows(ResponseStatusException.class,
+                () -> consultantStatusService.deleteStatus(10L));
     }
 }
-*/
+
+
