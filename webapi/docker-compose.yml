@@ -1,4 +1,3 @@
-
 services:
   # PostgreSQL Database
   zoplanner-database:
@@ -46,7 +45,7 @@ services:
   # .NET Application
   dotnet-service:
     build:
-      context: ../../zoplanner-service/zoplannerservice
+      context: ../../zoplanner-service/zoplannerservice # Sökväg till .NET-tjänstens mapp som innehåller Dockerfile
       dockerfile: Dockerfile
     container_name: zoplanner-dotnet
     networks:
@@ -62,7 +61,7 @@ services:
   # Frontend Application
   frontend:
     build:
-      context: ../../zoplanner-frontend
+      context: ../../zoplanner-frontend # Sökväg till frontend-mappen som innehåller Dockerfile
       dockerfile: Dockerfile
     container_name: zoplanner-frontend
     networks:
