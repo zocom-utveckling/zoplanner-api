@@ -83,8 +83,10 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
-            -t ghcr.io/${{ github.repository }}/app:latest \
-            .
+             -t ghcr.io/${{ github.repository }}/app:latest \
+             -f webapi/Dockerfile \
+            webapi
+
 
       # Push Docker image to GHCR
       - name: Push Docker image
