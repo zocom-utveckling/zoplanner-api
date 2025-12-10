@@ -32,7 +32,7 @@ public class SessionController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/assignment/{id}/")
+    @GetMapping("/assignment/{id}")
     public ResponseEntity<List<Session>> getSessionsByAssignmentId(@PathVariable Long id){
         return ResponseEntity.ok(sessionService.getSessionsByAssignmentId(id));
     }
