@@ -107,6 +107,9 @@
                     <source>21</source>
                     <target>21</target>
                     <parameters>true</parameters>
+                    <compilerArgs>
+                        <arg>-Xlint:-processing</arg>  <!-- Just suppress the warning -->
+                    </compilerArgs>
                 </configuration>
             </plugin>
 
