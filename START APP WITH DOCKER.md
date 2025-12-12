@@ -236,24 +236,15 @@ context: ../../zoplanner-frontend
 
 > 💡 **Tips:** Sökvägarna beror på var du har klonat repositories. Om alla tre repos ligger i samma mapp (`ZoPlanner/`), använd `../../` för att gå två nivåer upp från `webapi/`-mappen.
 
-### Steg 4: Bygg Spring Boot JAR-fil (krävs första gången)
 
-```bash
-# Se till att du är i zoplanner-api/webapi mappen
-cd zoplanner-api/webapi
-
-# Bygg JAR-filen (skippar tester för snabbare build)
-mvn clean package -DskipTests
-```
-
-### Steg 5: Starta alla containers - Starta Docker Desctop innan du ska använda en kommando!
+### Steg 4: Starta alla containers - Starta Docker Desctop innan du ska använda en kommando!
 
 ```bash
 # Starta alla 4 containers (från zoplanner-api/webapi mappen)
 docker-compose up -d --build
 ```
 
-### Steg 6: Verifiera att allt fungerar
+### Steg 5: Verifiera att allt fungerar
 
 - 🌐 Öppna **Frontend**: [http://localhost:3000](http://localhost:3000)
 - 🔌 Öppna **Spring Boot API (Swagger)**: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
@@ -331,4 +322,220 @@ Om du stöter på problem:
 
 ---
 
-*Senast uppdaterad: November 2025*
+```
+-- ============================
+-- TESTDATA TILL DATABASEN( - 20 POSTER PER TABELL
+-- ============================
+
+-- 1. USERS (40 st - 20 för managers, 20 för consultants)
+INSERT INTO users (username, password, name, role) VALUES
+-- Managers (1-20)
+('anna.svensson', '$2a$10$hash1', 'Anna Svensson', 'MANAGER'),
+('karin.nilsson', '$2a$10$hash2', 'Karin Nilsson', 'MANAGER'),
+('gustav.olsson', '$2a$10$hash3', 'Gustav Olsson', 'MANAGER'),
+('sara.lindberg', '$2a$10$hash4', 'Sara Lindberg', 'MANAGER'),
+('linda.lund', '$2a$10$hash5', 'Linda Lund', 'MANAGER'),
+('manager.one', '$2a$10$hash6', 'Manager Ett', 'MANAGER'),
+('manager.two', '$2a$10$hash7', 'Manager Två', 'MANAGER'),
+('manager.three', '$2a$10$hash8', 'Manager Tre', 'MANAGER'),
+('manager.four', '$2a$10$hash9', 'Manager Fyra', 'MANAGER'),
+('manager.five', '$2a$10$hash10', 'Manager Fem', 'MANAGER'),
+('manager.six', '$2a$10$hash11', 'Manager Sex', 'MANAGER'),
+('manager.seven', '$2a$10$hash12', 'Manager Sju', 'MANAGER'),
+('manager.eight', '$2a$10$hash13', 'Manager Åtta', 'MANAGER'),
+('manager.nine', '$2a$10$hash14', 'Manager Nio', 'MANAGER'),
+('manager.ten', '$2a$10$hash15', 'Manager Tio', 'MANAGER'),
+('manager.eleven', '$2a$10$hash16', 'Manager Elva', 'MANAGER'),
+('manager.twelve', '$2a$10$hash17', 'Manager Tolv', 'MANAGER'),
+('manager.thirteen', '$2a$10$hash18', 'Manager Tretton', 'MANAGER'),
+('manager.fourteen', '$2a$10$hash19', 'Manager Fjorton', 'MANAGER'),
+('manager.fifteen', '$2a$10$hash20', 'Manager Femton', 'MANAGER'),
+-- Consultants (21-40)
+('erik.johansson', '$2a$10$hash21', 'Erik Johansson', 'CONSULTANT'),
+('lars.karlsson', '$2a$10$hash22', 'Lars Karlsson', 'CONSULTANT'),
+('per.eriksson', '$2a$10$hash23', 'Per Eriksson', 'CONSULTANT'),
+('sofia.larsson', '$2a$10$hash24', 'Sofia Larsson', 'CONSULTANT'),
+('emma.persson', '$2a$10$hash25', 'Emma Persson', 'CONSULTANT'),
+('johan.bergman', '$2a$10$hash26', 'Johan Bergman', 'CONSULTANT'),
+('mikael.hansson', '$2a$10$hash27', 'Mikael Hansson', 'CONSULTANT'),
+('david.berg', '$2a$10$hash28', 'David Berg', 'CONSULTANT'),
+('helen.holm', '$2a$10$hash29', 'Helen Holm', 'CONSULTANT'),
+('peter.strand', '$2a$10$hash30', 'Peter Strand', 'CONSULTANT'),
+('thomas.berg', '$2a$10$hash31', 'Thomas Berg', 'CONSULTANT'),
+('camilla.hult', '$2a$10$hash32', 'Camilla Hult', 'CONSULTANT'),
+('anders.wall', '$2a$10$hash33', 'Anders Wall', 'CONSULTANT'),
+('consultant.one', '$2a$10$hash34', 'Konsult Ett', 'CONSULTANT'),
+('consultant.two', '$2a$10$hash35', 'Konsult Två', 'CONSULTANT'),
+('consultant.three', '$2a$10$hash36', 'Konsult Tre', 'CONSULTANT'),
+('consultant.four', '$2a$10$hash37', 'Konsult Fyra', 'CONSULTANT'),
+('consultant.five', '$2a$10$hash38', 'Konsult Fem', 'CONSULTANT'),
+('consultant.six', '$2a$10$hash39', 'Konsult Sex', 'CONSULTANT'),
+('consultant.seven', '$2a$10$hash40', 'Konsult Sju', 'CONSULTANT');
+
+-- 2. MANAGERS (20 st)
+INSERT INTO managers (user_id) VALUES
+(1), (2), (3), (4), (5), (6), (7), (8), (9), (10),
+(11), (12), (13), (14), (15), (16), (17), (18), (19), (20);
+
+-- 3. CONSULTANTS (20 st)
+INSERT INTO consultants (user_id, manager_id, city) VALUES
+(21, 1, 'Stockholm'),
+(22, 2, 'Göteborg'),
+(23, 3, 'Malmö'),
+(24, 4, 'Uppsala'),
+(25, 5, 'Lund'),
+(26, 6, 'Linköping'),
+(27, 7, 'Örebro'),
+(28, 8, 'Västerås'),
+(29, 9, 'Helsingborg'),
+(30, 10, 'Norrköping'),
+(31, 11, 'Jönköping'),
+(32, 12, 'Umeå'),
+(33, 13, 'Gävle'),
+(34, 14, 'Borås'),
+(35, 15, 'Eskilstuna'),
+(36, 16, 'Karlstad'),
+(37, 17, 'Sundsvall'),
+(38, 18, 'Luleå'),
+(39, 19, 'Trollhättan'),
+(40, 20, 'Växjö');
+
+-- 4. CUSTOMERS (20 st)
+INSERT INTO customers (name, city, manager_id) VALUES
+('Volvo Group', 'Göteborg', 1),
+('Ericsson AB', 'Stockholm', 2),
+('H&M Hennes & Mauritz', 'Stockholm', 3),
+('IKEA Sweden', 'Älmhult', 4),
+('Spotify AB', 'Stockholm', 5),
+('Skanska AB', 'Stockholm', 6),
+('Scania CV', 'Södertälje', 7),
+('ABB Sweden', 'Västerås', 8),
+('SEB Bank', 'Stockholm', 9),
+('Nordea Bank', 'Stockholm', 10),
+('Telia Company', 'Stockholm', 11),
+('Vattenfall AB', 'Solna', 12),
+('SCA Hygiene', 'Stockholm', 13),
+('SKF Group', 'Göteborg', 14),
+('Electrolux AB', 'Stockholm', 15),
+('Sandvik AB', 'Stockholm', 16),
+('AstraZeneca', 'Göteborg', 17),
+('Volvo Cars', 'Göteborg', 18),
+('SSAB Steel', 'Stockholm', 19),
+('Saab AB', 'Linköping', 20);
+
+-- 5. CLASSES (20 st)
+INSERT INTO classes (name, customer_id) VALUES
+('Backend Development 2024', 1),
+('Frontend Specialist Training', 2),
+('Cloud Architecture Course', 3),
+('DevOps Fundamentals', 4),
+('Data Science Bootcamp', 5),
+('Cybersecurity Essential', 6),
+('Mobile App Development', 7),
+('AI & Machine Learning', 8),
+('Full Stack Development', 9),
+('Database Administration', 10),
+('System Integration', 11),
+('Agile Project Management', 12),
+('UI/UX Design Principles', 13),
+('Microservices Architecture', 14),
+('React Native Development', 15),
+('Kubernetes Training', 16),
+('Python Programming', 17),
+('Java Enterprise Edition', 18),
+('Software Testing', 19),
+('Network Administration', 20);
+
+-- 6. COURSES (20 st)
+INSERT INTO courses (name, class_id, date_start, date_end) VALUES
+('Backend Development Sprint 1', 1, '2024-01-15', '2024-03-15'),
+('Frontend Basics', 2, '2024-02-01', '2024-04-01'),
+('AWS Cloud Foundations', 3, '2024-01-10', '2024-02-28'),
+('DevOps Pipeline Setup', 4, '2024-03-01', '2024-05-01'),
+('Data Analysis with Python', 5, '2024-02-15', '2024-04-30'),
+('Security Best Practices', 6, '2024-01-20', '2024-03-20'),
+('iOS Development', 7, '2024-04-01', '2024-06-30'),
+('Machine Learning Basics', 8, '2024-01-05', '2024-03-05'),
+('Full Stack MERN', 9, '2024-02-10', '2024-05-10'),
+('PostgreSQL Advanced', 10, '2024-03-15', '2024-05-15'),
+('REST API Integration', 11, '2024-01-25', '2024-03-25'),
+('Scrum Master Training', 12, '2024-02-20', '2024-04-20'),
+('Design Thinking Workshop', 13, '2024-04-05', '2024-06-05'),
+('Microservices with Spring', 14, '2024-01-30', '2024-04-30'),
+('React Native Essentials', 15, '2024-03-20', '2024-06-20'),
+('K8s Deployment Strategies', 16, '2024-02-05', '2024-04-05'),
+('Python for Data Science', 17, '2024-01-12', '2024-03-12'),
+('Java Spring Boot', 18, '2024-03-10', '2024-06-10'),
+('Automated Testing', 19, '2024-02-25', '2024-05-25'),
+('Network Security', 20, '2024-04-15', '2024-07-15');
+
+-- 7. ASSIGNMENTS (20 st)
+INSERT INTO assignments (course_id, consultant_id, date_start, date_end) VALUES
+(1, 1, '2024-01-15', '2024-03-15'),
+(2, 2, '2024-02-01', '2024-04-01'),
+(3, 3, '2024-01-10', '2024-02-28'),
+(4, 4, '2024-03-01', '2024-05-01'),
+(5, 5, '2024-02-15', '2024-04-30'),
+(6, 6, '2024-01-20', '2024-03-20'),
+(7, 7, '2024-04-01', '2024-06-30'),
+(8, 8, '2024-01-05', '2024-03-05'),
+(9, 9, '2024-02-10', '2024-05-10'),
+(10, 10, '2024-03-15', '2024-05-15'),
+(11, 11, '2024-01-25', '2024-03-25'),
+(12, 12, '2024-02-20', '2024-04-20'),
+(13, 13, '2024-04-05', '2024-06-05'),
+(14, 14, '2024-01-30', '2024-04-30'),
+(15, 15, '2024-03-20', '2024-06-20'),
+(16, 16, '2024-02-05', '2024-04-05'),
+(17, 17, '2024-01-12', '2024-03-12'),
+(18, 18, '2024-03-10', '2024-06-10'),
+(19, 19, '2024-02-25', '2024-05-25'),
+(20, 20, '2024-04-15', '2024-07-15');
+
+-- 8. SESSIONS (20 st)
+INSERT INTO sessions (assignment_id, time_start, time_end, location, comment) VALUES
+(1, '2024-01-15 09:00:00', '2024-01-15 17:00:00', 'ONSITE', 'Första kursdagen'),
+(2, '2024-02-01 10:00:00', '2024-02-01 16:00:00', 'REMOTE', 'Online intro'),
+(3, '2024-01-10 08:30:00', '2024-01-10 16:30:00', 'HYBRID', 'Blandad session'),
+(4, '2024-03-01 09:00:00', '2024-03-01 17:00:00', 'ONSITE', 'Praktisk workshop'),
+(5, '2024-02-15 13:00:00', '2024-02-15 17:00:00', 'REMOTE', 'Eftermiddagssession'),
+(6, '2024-01-20 09:00:00', '2024-01-20 12:00:00', 'ONSITE', 'Förmiddagsföreläsning'),
+(7, '2024-04-01 10:00:00', '2024-04-01 15:00:00', 'REMOTE', 'Distansundervisning'),
+(8, '2024-01-05 09:00:00', '2024-01-05 17:00:00', 'HYBRID', 'Kickoff meeting'),
+(9, '2024-02-10 08:00:00', '2024-02-10 16:00:00', 'ONSITE', 'Heldagsworkshop'),
+(10, '2024-03-15 14:00:00', '2024-03-15 18:00:00', 'REMOTE', 'Kvällssession'),
+(11, '2024-01-25 09:00:00', '2024-01-25 12:00:00', 'ONSITE', 'API-genomgång'),
+(12, '2024-02-20 10:00:00', '2024-02-20 15:00:00', 'HYBRID', 'Scrum training'),
+(13, '2024-04-05 09:30:00', '2024-04-05 16:30:00', 'ONSITE', 'Design workshop'),
+(14, '2024-01-30 09:00:00', '2024-01-30 17:00:00', 'REMOTE', 'Microservices intro'),
+(15, '2024-03-20 10:00:00', '2024-03-20 16:00:00', 'HYBRID', 'React Native basics'),
+(16, '2024-02-05 08:00:00', '2024-02-05 17:00:00', 'ONSITE', 'Kubernetes deep dive'),
+(17, '2024-01-12 09:00:00', '2024-01-12 15:00:00', 'REMOTE', 'Python fundamentals'),
+(18, '2024-03-10 10:00:00', '2024-03-10 17:00:00', 'ONSITE', 'Spring Boot hands-on'),
+(19, '2024-02-25 09:00:00', '2024-02-25 16:00:00', 'HYBRID', 'Testing strategies'),
+(20, '2024-04-15 09:00:00', '2024-04-15 17:00:00', 'ONSITE', 'Network security lab');
+
+-- 9. CONSULTANT_STATUSES (20 st)
+INSERT INTO consultant_statuses (consultant_id, status, date_start, date_end, comment) VALUES
+(1, 'BUSY', '2024-01-15', '2024-03-15', 'På uppdrag hos Volvo'),
+(2, 'AVAILABLE', '2024-04-01', '2024-04-30', 'Ledig för nya uppdrag'),
+(3, 'VACATION', '2024-07-01', '2024-07-21', 'Sommarsemester'),
+(4, 'BUSY', '2024-03-01', '2024-05-01', 'Devops projekt'),
+(5, 'STUDYING', '2024-05-01', '2024-05-15', 'Certifiering AWS'),
+(6, 'BUSY', '2024-01-20', '2024-03-20', 'Säkerhetskurs'),
+(7, 'AVAILABLE', '2024-02-01', '2024-03-01', 'Väntar på uppdrag'),
+(8, 'SICK', '2024-02-10', '2024-02-15', 'Sjukskriven'),
+(9, 'BUSY', '2024-02-10', '2024-05-10', 'Full stack utveckling'),
+(10, 'VACATION', '2024-12-20', '2025-01-06', 'Julledighet'),
+(11, 'BUSY', '2024-01-25', '2024-03-25', 'Integrationsprojekt'),
+(12, 'AVAILABLE', '2024-05-01', '2024-06-01', 'Söker nytt uppdrag'),
+(13, 'BUSY', '2024-04-05', '2024-06-05', 'UX design workshop'),
+(14, 'STUDYING', '2024-03-01', '2024-03-15', 'Spring Boot kurs'),
+(15, 'BUSY', '2024-03-20', '2024-06-20', 'React Native projekt'),
+(16, 'VACATION', '2024-08-01', '2024-08-14', 'Sommarsemester'),
+(17, 'BUSY', '2024-01-12', '2024-03-12', 'Data science projekt'),
+(18, 'AVAILABLE', '2024-06-15', '2024-07-15', 'Mellan uppdrag'),
+(19, 'BUSY', '2024-02-25', '2024-05-25', 'Testing projekt'),
+(20, 'UNAVAILABLE', '2024-11-01', '2024-11-30', 'Föräldraledighet');
+```
+*Senast uppdaterad: December 2025*
