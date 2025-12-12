@@ -1,11 +1,12 @@
-/*
-package com.zo.webapi.service;
+
+/*package com.zo.webapi.service;
 
 import com.zo.webapi.WebapiApplication;
 import com.zo.webapi.model.Consultant;
 import com.zo.webapi.model.ConsultantStatus;
 import com.zo.webapi.repository.ConsultantRepository;
 import com.zo.webapi.repository.ConsultantStatusRepository;
+import com.zo.webapi.service.ConsultantStatusService;
 import enums.ConsultantStatusType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -77,4 +78,5 @@ public class ConsultantStatusServiceIntegrationTest {
         assertEquals(ConsultantStatusType.BOOKED, statuses.get(0).getStatus());
     }
 }
+
 */

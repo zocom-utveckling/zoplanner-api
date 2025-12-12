@@ -1,8 +1,11 @@
 package com.zo.webapi.controller;
 
 import com.zo.webapi.model.User;
+import com.zo.webapi.repository.ConsultantRepository;
+import com.zo.webapi.repository.ManagerRepository;
 import com.zo.webapi.service.UserService;
 import org.junit.jupiter.api.Test;
+import org.springdoc.core.service.GenericResponseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -26,6 +29,15 @@ public class UserControllerTest {
 
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private ManagerRepository managerRepository;
+
+    @MockBean
+    private ConsultantRepository consultantRepository;
+
+    @MockBean
+    private GenericResponseService genericResponseService;
 
     @Test
     void testShowAllUsers() throws Exception{
@@ -70,10 +82,10 @@ public class UserControllerTest {
 
     @Test
     void testDeleteUser_Success() throws Exception{
-      doNothing().when(userService).deleteUser(1L);
+        doNothing().when(userService).deleteUser(1L);
 
-      mockMvc.perform(delete("/api/users/1"))
-              .andExpect(status().isNoContent());
+        mockMvc.perform(delete("/api/users/1"))
+                .andExpect(status().isNoContent());
 
     }
 
@@ -82,7 +94,9 @@ public class UserControllerTest {
         doThrow(new IllegalArgumentException("User not found"))
                 .when(userService).deleteUser(999L);
         mockMvc.perform(delete("/api/users/999"))
-                .andExpect(status().isNotFound());
+               .andExpect(status().isNotFound());
+
+
     }
 
     @Test
@@ -102,12 +116,11 @@ public class UserControllerTest {
         """;
 
         mockMvc.perform(post("/api/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestJson))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.username").value("testuser"))
                 .andExpect(jsonPath("$.name").value("Test User"))
                 .andExpect(jsonPath("$.role").value("CONSULTANT"));
     }
 }
-
