@@ -1,6 +1,9 @@
-/*package service;
+package service;
 
+import com.zo.webapi.model.Manager;
 import com.zo.webapi.model.User;
+import com.zo.webapi.repository.ConsultantRepository;
+import com.zo.webapi.repository.ManagerRepository;
 import com.zo.webapi.repository.UserRepository;
 import com.zo.webapi.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,8 +24,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class UserServiceTest {
-    @Mock
-    private UserRepository userRepository;
+    @Mock private UserRepository userRepository;
+    @Mock private ManagerRepository managerRepository;
+    @Mock private ConsultantRepository consultantRepository;
+
 
     @InjectMocks
     private UserService userService;
@@ -76,18 +81,29 @@ public class UserServiceTest {
     }
 
     @Test
-    void testDeleteUser_Exists() {
+    void testDeleteUser_Manager() {
+        Manager manager = new Manager();
+        manager.setId(10L);
+
         when(userRepository.existsById(1L)).thenReturn(true);
+        when(managerRepository.findByUserId(1L)).thenReturn(Optional.of(manager));
+        when(consultantRepository.findByUserId(1L)).thenReturn(Optional.empty());
+
         userService.deleteUser(1L);
-        verify(userRepository, times(1)).deleteById(1L);
+
+        verify(managerRepository).delete(manager);
+        verify(userRepository).deleteById(1L);
+
     }
+
+
 
     @Test
     void testDeleteUser_NotExists() {
         when(userRepository.existsById(1L)).thenReturn(false);
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.deleteUser(1L));
-        assertEquals("User not found with id 1", exception.getMessage());
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.deleteUser(1L));
+        assertEquals("User not found with id: 1", exception.getMessage());
     }
 
     @Test
@@ -112,4 +128,4 @@ public class UserServiceTest {
         assertEquals("User not found with name john_doe", exception.getMessage());
     }
 }
-*/
+

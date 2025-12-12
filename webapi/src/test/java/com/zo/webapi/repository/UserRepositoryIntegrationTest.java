@@ -1,11 +1,17 @@
-/*
 package com.zo.webapi.repository;
 
+import com.zo.webapi.enums.UserRole;
 import com.zo.webapi.model.User;
 import jakarta.validation.ConstraintViolationException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
+
+import javax.swing.text.html.Option;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
@@ -15,117 +21,77 @@ import java.util.Optional;
 
 
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // use real Postgres
+@ActiveProfiles("test")
 public class UserRepositoryIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
     @Test
-    void testFindByUsername(){
-        //Arrange test data
-        User user = new User();
-        user.setUsername("Ben");
-        user.setPassword("123456");
-        user.setRole("USER");
-        user.setName("Ben Ten");
-        user.setCity("London");
+    @DisplayName("Save user and find by username")
+    void testSaveUserAndFindByUsername() {
+        User user = new User(null, "alice", "password123", "alicesmith", UserRole.MANAGER);
         userRepository.save(user);
 
-        //Act
-        //Call repo to find user --> return as optional (may or may not exist)
-        Optional<User> foundUser = userRepository.findByUsername("Ben");
+        Optional<User> foundUser = userRepository.findByUsername("alice");
 
-        //Assert : Check results are as expected
-        assertThat(foundUser.isPresent());
-        assertThat(foundUser.get().getUsername()).isEqualTo("Ben");
-        assertThat(foundUser.get().getPassword()).isEqualTo("123456");
-        assertThat(foundUser.get().getRole()).isEqualTo("USER");
-        assertThat(foundUser.get().getName()).isEqualTo("Ben Ten");
-        assertThat(foundUser.get().getCity()).isEqualTo("London");
+        assertThat(foundUser).isPresent();
+        assertThat(foundUser.get().getUsername()).isEqualTo("alice");
+        assertThat(foundUser.get().getRole()).isEqualTo(UserRole.MANAGER);
     }
 
     @Test
-    void testExistsByUsername(){
-        // Arrange test data
-        User user = new User();
-        user.setUsername("Linda");
-        user.setPassword("secret");
-        user.setRole("ADMIN");
-        user.setName("Bob Builder");
+    @DisplayName("Check if username exists")
+    void testCheckIfUsernameExists() {
+        User user = new User(null, "john", "password123", "johndoe", UserRole.CONSULTANT);
         userRepository.save(user);
 
-        // Act
-        //True for saved user
-        boolean exists = userRepository.existsByUsername("Linda");
-        //False for a username that doesn't exist
-        boolean notExists = userRepository.existsByUsername("Bob Builder");
-
-        // Assert : Check results
-        assertThat(exists).isTrue();
-        assertThat(notExists).isFalse();
+        assertThat(userRepository.existsByUsername("john")).isTrue();
+        assertThat(userRepository.existsByUsername("nonexistent")).isFalse();
     }
 
     @Test
-    void testSaveAndGetAllUsers() {
-        User user1 = new User(null, "User1", "pass1", "USER", "City1", "Name1");
-        User user2 = new User(null, "User2", "pass2", "ADMIN", "City2", "Name2");
+    @DisplayName("Save multiple users and retrieve all")
+    void testSaveMultipleUsers() {
+        User user1 = new User(null, "carol", "pass1", "Carol White", UserRole.CONSULTANT);
+        User user2 = new User(null, "dave", "pass2", "Dave Green", UserRole.MANAGER);
+
         userRepository.save(user1);
         userRepository.save(user2);
 
         List<User> allUsers = userRepository.findAll();
         assertThat(allUsers).hasSize(2);
-        assertThat(allUsers).extracting(User::getName).containsExactlyInAnyOrder("Name1", "Name2");
-
+        assertThat(allUsers).extracting(User::getUsername).containsExactlyInAnyOrder("carol", "dave");
 
     }
 
     @Test
-    void testUpdateUser() {
-        User user = new User(null, "User1", "pass1", "USER", "City1", "Name1");
-        userRepository.save(user);
-
-        user.setPassword("newpass");
-        user.setCity("newcity");
-        userRepository.save(user);
-
-        Optional<User> updatedUser = userRepository.findByUsername("User1");
-        assertThat(updatedUser).isPresent();
-        assertThat(updatedUser.get().getPassword()).isEqualTo("newpass");
-        assertThat(updatedUser.get().getCity()).isEqualTo("newcity");
-    }
-
-    @Test
+    @DisplayName("Delete a user")
     void testDeleteUser() {
-        User user = new User(null, "User1", "pass1", "USER", "City1", "Name1");
+        User user = new User(null, "Ben", "pass1", "Ben Green", UserRole.CONSULTANT);
         userRepository.save(user);
-
         userRepository.delete(user);
 
-        Optional<User> deletedUser = userRepository.findByUsername("User1");
-        assertThat(deletedUser).isEmpty();
+        assertThat(userRepository.existsByUsername("Ben")).isFalse();
     }
 
     @Test
-    void testDuplicateUsernameThrowsException() {
-        User user1 = new User(null, "User1", "pass1", "USER", "City1", "Name1");
-        User user2 = new User(null, "User1", "pass2", "ADMIN", "City2", "Name2");
+    @DisplayName("Find by username returns empty if user does not exist")
+    void testFindByUsername_NotFound() {
+        Optional<User> user = userRepository.findByUsername("nonexistent");
 
-        userRepository.save(user1);
-
-        assertThatThrownBy(() -> userRepository.saveAndFlush(user2)).isInstanceOf(Exception.class);
+        assertThat(user).isNotPresent();
     }
 
     @Test
-    void testSaveUserWithMissingRequiredFields() {
-        User user = new User();
+    @DisplayName("Ensure default role is Consultant")
+    void testDefaultRole() {
+        User user = new User(null, "phoebe", "phoebes234", "Phoebe Green", null);
+        userRepository.save(user);
 
-        assertThatThrownBy(() -> userRepository.saveAndFlush(user)).isInstanceOf(ConstraintViolationException.class);
-    }
-
-    @Test
-    void testFindByUsernameNotFound() {
-        Optional<User> foundUser = userRepository.findByUsername("notfound");
-        assertThat(foundUser).isEmpty();
+        Optional<User> foundUser = userRepository.findByUsername("phoebe");
+        assertThat(foundUser).isPresent();
+        assertThat(foundUser.get().getRole()).isEqualTo(UserRole.CONSULTANT);
     }
 
 }
-*/

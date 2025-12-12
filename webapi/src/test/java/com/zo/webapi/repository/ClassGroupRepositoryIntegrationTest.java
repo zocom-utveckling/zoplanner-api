@@ -1,87 +1,87 @@
-/*
 package com.zo.webapi.repository;
 
+import com.zo.webapi.enums.UserRole;
 import com.zo.webapi.model.ClassGroup;
+import com.zo.webapi.model.Customer;
+import com.zo.webapi.model.Manager;
+import com.zo.webapi.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ActiveProfiles("test")
 public class ClassGroupRepositoryIntegrationTest {
     @Autowired
     private ClassGroupRepository classGroupRepository;
+    @Autowired
+    private CustomerRepository customerRepository;
+    @Autowired
+    private ManagerRepository managerRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-    // Test variables
-    private ClassGroup class1;
-    private ClassGroup class2;
-    private ClassGroup class3;
+    private Customer customer;
 
     @BeforeEach
     void setup() {
-        // Clean up table before each test
-        classGroupRepository.deleteAll();
+        User user = new User();
+        user.setUsername("manager1");
+        user.setPassword("password");
+        user.setName("Manager one");
+        user.setRole(UserRole.MANAGER);
+        userRepository.save(user);
 
-        // Test objects
-        class1 = new ClassGroup("Class 1", 100L);
-        class2 = new ClassGroup("Class 2", 100L);
-        class3 = new ClassGroup("Class 1", 200L);
+        Manager manager = new Manager(user);
+        managerRepository.save(manager);
 
-        classGroupRepository.save(class1);
-        classGroupRepository.save(class2);
-        classGroupRepository.save(class3);
+        customer = new Customer();
+        customer.setName("Customer a");
+        customer.setCity("City a");
+        customer.setManager(manager);
+        customerRepository.save(customer);
 
-    }
+        ClassGroup group1 = new ClassGroup("Class 1", customer);
+        ClassGroup group2 = new ClassGroup("Class 2", customer);
 
-    @Test
-    void testFindByCustomerId_ReturnMatchingGroups() {
-        // Act
-        List<ClassGroup> classGroups = classGroupRepository.findByCustomerId(100L);
-
-        // Assert
-        assertThat(classGroups).hasSize(2);
-        assertThat(classGroups).extracting(ClassGroup::getName).containsExactlyInAnyOrder("Class 1", "Class 2");
-
-    }
-
-    @Test
-    void testFindByName_ReturnAllMatchingGroups() {
-        // Act
-        List<ClassGroup> classGroups = classGroupRepository.findByName("Class 1");
-
-        // Assert
-        assertThat(classGroups).hasSize(2);
-        assertThat(classGroups).extracting(ClassGroup::getCustomerId).containsExactlyInAnyOrder(100L, 200L);
+        classGroupRepository.save(group1);
+        classGroupRepository.save(group2);
 
     }
 
     @Test
-    void testSaveAndRetrieveClassGroups_Success() {
-        // Arrange
-        ClassGroup classGroup = new ClassGroup("Class 5", 300L);
-        ClassGroup savedClassGroup = classGroupRepository.save(classGroup);
+    void testFindByCustomerId() {
 
-        // Act
-        Optional<ClassGroup> found = classGroupRepository.findById(savedClassGroup.getId());
+        List<ClassGroup> groups = classGroupRepository.findByCustomerId(customer.getId());
+        assertThat(groups).hasSize(2);
+        assertThat(groups).allMatch(c -> c.getCustomer().getId().equals(customer.getId()));
 
-        // Assert
+    }
+
+    @Test
+    void testFindByName() {
+        Optional<ClassGroup> found = classGroupRepository.findByName("Class 1");
         assertThat(found).isPresent();
-        assertThat(found.get().getName()).isEqualTo("Class 5");
-        assertThat(found.get().getCustomerId()).isEqualTo(300L);
+        assertThat(found.get().getName()).isEqualTo("Class 1");
     }
 
     @Test
-    void testFindByCustomerId_NotFound() {
-        // Act
-        Optional<ClassGroup> classGroup = classGroupRepository.findById(999L);
+    void testExistsByNameAndCustomerId() {
+        boolean exists = classGroupRepository.existsByNameAndCustomerId("Class 1", customer.getId());
+        assertThat(exists).isTrue();
 
-        // Assert
-        assertThat(classGroup).isEmpty();
+        boolean notExists = classGroupRepository.existsByNameAndCustomerId("Nonexistent", customer.getId());
+        assertThat(notExists).isFalse();
+
     }
+
 }
 
-*/
