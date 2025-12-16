@@ -76,7 +76,7 @@ services:
   # Notification Service
   notification-service:
     build:
-      context: ../../zoplanner-notificationservice # Sökväg till frontend-mappen som innehåller Dockerfile
+      context: ../../zoplanner-notificationservice # Sökväg till notificationservice-mappen som innehåller Dockerfile
       dockerfile: Dockerfile
     container_name: zoplanner-notification-service
     networks:
