@@ -178,6 +178,7 @@ cd ZoPlanner
 git clone https://github.com/zocom-utveckling/zoplanner-api.git
 git clone https://github.com/zocom-utveckling/zoplanner-service.git
 git clone https://github.com/zocom-utveckling/zoplanner-frontend.git
+git clone https://github.com/zocom-utveckling/zoplanner-notificationservice
 ```
 
 ### Steg 2: Skapa miljövariabler (.env fil)
@@ -232,6 +233,11 @@ context: ../../zoplanner-service/zoplannerservice
 context: ./path/to/frontend
 # Till din faktiska sökväg, t.ex. (om repos ligger i samma mapp):
 context: ../../zoplanner-frontend
+
+# Ändra denna rad för notification-service tjänsten:
+context: .path/to/zoplanner-notificationservice 
+# Till din faktiska sökväg, t.ex. (om repos ligger i samma mapp):
+context: ../../zoplanner-notificationservice
 ```
 
 > 💡 **Tips:** Sökvägarna beror på var du har klonat repositories. Om alla tre repos ligger i samma mapp (`ZoPlanner/`), använd `../../` för att gå två nivåer upp från `webapi/`-mappen.
@@ -240,7 +246,7 @@ context: ../../zoplanner-frontend
 ### Steg 4: Starta alla containers - Starta Docker Desctop innan du ska använda en kommando!
 
 ```bash
-# Starta alla 4 containers (från zoplanner-api/webapi mappen)
+# Starta alla 5 containers (från zoplanner-api/webapi mappen)
 docker-compose up -d --build
 ```
 
@@ -284,6 +290,9 @@ docker-compose up -d dotnet-service
 
 # Endast Frontend
 docker-compose up -d frontend
+
+# Endast Notification service
+docker-compose up -d notification-service
 ```
 
 ---
