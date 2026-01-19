@@ -45,6 +45,14 @@ public class UserService {
                 throw new IllegalArgumentException("Username already exists: " +  userDetails.getUsername());
             }
         }
+
+        if (userDetails.getEmail() != null && !userDetails.getEmail().equals(user.getEmail())) {
+            if (userRepository.existsByEmail(userDetails.getEmail())) {
+                throw new IllegalArgumentException("Email already exists: " + userDetails.getEmail());
+            }
+            user.setEmail(userDetails.getEmail());
+        }
+
         user.setUsername(userDetails.getUsername());
         user.setPassword(userDetails.getPassword());
         user.setRole(userDetails.getRole());
@@ -92,6 +100,11 @@ public class UserService {
     //Check if username already exists
     public boolean usernameExists(String username) {
         return userRepository.existsByUsername(username);
+    }
+
+    //Check if email already exists
+    public boolean emailExists(String email) {
+        return userRepository.existsByEmail(email);
     }
 
     //Get one user by username
