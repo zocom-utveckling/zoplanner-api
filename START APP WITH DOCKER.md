@@ -209,6 +209,10 @@ PORT=5432
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=test123
 POSTGRES_DB=zoplanner
+AWS_ACCESS_KEY_ID=your_actual_access_key_id
+AWS_SECRET_ACCESS_KEY=your_actual_secret_access_key
+AWS_REGION=eu-north-1
+SQS_QUEUE_URL=https://sqs.eu-north-1.amazonaws.com/your-account-id/zoplanner-notifications
 
 # Spara filen → stäng Notepad.
 
