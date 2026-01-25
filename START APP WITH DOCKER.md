@@ -1,4 +1,4 @@
-# 🚀 ZoPlanner: Starta 4 conteinrar Guide
+# 🚀 ZoPlanner: Starta 5 conteinrar Guide
 
 > **Komplett guide för att starta hela ZoPlanner-systemet med Docker**  
 
@@ -24,7 +24,7 @@
 
 ## 🏗️ Systemöversikt
 
-ZoPlanner består av **4 Docker-containrar** som kommunicerar med varandra:
+ZoPlanner består av **5 Docker-containrar** som kommunicerar med varandra:
 
 ```
 ┌─────────────────────────────┐
@@ -66,6 +66,7 @@ Alla containrar är anslutna till samma nätverk `zoplanner` (bridge), så de ka
 | **zoplanner** | Spring Boot API (Java) | `localhost:8080` |
 | **zoplanner-dotnet** | .NET Service | `localhost:5027` |
 | **zoplanner-frontend** | Frontend applikation | `localhost:3000` |
+| **zoplanner-notificationservice** | Notification Service | `localhost:8082` |
 
 ---
 
@@ -171,13 +172,14 @@ Du ska se något som
 mkdir ZoPlanner
 cd ZoPlanner
 
-# Klona alla tre repositories
+# Klona alla fyra repositories
 # När man kör det här kommandot öppnas ett fönster där man behöver logga in på GitHub. Följ instruktionerna. 
 # Man måste logga in med ett konto som har åtkomst till alla repo som man klonar.
 
 git clone https://github.com/zocom-utveckling/zoplanner-api.git
 git clone https://github.com/zocom-utveckling/zoplanner-service.git
 git clone https://github.com/zocom-utveckling/zoplanner-frontend.git
+git clone https://github.com/zocom-utveckling/zoplanner-notificationservice
 ```
 
 ### Steg 2: Skapa miljövariabler (.env fil)
@@ -209,6 +211,10 @@ PORT=5432
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=test123
 POSTGRES_DB=zoplanner
+AWS_ACCESS_KEY_ID=your_actual_access_key_id
+AWS_SECRET_ACCESS_KEY=your_actual_secret_access_key
+AWS_REGION=eu-north-1
+SQS_QUEUE_URL=https://sqs.eu-north-1.amazonaws.com/your-account-id/zoplanner-notifications
 
 # Spara filen → stäng Notepad.
 
@@ -232,6 +238,11 @@ context: ../../zoplanner-service/zoplannerservice
 context: ./path/to/frontend
 # Till din faktiska sökväg, t.ex. (om repos ligger i samma mapp):
 context: ../../zoplanner-frontend
+
+# Ändra denna rad för notification-service tjänsten:
+context: .path/to/zoplanner-notificationservice 
+# Till din faktiska sökväg, t.ex. (om repos ligger i samma mapp):
+context: ../../zoplanner-notificationservice
 ```
 
 > 💡 **Tips:** Sökvägarna beror på var du har klonat repositories. Om alla tre repos ligger i samma mapp (`ZoPlanner/`), använd `../../` för att gå två nivåer upp från `webapi/`-mappen.
@@ -240,7 +251,7 @@ context: ../../zoplanner-frontend
 ### Steg 4: Starta alla containers - Starta Docker Desctop innan du ska använda en kommando!
 
 ```bash
-# Starta alla 4 containers (från zoplanner-api/webapi mappen)
+# Starta alla 5 containers (från zoplanner-api/webapi mappen)
 docker-compose up -d --build
 ```
 
@@ -284,6 +295,9 @@ docker-compose up -d dotnet-service
 
 # Endast Frontend
 docker-compose up -d frontend
+
+# Endast Notification service
+docker-compose up -d notification-service
 ```
 
 ---
