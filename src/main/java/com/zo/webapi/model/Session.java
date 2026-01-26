@@ -32,7 +32,6 @@ public class Session {
     @Column(name = "time_end")
     private LocalDateTime timeEnd;
 
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Enumerated(EnumType.STRING)
     @Column(name = "location", columnDefinition = "session_location")
     private SessionLocation location;

@@ -30,7 +30,9 @@ services:
 
   # Spring Boot Application
   app:
-    build: .
+    build:
+      context: ../../zoplanner-api/webapi
+      dockerfile: Dockerfile
     container_name: zoplanner
     networks:
       - zoplanner

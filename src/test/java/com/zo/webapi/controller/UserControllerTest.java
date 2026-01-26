@@ -42,7 +42,7 @@ public class UserControllerTest {
     @Test
     void testShowAllUsers() throws Exception{
         List<User> users = new ArrayList<>();
-        User user = new User(1L, "testuser", "testpassword", "Test User", UserRole.MANAGER);
+        User user = new User(1L, "testuser", "testpassword", "Test User", "test@example.com", UserRole.MANAGER);
 
         users.add(user);
 
@@ -58,7 +58,7 @@ public class UserControllerTest {
 
     @Test
     void testGetUserById_Success() throws Exception{
-        User user = new User(1L, "testuser", "testpassword", "Test User", UserRole.MANAGER);
+        User user = new User(1L, "testuser", "testpassword", "Test User", "test@example.com", UserRole.MANAGER);
 
         when(userService.getUserById(1L)).thenReturn(user);
 
@@ -101,7 +101,7 @@ public class UserControllerTest {
 
     @Test
     void testCreateUser_Success() throws Exception{
-        User user = new User(1L, "testuser", "testpassword", "Test User", UserRole.CONSULTANT);
+        User user = new User(1L, "testuser", "testpassword", "Test User", "test@example.com", UserRole.CONSULTANT);
 
         when(userService.usernameExists("testuser")).thenReturn(false);
         when(userService.createUser(any(User.class))).thenReturn(user);
