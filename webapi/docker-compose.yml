@@ -52,6 +52,8 @@ services:
       - zoplanner
     ports:
       - "5027:5027"
+    env_file:
+      - .env
     environment:
       - SpringApi__BaseUrl=http://zoplanner:8080/api
     restart: unless-stopped
