@@ -7,7 +7,7 @@ COPY .mvn/ .mvn/
 COPY mvnw mvnw.cmd pom.xml ./
 
 # Ladda ner dependencies (cachas om pom.xml inte ändras)
-RUN chmod +x ./mvnw || true
+RUN sed -i 's/\r$//' mvnw && chmod +x mvnw
 RUN ./mvnw dependency:go-offline || true
 
 # Kopiera source code
