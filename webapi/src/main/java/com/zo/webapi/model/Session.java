@@ -34,7 +34,7 @@ public class Session {
 
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Enumerated(EnumType.STRING)
-    @Column(name = "location", columnDefinition = "session_location")
+    @Column(name = "location")
     private SessionLocation location;
 
     @Column(name = "comment")
