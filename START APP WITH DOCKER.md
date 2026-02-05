@@ -44,18 +44,20 @@ ZoPlanner består av **5 Docker-containrar** som kommunicerar med varandra:
 └─────────────┬───────────────┘
               │ beroende av
               ▼
-┌─────────────────────────────┐
-│   Spring Boot-app           │
-│   (zoplanner)               │
-│   Port: 8080                │
-└─────────────┬───────────────┘
-              │ beroende av
-              ▼
-┌─────────────────────────────┐
-│     PostgreSQL-databas      │
-│   (zoplanner-database)      │
-│   Port: 5432                │
-└─────────────────────────────┘
+┌─────────────────────────────┐     ┌─────────────────────────────┐
+│   Spring Boot-app           │     │  Notification Service       │
+│   (zoplanner)               │     │  (zoplanner-notification)   │
+│   Port: 8080                │     │  Port: 8082                 │
+└─────────────┬───────────────┘     └─────────────┬───────────────┘
+              │ beroende av                       │ beroende av
+              │                                   │
+              └──────────────┬────────────────────┘
+                             ▼
+              ┌─────────────────────────────┐
+              │     PostgreSQL-databas      │
+              │   (zoplanner-database)      │
+              │   Port: 5432                │
+              └─────────────────────────────┘
 
 Alla containrar är anslutna till samma nätverk `zoplanner` (bridge), så de kan kommunicera med varandra via container-namn.
 
