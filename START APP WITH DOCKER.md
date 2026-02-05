@@ -13,6 +13,7 @@
 | **zoplanner-api** | CRUD API mot databasen (Java/Spring Boot) | [GitHub](https://github.com/zocom-utveckling/zoplanner-api) |
 | **zoplanner-service** | Backend-tjänst (.NET) | [GitHub](https://github.com/zocom-utveckling/zoplanner-service) |
 | **zoplanner-frontend** | Användargränssnitt (Frontend) | [GitHub](https://github.com/zocom-utveckling/zoplanner-frontend) |
+| **zoplanner-notificationservice** | Notifikiationsservice (Java) | [GitHub](https://github.com/zocom-utveckling/zoplanner-notificationservice) |
 
 ### Befintlig Dokumentation
 
