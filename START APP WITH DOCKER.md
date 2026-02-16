@@ -1,4 +1,4 @@
-# 🚀 ZoPlanner: Starta 5 conteinrar Guide
+# 🚀 ZoPlanner: Starta 5 containrar Guide
 
 > **Komplett guide för att starta hela ZoPlanner-systemet med Docker**  
 
