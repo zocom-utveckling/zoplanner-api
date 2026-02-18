@@ -4,22 +4,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zo.webapi.dto.AssignmentDTO;
 import com.zo.webapi.exception.ResourceNotFoundException;
 import com.zo.webapi.model.Assignment;
-import com.zo.webapi.model.Session;
+
 import com.zo.webapi.service.AssignmentService;
 import com.zo.webapi.service.SessionService;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.mockito.ArgumentCaptor;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -45,9 +46,15 @@ public class AssignmentControllerTest {
 
         when(assignmentService.getAllAssignments()).thenReturn(assignments);
 
-        mockMvc.perform(get("/assignments"))
+        mockMvc.perform(get("/api/assignments"))
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].id").value(1));
+
+        verify(assignmentService).getAllAssignments();
+        verifyNoMoreInteractions(assignmentService);
     }
 
 
@@ -61,9 +68,13 @@ public class AssignmentControllerTest {
         when(assignmentService.getAssignmentById(1L)).thenReturn(Optional.of(assignment));
 
         // Call the endpoint and check response
-        mockMvc.perform(get("/assignments/1"))
+        mockMvc.perform(get("/api/assignments/{id}", 1))
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1));
+
+        verify(assignmentService).getAssignmentById(1L);
+        verifyNoMoreInteractions(assignmentService);
     }
 
 
@@ -78,12 +89,21 @@ public class AssignmentControllerTest {
 
         when(assignmentService.createAssignment(any(AssignmentDTO.class))).thenReturn(created);
 
-        mockMvc.perform(post("/assignments")
+        mockMvc.perform(post("/api/assignments")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(assignmentDTO)))
                 .andExpect(status().isCreated())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1));
 
+        ArgumentCaptor<AssignmentDTO> captor = ArgumentCaptor.forClass(AssignmentDTO.class);
+        verify(assignmentService).createAssignment(captor.capture());
+
+        AssignmentDTO sent = captor.getValue();
+        assertEquals(1L, sent.getConsultantId());
+        assertEquals(2L, sent.getCourseId());
+
+        verifyNoMoreInteractions(assignmentService);
     }
 
 
@@ -98,21 +118,32 @@ public class AssignmentControllerTest {
 
         when(assignmentService.updateAssignment(eq(1L), any(AssignmentDTO.class))).thenReturn(updated);
 
-        mockMvc.perform(put("/assignments/1")
+        mockMvc.perform(put("/api/assignments/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(assignmentDTO)))
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1));
 
+        ArgumentCaptor<AssignmentDTO> captor = ArgumentCaptor.forClass(AssignmentDTO.class);
+        verify(assignmentService).updateAssignment(eq(1L), captor.capture());
 
+        AssignmentDTO sent = captor.getValue();
+        assertEquals(1L, sent.getConsultantId());
+        assertEquals(2L, sent.getCourseId());
+
+        verifyNoMoreInteractions(assignmentService);
     }
 
 
 
     @Test
     void testDeleteAssignment_Success() throws Exception {
-        mockMvc.perform(delete("/assignments/1"))
+        mockMvc.perform(delete("/api/assignments/{id}", 1))
                 .andExpect(status().isNoContent());
+
+        verify(assignmentService).deleteAssignment(1L);
+        verifyNoMoreInteractions(assignmentService);
     }
 
     @Test
@@ -122,9 +153,15 @@ public class AssignmentControllerTest {
 
        when(assignmentService.getAssignmentsByConsultant(5L)).thenReturn(List.of(assignment));
 
-       mockMvc.perform(get("/assignments/consultant/5"))
+       mockMvc.perform(get("/api/assignments/consultant/{consultantId}", 5))
                .andExpect(status().isOk())
+               .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+               .andExpect(jsonPath("$").isArray())
+               .andExpect(jsonPath("$.length()").value(1))
                .andExpect(jsonPath("$[0].id").value(1));
+
+       verify(assignmentService).getAssignmentsByConsultant(5L);
+       verifyNoMoreInteractions(assignmentService);
     }
 
 
@@ -133,8 +170,11 @@ public class AssignmentControllerTest {
      void testGetAssignmentById_NotFound() throws Exception {
         when(assignmentService.getAssignmentById(999L)).thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/assignments/999"))
+        mockMvc.perform(get("/api/assignments/{id}", 999))
                 .andExpect(status().isNotFound());
+
+        verify(assignmentService).getAssignmentById(999L);
+        verifyNoMoreInteractions(assignmentService);
     }
 
     @Test
@@ -146,10 +186,13 @@ public class AssignmentControllerTest {
         assignmentDTO.setConsultantId(1L);
         assignmentDTO.setCourseId(3L);
 
-        mockMvc.perform(put("/assignments/999")
+        mockMvc.perform(put("/api/assignments/{id}", 999)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(assignmentDTO)))
                 .andExpect(status().isNotFound());
+
+        verify(assignmentService).updateAssignment(eq(999L), any(AssignmentDTO.class));
+        verifyNoMoreInteractions(assignmentService);
     }
 
     @Test
@@ -157,9 +200,11 @@ public class AssignmentControllerTest {
         doThrow(new ResourceNotFoundException("Assignment", "id", 999L))
                 .when(assignmentService).deleteAssignment(999L);
 
-        mockMvc.perform(delete("/assignments/999"))
+        mockMvc.perform(delete("/api/assignments/{id}", 999))
                 .andExpect(status().isNotFound());
 
+        verify(assignmentService).deleteAssignment(999L);
+        verifyNoMoreInteractions(assignmentService);
     }
 
 
