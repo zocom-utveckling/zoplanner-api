@@ -16,16 +16,20 @@ public class CreateUserRequestDTO {
     @NotBlank(message = "Email is required")
     private String email;
 
+    @NotBlank(message = "City is required")
+    private String city;
+
     private UserRole role = UserRole.CONSULTANT;
 
     public CreateUserRequestDTO() {}
 
-    public CreateUserRequestDTO(String username, String password, String name, String email, UserRole role) {
+    public CreateUserRequestDTO(String username, String password, String name, String email, UserRole role, String city) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
         this.role = role;
+        this.city = city;
     }
 
     public String getUsername() {
@@ -58,6 +62,14 @@ public class CreateUserRequestDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public UserRole getRole() {
