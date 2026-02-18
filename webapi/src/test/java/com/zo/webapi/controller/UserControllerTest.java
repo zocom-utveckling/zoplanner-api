@@ -42,7 +42,7 @@ public class UserControllerTest {
     @Test
     void testShowAllUsers() throws Exception{
         List<User> users = new ArrayList<>();
-        User user = new User(1L, "testuser", "testpassword", "Test User", UserRole.MANAGER);
+        User user = new User(1L, "testuser", "testpassword", "Test User","testuser@mail.com", UserRole.MANAGER);
 
         users.add(user);
 
@@ -53,12 +53,13 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].username").value("testuser"))
                 .andExpect(jsonPath("$[0].name").value("Test User"))
+                .andExpect(jsonPath("$[0].email").value("testuser@mail.com"))
                 .andExpect(jsonPath("$[0].role").value("MANAGER"));
     }
 
     @Test
     void testGetUserById_Success() throws Exception{
-        User user = new User(1L, "testuser", "testpassword", "Test User", UserRole.MANAGER);
+        User user = new User(1L, "testuser", "testpassword", "Test User","testuser@mail.com", UserRole.MANAGER);
 
         when(userService.getUserById(1L)).thenReturn(user);
 
@@ -67,6 +68,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.username").value("testuser"))
                 .andExpect(jsonPath("$.name").value("Test User"))
+                .andExpect(jsonPath("$.email").value("testuser@mail.com"))
                 .andExpect(jsonPath("$.role").value("MANAGER"));
 
     }
@@ -101,7 +103,7 @@ public class UserControllerTest {
 
     @Test
     void testCreateUser_Success() throws Exception{
-        User user = new User(1L, "testuser", "testpassword", "Test User", UserRole.CONSULTANT);
+        User user = new User(1L, "testuser", "testpassword", "Test User", "testuser@mail.com", UserRole.CONSULTANT);
 
         when(userService.usernameExists("testuser")).thenReturn(false);
         when(userService.createUser(any(User.class))).thenReturn(user);
@@ -111,6 +113,7 @@ public class UserControllerTest {
                 "username": "testuser",
                 "password": "testpassword",
                 "name": "Test User",
+                "email": "testuser@mail.com",
                 "role": "CONSULTANT"
             }
         """;
@@ -121,6 +124,7 @@ public class UserControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.username").value("testuser"))
                 .andExpect(jsonPath("$.name").value("Test User"))
+                .andExpect(jsonPath("$.email").value("testuser@mail.com"))
                 .andExpect(jsonPath("$.role").value("CONSULTANT"));
     }
 }
