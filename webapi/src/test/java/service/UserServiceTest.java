@@ -1,4 +1,4 @@
-/*package service;
+package service;
 
 import com.zo.webapi.model.User;
 import com.zo.webapi.repository.UserRepository;
@@ -30,9 +30,9 @@ public class UserServiceTest {
     private User sampleUser;
 
     @BeforeEach
-    public void setUp() {
+    public void setup() {
         MockitoAnnotations.openMocks(this);
-        sampleUser = new User(1L, "john_doe", "password123", "John Doe", UserRole.CONSULTANT);
+        sampleUser = new User(1L, "john_doe", "password123", "John Doe", "johndoe@mail.com", "Malmö", UserRole.CONSULTANT);
     }
 
     @Test
@@ -111,5 +111,11 @@ public class UserServiceTest {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.getUserByUsername("john_doe"));
         assertEquals("User not found with name john_doe", exception.getMessage());
     }
+
+    @Test
+    void testEmailExists() {
+        when(userRepository.existsByEmail("johndoe@mail.com")).thenReturn(true);
+        assertTrue(userService.emailExists("johndoe@mail.com"));
+        verify(userRepository, times(1)).existsByEmail("johndoe@mail.com");
+    }
 }
-*/
