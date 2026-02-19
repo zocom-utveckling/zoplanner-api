@@ -1,6 +1,8 @@
 package service;
 
 import com.zo.webapi.model.User;
+import com.zo.webapi.repository.ConsultantRepository;
+import com.zo.webapi.repository.ManagerRepository;
 import com.zo.webapi.repository.UserRepository;
 import com.zo.webapi.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +25,12 @@ import static org.mockito.Mockito.*;
 public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private ManagerRepository managerRepository;
+
+    @Mock
+    private ConsultantRepository consultantRepository;
 
     @InjectMocks
     private UserService userService;
@@ -87,7 +95,7 @@ public class UserServiceTest {
         when(userRepository.existsById(1L)).thenReturn(false);
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.deleteUser(1L));
-        assertEquals("User not found with id 1", exception.getMessage());
+        assertEquals("User not found with id: 1", exception.getMessage());
     }
 
     @Test
