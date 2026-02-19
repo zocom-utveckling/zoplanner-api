@@ -29,6 +29,10 @@ public class User {
     @Column(name = "email", unique = true)
     private String email;
 
+    @NotBlank(message = "City is required")
+    @Column(name = "city", nullable = false)
+    private String city;
+
     @NotNull(message = "Role is required")
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
@@ -89,6 +93,13 @@ public class User {
         this.email = email;
     }
 
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
 
     public UserRole getRole() {
         return role;
