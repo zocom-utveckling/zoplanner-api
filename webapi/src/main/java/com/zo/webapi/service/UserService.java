@@ -4,10 +4,8 @@ import com.zo.webapi.model.User;
 import com.zo.webapi.repository.ConsultantRepository;
 import com.zo.webapi.repository.ManagerRepository;
 import com.zo.webapi.repository.UserRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -16,13 +14,16 @@ public class UserService {
     private final UserRepository userRepository;
     private final ManagerRepository managerRepository;
     private final ConsultantRepository consultantRepository;
+    private final ManagerService managerService;
+    private final ConsultantService consultantService;
 
     //Constructor
-    public UserService(UserRepository userRepository, ManagerRepository managerRepository, ConsultantRepository consultantRepository) {
+    public UserService(UserRepository userRepository, ManagerRepository managerRepository, ConsultantRepository consultantRepository, ManagerService managerService, ConsultantService consultantService) {
         this.userRepository = userRepository;
         this.managerRepository = managerRepository;
         this.consultantRepository = consultantRepository;
-
+        this.managerService = managerService;
+        this.consultantService = consultantService;
     }
 
     //Gets all users
@@ -61,14 +62,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    //Deletes a user
-   /*public void deleteUser(Long id) {
-       if (!userRepository.existsById(id)) {
-           throw new IllegalArgumentException("User not found with id " + id);
-       }
-       userRepository.deleteById(id);
-    }*/
-
     @Transactional
     public void deleteUser(Long userId) {
         // Verify first if user exists
@@ -79,11 +72,11 @@ public class UserService {
 
         // If user is a manager - delete manager first
         managerRepository.findByUserId(userId).ifPresent(manager -> {
-            managerRepository.delete(manager);
+            managerService.deleteManager(manager.getId());
         });
 
         // If user is a consultant - delete consultant first
-        consultantRepository.findByUserId(userId).ifPresent(consultant -> consultantRepository.delete(consultant));
+        consultantRepository.findByUserId(userId).ifPresent(consultant -> consultantService.deleteConsultant(consultant.getId()));
 
         // Finally delete the user
         userRepository.deleteById(userId);

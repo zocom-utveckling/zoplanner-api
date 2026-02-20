@@ -10,13 +10,11 @@ import org.springdoc.core.service.GenericResponseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
 import java.util.ArrayList;
 import java.util.List;
 import com.zo.webapi.enums.UserRole;
-import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -115,7 +113,7 @@ public class UserControllerTest {
 
         mockMvc.perform(delete("/api/users/1"))
                 .andExpect(status().isNoContent());
-
+        verify(userService, times(1)).deleteUser(1L);
     }
 
     @Test
@@ -154,4 +152,26 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.city").value("Malmö"))
                 .andExpect(jsonPath("$.role").value("MANAGER"));
     }
+
+    @Test
+    void testCreateUser_AlreadyExists() throws Exception {
+        when(userService.usernameExists("testuser")).thenReturn(true);
+        String requestJson = """
+            {
+                "username": "testuser",
+                "password": "testpassword",
+                "name": "Test User",
+                "email": "testuser@mail.com",
+                "city": "Malmö",
+                "role": "MANAGER"
+            }
+        """;
+
+        mockMvc.perform(post("/api/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isConflict());
+        verify(userService, never()).createUser(user);
+    }
 }
+
