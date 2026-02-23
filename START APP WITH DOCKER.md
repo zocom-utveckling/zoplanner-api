@@ -559,4 +559,4 @@ INSERT INTO consultant_statuses (consultant_id, status, date_start, date_end, co
 (19, 'BUSY', '2024-02-25', '2024-05-25', 'Testing projekt'),
 (20, 'UNAVAILABLE', '2024-11-01', '2024-11-30', 'Föräldraledighet');
 ```
-*Senast uppdaterad: December 2025*
+
