@@ -338,6 +338,9 @@ Om du stöter på problem:
 2. 📋 Kontrollera loggarna med `docker-compose logs -f`
 3. 💬 Kontakta utvecklingsteamet i discord
 
+
+### OBS, utdaterad data. Det finns fler tabeller och kolumner i databasen idag. Databasen skapas automatiskt via Java CRUD API-koden om det inte finns en databas på datorn. För att uppdatera databasen krävs i nuläget att man manuellt tart bort den gamla från PgAdmin.
+
 ---
 
 ```
