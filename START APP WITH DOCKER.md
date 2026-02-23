@@ -225,7 +225,7 @@ SQS_QUEUE_URL=https://sqs.eu-north-1.amazonaws.com/your-account-id/zoplanner-not
 
 > ⚠️ **VIKTIGT:** Kommittera ALDRIG denna fil till Git!
 
-###(OBS, detta steg behövs ej om du följt guiden rakt av)
+### (OBS, följande steg behövs ej om du följt guiden rakt av, gå direkt till steg 4)
 ### Steg 3: Konfigurera sökvägar i docker-compose.yml 
 
 Öppna filen `zoplanner-api/webapi/docker-compose.yml` och uppdatera sökvägarna till .NET-tjänsten och frontend:
