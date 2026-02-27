@@ -1,4 +1,4 @@
-package service;
+package com.zo.webapi.service;
 
 import com.zo.webapi.dto.ConsultantDTO;
 import com.zo.webapi.exception.InvalidDataException;

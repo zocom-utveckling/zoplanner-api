@@ -1,4 +1,4 @@
-package service;
+package com.zo.webapi.service;
 
 import com.zo.webapi.dto.ManagerResponseDTO;
 import com.zo.webapi.enums.UserRole;
