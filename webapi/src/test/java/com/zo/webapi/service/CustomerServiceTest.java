@@ -1,4 +1,4 @@
-package service;
+package com.zo.webapi.service;
 
 import com.zo.webapi.dto.CustomerUpdateDTO;
 import com.zo.webapi.model.Customer;
