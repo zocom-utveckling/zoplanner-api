@@ -11,6 +11,7 @@ services:
       - .env
     volumes:
       - zoplanner-data:/var/lib/postgresql/data
+      - ../../zoplanner-notificationservice/database/migrations:/docker-entrypoint-initdb.d/notification
     restart: unless-stopped
 
   # pgAdmin4
