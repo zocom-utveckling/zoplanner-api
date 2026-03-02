@@ -93,4 +93,14 @@ public class ConsultantStatusServiceIntegrationTest {
                 ResponseStatusException.class, () -> statusService.getStatusesByConsultant(consultant.getId()));
         assertEquals("404 NOT_FOUND \"No statuses found for consultant ID " + consultant.getId() + "\"", exception.getMessage());
     }
+
+    @Test
+    void testGetStatusById() {
+        ConsultantStatus status = statusService.createStatus(statusDTO);
+
+        ConsultantStatus getStatus = statusService.getStatusById(status.getId());
+
+        assertEquals(status.getId(), getStatus.getId());
+        assertEquals(status.getStatus(), getStatus.getStatus());
+    }
 }

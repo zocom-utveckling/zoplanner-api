@@ -230,8 +230,6 @@ public class ManagerServiceTest {
 
         assertNull(customer.getManager());
         verify(customerRepository).save(customer);
-
-
     }
 
     @Test
@@ -257,8 +255,6 @@ public class ManagerServiceTest {
         ManagerResponseDTO responseDTO = managerService.updateManagerUser(1L, 2L);
 
         assertEquals("newUser", responseDTO.getUsername());
-
-
     }
 
     @Test
