@@ -10,10 +10,13 @@ import com.zo.webapi.model.User;
 import com.zo.webapi.repository.ConsultantRepository;
 import com.zo.webapi.repository.ManagerRepository;
 import com.zo.webapi.repository.UserRepository;
+import com.zo.webapi.specification.ConsultantSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -37,6 +40,23 @@ public class ConsultantService {
         return consultantRepository.findById(id)
                 .map(ConsultantMapper::toDTO)
                 .orElseThrow(() -> new ResourceNotFoundException("Consultant", "id", id));
+    }
+
+    public List<ConsultantDTO> searchConsultants(String name, String city, Long managerId) {
+
+        //Förberedd sökning
+        Specification<Consultant> spec = Specification.allOf(
+                ConsultantSpecification.hasName(name),
+                ConsultantSpecification.hasCity(city),
+                ConsultantSpecification.hasManager(managerId)
+        );
+        List<Consultant> result = consultantRepository.findAll(spec);
+        List<ConsultantDTO> consultants = new ArrayList<>();
+
+        //konvertera Consultant till ConsultantDto
+        result.forEach(consultant -> consultants.add(ConsultantMapper.toDTO(consultant)));
+
+        return consultants;
     }
 
     @Transactional(readOnly = true)

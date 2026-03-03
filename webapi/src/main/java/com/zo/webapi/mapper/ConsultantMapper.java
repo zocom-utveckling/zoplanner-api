@@ -10,7 +10,8 @@ public class ConsultantMapper {
 
         return new ConsultantDTO(
                 consultant.getId(),
-                consultant.getCity(),
+                consultant.getUser().getName(),
+                consultant.getUser().getCity(),
                 consultant.getUser() != null ? consultant.getUser().getId() : null,
                 consultant.getManager() != null ? consultant.getManager().getId() : null
         );

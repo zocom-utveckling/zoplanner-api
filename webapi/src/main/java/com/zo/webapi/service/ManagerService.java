@@ -119,7 +119,9 @@ public class ManagerService {
                 .map(consultant -> new ConsultantDTO(
                         consultant.getId(),
                         consultant.getUser().getName(),
-                        consultant.getCity()
+                        consultant.getCity(),
+                        consultant.getUser().getId(),
+                        managerId
                 ))
                 .toList();
     }
