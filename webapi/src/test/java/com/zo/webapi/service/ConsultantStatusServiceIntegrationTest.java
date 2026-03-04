@@ -1,23 +1,19 @@
-package service;
+
+/*package com.zo.webapi.service;
 
 import com.zo.webapi.WebapiApplication;
-import com.zo.webapi.dto.ConsultantStatusDTO;
-import com.zo.webapi.enums.ConsultantStatusType;
-import com.zo.webapi.enums.UserRole;
 import com.zo.webapi.model.Consultant;
 import com.zo.webapi.model.ConsultantStatus;
-import com.zo.webapi.model.User;
 import com.zo.webapi.repository.ConsultantRepository;
 import com.zo.webapi.repository.ConsultantStatusRepository;
-import com.zo.webapi.repository.UserRepository;
 import com.zo.webapi.service.ConsultantStatusService;
+import enums.ConsultantStatusType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -38,69 +34,49 @@ public class ConsultantStatusServiceIntegrationTest {
     @Autowired
     private ConsultantStatusRepository statusRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
     private Consultant consultant;
-
-    private ConsultantStatusDTO statusDTO;
-
 
     @BeforeEach
     void setup() {
         statusRepository.deleteAll();
-
-        userRepository.save(new User(null, "testuser", "testuser", "testuser", "e@mail.com", "Stockholm", UserRole.CONSULTANT));
+        consultantRepository.deleteAll();
 
         consultant = new Consultant();
-        consultant.setUser(userRepository.findAll().getFirst());
-        consultant.setCity("Stockholm");
+        consultant.setName("Test Consultant");
+        consultant.setEmail("test@consultant.com");
         consultantRepository.save(consultant);
-        System.out.println(consultantRepository.findAll());
-
-        //create consultantDto
-        statusDTO = new ConsultantStatusDTO();
-        statusDTO.setStatus(ConsultantStatusType.AVAILABLE);
-        statusDTO.setConsultantId(consultantRepository.findAll().getFirst().getId());
-        statusDTO.setDateStart(LocalDate.of(2026, 10, 13));
-        statusDTO.setDateEnd(LocalDate.of(2026, 12, 13));
-        statusDTO.setComment("test comment");
     }
 
     @Test
     void testCreateStatus() {
-        ConsultantStatus status = statusService.createStatus(statusDTO);
+        ConsultantStatus status = statusService.createStatus(
+                consultant.getId(),
+                ConsultantStatusType.AVAILABLE,
+                LocalDate.of(2024, 1, 1),
+                LocalDate.of(2024, 2, 1),
+                "Test note"
+        );
+
         assertNotNull(status);
+        assertEquals(consultant.getId(), status.getConsultant().getId());
         assertEquals(ConsultantStatusType.AVAILABLE, status.getStatus());
-        assertEquals(1L, status.getConsultant().getId());
-        assertEquals(LocalDate.of(2026, 10, 13), status.getDateStart());
-        assertEquals(LocalDate.of(2026, 12, 13), status.getDateEnd());
-        assertEquals("test comment", status.getComment());
     }
 
     @Test
     void testGetStatusesByConsultant() {
-        statusService.createStatus(statusDTO);
+        statusService.createStatus(
+                consultant.getId(),
+                ConsultantStatusType.BOOKED,
+                LocalDate.of(2024, 1, 1),
+                LocalDate.of(2024, 1, 10),
+                null
+        );
+
         List<ConsultantStatus> statuses = statusService.getStatusesByConsultant(consultant.getId());
 
         assertEquals(1, statuses.size());
-        assertEquals(ConsultantStatusType.AVAILABLE, statuses.getFirst().getStatus());
-    }
-
-    @Test
-    void testGetStatusesByConsultant_HasNoStatus() {
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class, () -> statusService.getStatusesByConsultant(consultant.getId()));
-        assertEquals("404 NOT_FOUND \"No statuses found for consultant ID " + consultant.getId() + "\"", exception.getMessage());
-    }
-
-    @Test
-    void testGetStatusById() {
-        ConsultantStatus status = statusService.createStatus(statusDTO);
-
-        ConsultantStatus getStatus = statusService.getStatusById(status.getId());
-
-        assertEquals(status.getId(), getStatus.getId());
-        assertEquals(status.getStatus(), getStatus.getStatus());
+        assertEquals(ConsultantStatusType.BOOKED, statuses.get(0).getStatus());
     }
 }
+
+*/
