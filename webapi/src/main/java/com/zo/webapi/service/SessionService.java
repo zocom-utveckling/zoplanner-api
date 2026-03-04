@@ -22,7 +22,7 @@ public class SessionService {
     }
 
     public List<Session> getAllSessions() {
-        return  sessionRepository.findAll();
+        return sessionRepository.findAll();
     }
 
     public Optional<Session> getSessionById(Long id) {
@@ -36,7 +36,7 @@ public class SessionService {
     @Transactional
     public Session createSession(Long id, Session session) {
         Optional<Assignment> assignment = assignmentService.getAssignmentById(id);
-        if(assignment.isPresent()){
+        if (assignment.isPresent()) {
             session.setAssignment(assignment.get());
             session.setId(null);
             return sessionRepository.save(session);
@@ -47,11 +47,27 @@ public class SessionService {
     public Session updateSession(Long id, Session session) {
         Session updatedSession = sessionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Session with id " + id + " does not exist."));
-        //Update the fields with the new data
-        updatedSession.setTimeStart(session.getTimeStart());
-        updatedSession.setTimeEnd(session.getTimeEnd());
-        updatedSession.setComment(session.getComment());
-        updatedSession.setLocation(session.getLocation());
+
+        // Uppdatera tider och datum för lektionen
+        if (session.getTimeStart() != null) {
+            updatedSession.setTimeStart(session.getTimeStart());
+        }
+        if (session.getTimeEnd() != null) {
+            updatedSession.setTimeEnd(session.getTimeEnd());
+        }
+        if (session.getDateStart() != null) {
+            updatedSession.setDateStart(session.getDateStart());
+        }
+        if (session.getDateEnd() != null) {
+            updatedSession.setDateEnd(session.getDateEnd());
+        }
+        if (session.getLocation() != null) {
+            updatedSession.setLocation(session.getLocation());
+        }
+        if (session.getComment() != null) {
+            updatedSession.setComment(session.getComment());
+        }
+
         return sessionRepository.save(updatedSession);
     }
 
@@ -60,7 +76,6 @@ public class SessionService {
         if (!sessionRepository.existsById(id)) {
             return false;
         }
-
         sessionRepository.deleteById(id);
         return true;
     }

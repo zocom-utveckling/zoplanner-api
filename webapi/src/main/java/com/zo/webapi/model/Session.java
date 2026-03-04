@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -21,14 +22,19 @@ public class Session {
     @Schema(hidden = true)
     private Long id;
 
+    @Column(name = "date_start")
+    private LocalDate dateStart;
 
-    @Schema(example = "2025-11-03 12:00", description = "När passet börjar (format: yyyy-MM-dd HH:mm)")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @Column(name = "date_end")
+    private LocalDate dateEnd;
+
+    @Schema(example = "2025-11-03T12:00:00", description = "När passet börjar (format: yyyy-MM-dd'T'HH:mm:ss)")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "time_start")
     private LocalDateTime timeStart;
 
-    @Schema(example = "2025-11-03 16:00", description = "När passet slutar (format: yyyy-MM-dd HH:mm)")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @Schema(example = "2025-11-03T16:00:00", description = "När passet slutar (format: yyyy-MM-dd'T'HH:mm:ss)")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "time_end")
     private LocalDateTime timeEnd;
 
@@ -47,64 +53,35 @@ public class Session {
     @JsonBackReference
     private Assignment assignment;
 
-    /**
-     * Represents the time frame where a consultant is lecturing.
-     *
-     * @param timeStart What time the session starts
-     * @param timeEnd   What time the session end
-     */
-    public Session(LocalDateTime timeStart,  LocalDateTime timeEnd) {
+    public Session(LocalDateTime timeStart, LocalDateTime timeEnd) {
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;
     }
 
     public Session() {}
 
-    public LocalDateTime getTimeEnd() {
-        return timeEnd;
-    }
+    // --- Getters och Setters ---
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setTimeEnd(LocalDateTime endTime) {
-        this.timeEnd = endTime;
-    }
+    public LocalDate getDateStart() { return dateStart; }
+    public void setDateStart(LocalDate dateStart) { this.dateStart = dateStart; }
 
-    public LocalDateTime getTimeStart() {
-        return timeStart;
-    }
+    public LocalDate getDateEnd() { return dateEnd; }
+    public void setDateEnd(LocalDate dateEnd) { this.dateEnd = dateEnd; }
 
-    public void setTimeStart(LocalDateTime startTime) {
-        this.timeStart = startTime;
-    }
+    public LocalDateTime getTimeStart() { return timeStart; }
+    public void setTimeStart(LocalDateTime timeStart) { this.timeStart = timeStart; }
 
-    public Long getId() {
-        return id;
-    }
+    public LocalDateTime getTimeEnd() { return timeEnd; }
+    public void setTimeEnd(LocalDateTime timeEnd) { this.timeEnd = timeEnd; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public SessionLocation getLocation() { return location; }
+    public void setLocation(SessionLocation location) { this.location = location; }
 
-    public Assignment getAssignment() {
-        return assignment;
-    }
+    public String getComment() { return comment; }
+    public void setComment(String comment) { this.comment = comment; }
 
-    public void setAssignment(Assignment assignment) {
-        this.assignment = assignment;
-    }
-
-    public SessionLocation getLocation() {
-        return location;
-    }
-
-    public void setLocation(SessionLocation location) {
-        this.location = location;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
+    public Assignment getAssignment() { return assignment; }
+    public void setAssignment(Assignment assignment) { this.assignment = assignment; }
 }
