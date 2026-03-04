@@ -1,4 +1,4 @@
-package service;
+package com.zo.webapi.service;
 
 import com.zo.webapi.model.User;
 import com.zo.webapi.repository.ConsultantRepository;

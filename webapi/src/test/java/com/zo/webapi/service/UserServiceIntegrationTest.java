@@ -1,5 +1,5 @@
 
-package service;
+package com.zo.webapi.service;
 
 
 import com.zo.webapi.WebapiApplication;
