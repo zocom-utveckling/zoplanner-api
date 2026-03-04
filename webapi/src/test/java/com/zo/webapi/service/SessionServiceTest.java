@@ -1,4 +1,4 @@
-package service;
+package com.zo.webapi.service;
 
 import com.zo.webapi.model.Assignment;
 import com.zo.webapi.model.Session;
