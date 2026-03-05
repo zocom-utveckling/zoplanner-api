@@ -36,8 +36,20 @@ public class AssignmentController {
     }
 
     @GetMapping("/consultant/{consultantId}")
-    public ResponseEntity<List<Assignment>> getAssignmentsByConsultant(@PathVariable Long consultantId) {
-        List<Assignment> assignments = assignmentService.getAssignmentsByConsultant(consultantId);
+    public ResponseEntity<List<Assignment>> getAssignmentsByConsultant(@PathVariable Long consultantId, @RequestParam(required = false) Boolean published) {
+        if(published != null) {
+            List<Assignment> assignments = assignmentService.getAssignmentsByConsultantAndVisibility(consultantId, published);
+            return ResponseEntity.ok(assignments);
+        }
+        else {
+            List<Assignment> assignments = assignmentService.getAssignmentsByConsultant(consultantId);
+            return ResponseEntity.ok(assignments);
+        }
+    }
+
+    @GetMapping("/visibility")
+    public ResponseEntity<List<Assignment>> getAssignmentsByVisibility(@RequestParam(required = false) boolean published) {
+        List<Assignment> assignments = assignmentService.getAssignmentsByVisibility(published);
         return ResponseEntity.ok(assignments);
     }
 

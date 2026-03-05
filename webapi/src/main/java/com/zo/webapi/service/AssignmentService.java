@@ -9,7 +9,9 @@ import com.zo.webapi.model.Course;
 import com.zo.webapi.repository.AssignmentRepository;
 import com.zo.webapi.repository.ConsultantRepository;
 import com.zo.webapi.repository.CourseRepository;
+import com.zo.webapi.specification.AssignmentSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,6 +55,19 @@ public class AssignmentService {
         return assignmentRepository.findByConsultant_Id(consultantId);
     }
 
+    public List<Assignment> getAssignmentsByVisibility(boolean published) {
+        Specification<Assignment> spec = Specification.allOf(AssignmentSpecification.isPublished(published));
+        return assignmentRepository.findAll(spec);
+    }
+
+    public List<Assignment> getAssignmentsByConsultantAndVisibility(Long consultantId, boolean published) {
+        Specification<Assignment> spec = Specification.allOf(
+                AssignmentSpecification.isPublished(published),
+                AssignmentSpecification.hasConsultant(consultantId)
+        );
+        return assignmentRepository.findAll(spec);
+    }
+
     @Transactional
     public Assignment createAssignment(AssignmentDTO dto) {
         // Validera DTO
@@ -72,6 +87,8 @@ public class AssignmentService {
         assignment.setCourse(course);
         assignment.setDateStart(dto.getDateStart());
         assignment.setDateEnd(dto.getDateEnd());
+        if(dto.isPublished() == null) assignment.setPublished(false); //Utkast by-default
+        else assignment.setPublished(dto.isPublished());
 
         return assignmentRepository.save(assignment);
     }
@@ -97,6 +114,7 @@ public class AssignmentService {
         assignment.setCourse(course);
         assignment.setDateStart(dto.getDateStart());
         assignment.setDateEnd(dto.getDateEnd());
+        if(dto.isPublished() != null) assignment.setPublished(dto.isPublished());
 
         return assignmentRepository.save(assignment);
     }
