@@ -86,6 +86,7 @@ public class AssignmentControllerTest {
         AssignmentDTO assignmentDTO = new AssignmentDTO();
         assignmentDTO.setConsultantId(1L);
         assignmentDTO.setCourseId(2L);
+        assignmentDTO.setPublished(true);
 
         when(assignmentService.createAssignment(any(AssignmentDTO.class))).thenReturn(created);
 
@@ -102,6 +103,7 @@ public class AssignmentControllerTest {
         AssignmentDTO sent = captor.getValue();
         assertEquals(1L, sent.getConsultantId());
         assertEquals(2L, sent.getCourseId());
+        assertTrue(sent.isPublished());
 
         verifyNoMoreInteractions(assignmentService);
     }
@@ -115,6 +117,7 @@ public class AssignmentControllerTest {
         AssignmentDTO assignmentDTO = new AssignmentDTO();
         assignmentDTO.setConsultantId(1L);
         assignmentDTO.setCourseId(2L);
+        assignmentDTO.setPublished(false);
 
         when(assignmentService.updateAssignment(eq(1L), any(AssignmentDTO.class))).thenReturn(updated);
 
@@ -131,6 +134,7 @@ public class AssignmentControllerTest {
         AssignmentDTO sent = captor.getValue();
         assertEquals(1L, sent.getConsultantId());
         assertEquals(2L, sent.getCourseId());
+        assertFalse(sent.isPublished());
 
         verifyNoMoreInteractions(assignmentService);
     }

@@ -37,14 +37,14 @@ public class AssignmentController {
 
     @GetMapping("/consultant/{consultantId}")
     public ResponseEntity<List<Assignment>> getAssignmentsByConsultant(@PathVariable Long consultantId, @RequestParam(required = false) Boolean published) {
+        List<Assignment> assignments;
         if(published != null) {
-            List<Assignment> assignments = assignmentService.getAssignmentsByConsultantAndVisibility(consultantId, published);
-            return ResponseEntity.ok(assignments);
+            assignments = assignmentService.getAssignmentsByConsultantAndVisibility(consultantId, published);
         }
         else {
-            List<Assignment> assignments = assignmentService.getAssignmentsByConsultant(consultantId);
-            return ResponseEntity.ok(assignments);
+            assignments = assignmentService.getAssignmentsByConsultant(consultantId);
         }
+        return ResponseEntity.ok(assignments);
     }
 
     @GetMapping("/visibility")
