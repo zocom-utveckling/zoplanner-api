@@ -225,7 +225,8 @@ SQS_QUEUE_URL=https://sqs.eu-north-1.amazonaws.com/your-account-id/zoplanner-not
 
 > ⚠️ **VIKTIGT:** Kommittera ALDRIG denna fil till Git!
 
-### Steg 3: Konfigurera sökvägar i docker-compose.yml
+### (OBS, följande steg behövs ej om du följt guiden rakt av, gå direkt till steg 4)
+### Steg 3: Konfigurera sökvägar i docker-compose.yml 
 
 Öppna filen `zoplanner-api/webapi/docker-compose.yml` och uppdatera sökvägarna till .NET-tjänsten och frontend:
 
@@ -336,6 +337,9 @@ Om du stöter på problem:
 1. 📖 Läs igenom felsökningsavsnittet ovan
 2. 📋 Kontrollera loggarna med `docker-compose logs -f`
 3. 💬 Kontakta utvecklingsteamet i discord
+
+
+### OBS, utdaterad data. Det finns fler tabeller och kolumner i databasen idag. Databasen skapas automatiskt via Java CRUD API-koden om det inte finns en databas på datorn. För att uppdatera databasen krävs i nuläget att man manuellt tart bort den gamla från PgAdmin.
 
 ---
 
@@ -555,4 +559,4 @@ INSERT INTO consultant_statuses (consultant_id, status, date_start, date_end, co
 (19, 'BUSY', '2024-02-25', '2024-05-25', 'Testing projekt'),
 (20, 'UNAVAILABLE', '2024-11-01', '2024-11-30', 'Föräldraledighet');
 ```
-*Senast uppdaterad: December 2025*
+

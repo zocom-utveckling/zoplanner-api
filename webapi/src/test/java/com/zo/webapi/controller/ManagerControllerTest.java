@@ -42,7 +42,6 @@ public class ManagerControllerTest {
                 .param("userId", "10"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L));
-
     }
 
 
@@ -102,7 +101,6 @@ public class ManagerControllerTest {
         mockMvc.perform(get("/api/managers/1/customers"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1L));
-
     }
 
     @Test
