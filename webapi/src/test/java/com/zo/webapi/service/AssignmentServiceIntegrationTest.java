@@ -271,6 +271,7 @@ public class AssignmentServiceIntegrationTest {
         u.setPassword("pw");
         u.setName(name);
         u.setEmail(email);
+        u.setCity(city);
         u.setRole(UserRole.CONSULTANT);
         u = userRepository.save(u);
 

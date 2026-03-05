@@ -1,9 +1,6 @@
 package com.zo.webapi.controller;
 
-import com.zo.webapi.dto.CustomerCreateDTO;
-import com.zo.webapi.dto.CustomerResponseDTO;
-import com.zo.webapi.dto.CustomerUpdateDTO;
-import com.zo.webapi.dto.ManagerResponseToCustomerDTO;
+import com.zo.webapi.dto.*;
 import com.zo.webapi.model.Customer;
 import com.zo.webapi.model.Manager;
 import com.zo.webapi.service.CustomerService;
@@ -104,7 +101,7 @@ public class CustomerControllerTest {
         ManagerResponseToCustomerDTO mgrDto = new ManagerResponseToCustomerDTO(1L, "mgrUser", "MANAGER");
         CustomerResponseDTO response = new CustomerResponseDTO(1L, "John", "Berlin", mgrDto);
 
-        when(managerService.findManagerById(1L)).thenReturn(manager);
+        when(managerService.getManagerById(1L)).thenReturn(new ManagerResponseDTO(1L, 1L, "mgrUser", "MANAGER"));
         when(customerService.createCustomer(any(CustomerCreateDTO.class))).thenReturn(response);
 
         String json = "{\"name\":\"John\",\"city\":\"Berlin\",\"managerId\":1}";

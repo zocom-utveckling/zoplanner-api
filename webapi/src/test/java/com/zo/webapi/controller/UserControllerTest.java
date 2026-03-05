@@ -4,18 +4,17 @@ import com.zo.webapi.model.User;
 import com.zo.webapi.repository.ConsultantRepository;
 import com.zo.webapi.repository.ManagerRepository;
 import com.zo.webapi.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springdoc.core.service.GenericResponseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
 import java.util.ArrayList;
 import java.util.List;
 import com.zo.webapi.enums.UserRole;
-import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -39,10 +38,16 @@ public class UserControllerTest {
     @MockBean
     private GenericResponseService genericResponseService;
 
+    private User user;
+
+    @BeforeEach
+    public void setup() {
+        user = new User(1L, "testuser", "testpassword", "Test User","testuser@mail.com", "Malmö", UserRole.MANAGER);
+    }
+
     @Test
     void testShowAllUsers() throws Exception{
         List<User> users = new ArrayList<>();
-        User user = new User(1L, "testuser", "testpassword", "Test User","testuser@mail.com", UserRole.MANAGER);
 
         users.add(user);
 
@@ -59,8 +64,6 @@ public class UserControllerTest {
 
     @Test
     void testGetUserById_Success() throws Exception{
-        User user = new User(1L, "testuser", "testpassword", "Test User","testuser@mail.com", UserRole.MANAGER);
-
         when(userService.getUserById(1L)).thenReturn(user);
 
         mockMvc.perform(get("/api/users/1"))
@@ -83,12 +86,34 @@ public class UserControllerTest {
     }
 
     @Test
+    void testGetUserByUsername_Success() throws Exception {
+        when(userService.getUserByUsername("testuser")).thenReturn(user);
+
+        mockMvc.perform(get("/api/users/username/testuser"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.username").value("testuser"))
+                .andExpect(jsonPath("$.name").value("Test User"))
+                .andExpect(jsonPath("$.email").value("testuser@mail.com"))
+                .andExpect(jsonPath("$.role").value("MANAGER"));
+    }
+
+    @Test
+    void testGetUserByUsername_NotFound() throws Exception {
+        when(userService.getUserByUsername("user2"))
+                .thenThrow(new IllegalArgumentException("User not found"));
+
+        mockMvc.perform(get("/api/users/username/user2"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void testDeleteUser_Success() throws Exception{
         doNothing().when(userService).deleteUser(1L);
 
         mockMvc.perform(delete("/api/users/1"))
                 .andExpect(status().isNoContent());
-
+        verify(userService, times(1)).deleteUser(1L);
     }
 
     @Test
@@ -103,8 +128,6 @@ public class UserControllerTest {
 
     @Test
     void testCreateUser_Success() throws Exception{
-        User user = new User(1L, "testuser", "testpassword", "Test User", "testuser@mail.com", UserRole.CONSULTANT);
-
         when(userService.usernameExists("testuser")).thenReturn(false);
         when(userService.createUser(any(User.class))).thenReturn(user);
 
@@ -114,7 +137,8 @@ public class UserControllerTest {
                 "password": "testpassword",
                 "name": "Test User",
                 "email": "testuser@mail.com",
-                "role": "CONSULTANT"
+                "city": "Malmö",
+                "role": "MANAGER"
             }
         """;
 
@@ -125,6 +149,29 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.username").value("testuser"))
                 .andExpect(jsonPath("$.name").value("Test User"))
                 .andExpect(jsonPath("$.email").value("testuser@mail.com"))
-                .andExpect(jsonPath("$.role").value("CONSULTANT"));
+                .andExpect(jsonPath("$.city").value("Malmö"))
+                .andExpect(jsonPath("$.role").value("MANAGER"));
+    }
+
+    @Test
+    void testCreateUser_AlreadyExists() throws Exception {
+        when(userService.usernameExists("testuser")).thenReturn(true);
+        String requestJson = """
+            {
+                "username": "testuser",
+                "password": "testpassword",
+                "name": "Test User",
+                "email": "testuser@mail.com",
+                "city": "Malmö",
+                "role": "MANAGER"
+            }
+        """;
+
+        mockMvc.perform(post("/api/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isConflict());
+        verify(userService, never()).createUser(user);
     }
 }
+

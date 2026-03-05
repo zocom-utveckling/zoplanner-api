@@ -1,17 +1,16 @@
-/*package service;
+package com.zo.webapi.service;
 
 import com.zo.webapi.model.User;
+import com.zo.webapi.repository.ConsultantRepository;
+import com.zo.webapi.repository.ManagerRepository;
 import com.zo.webapi.repository.UserRepository;
 import com.zo.webapi.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.zo.webapi.enums.UserRole;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,15 +23,21 @@ public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private ManagerRepository managerRepository;
+
+    @Mock
+    private ConsultantRepository consultantRepository;
+
     @InjectMocks
     private UserService userService;
 
     private User sampleUser;
 
     @BeforeEach
-    public void setUp() {
+    public void setup() {
         MockitoAnnotations.openMocks(this);
-        sampleUser = new User(1L, "john_doe", "password123", "John Doe", UserRole.CONSULTANT);
+        sampleUser = new User(1L, "john_doe", "password123", "John Doe", "johndoe@mail.com", "Malmö", UserRole.CONSULTANT);
     }
 
     @Test
@@ -87,7 +92,7 @@ public class UserServiceTest {
         when(userRepository.existsById(1L)).thenReturn(false);
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.deleteUser(1L));
-        assertEquals("User not found with id 1", exception.getMessage());
+        assertEquals("User not found with id: 1", exception.getMessage());
     }
 
     @Test
@@ -111,5 +116,11 @@ public class UserServiceTest {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.getUserByUsername("john_doe"));
         assertEquals("User not found with name john_doe", exception.getMessage());
     }
+
+    @Test
+    void testEmailExists() {
+        when(userRepository.existsByEmail("johndoe@mail.com")).thenReturn(true);
+        assertTrue(userService.emailExists("johndoe@mail.com"));
+        verify(userRepository, times(1)).existsByEmail("johndoe@mail.com");
+    }
 }
-*/
