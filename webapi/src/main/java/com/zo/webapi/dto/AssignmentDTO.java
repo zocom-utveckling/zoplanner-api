@@ -11,4 +11,9 @@ public class AssignmentDTO {
     private Long courseId;
     private LocalDate dateStart;
     private LocalDate dateEnd;
+    private Boolean published;
+
+    public Boolean isPublished() {
+        return published;
+    }
 }

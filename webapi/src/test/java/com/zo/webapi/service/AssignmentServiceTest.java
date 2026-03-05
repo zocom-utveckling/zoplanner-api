@@ -122,6 +122,7 @@ public class AssignmentServiceTest {
         assertSame(course, toSave.getCourse());
         assertEquals(assignmentDTO.getDateStart(), toSave.getDateStart());
         assertEquals(assignmentDTO.getDateEnd(), toSave.getDateEnd());
+        assertFalse(toSave.isPublished());
 
         verifyNoMoreInteractions(assignmentRepository, consultantRepository, courseRepository);
     }

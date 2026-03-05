@@ -36,6 +36,8 @@ public class Assignment {
     @JsonManagedReference
     private final List<Session> sessions = new ArrayList<>();
 
+    @Column(name = "published" , nullable = false)
+    private boolean published;
 
     public Assignment() {}
 
@@ -89,5 +91,13 @@ public class Assignment {
 
     public void addSession(Session session) {
         sessions.add(session);
+    }
+
+    public boolean isPublished() {
+        return published;
+    }
+
+    public void setPublished(boolean published) {
+        this.published = published;
     }
 }

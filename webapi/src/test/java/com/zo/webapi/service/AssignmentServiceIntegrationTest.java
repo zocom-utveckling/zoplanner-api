@@ -22,6 +22,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = WebapiApplication.class)
@@ -62,7 +63,8 @@ public class AssignmentServiceIntegrationTest {
                 consultant1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 1, 1),
-                LocalDate.of(2026, 1, 5)
+                LocalDate.of(2026, 1, 5),
+                true
         );
 
         Assignment created = assignmentService.createAssignment(dto);
@@ -74,6 +76,7 @@ public class AssignmentServiceIntegrationTest {
         assertThat(created.getCourse().getId()).isEqualTo(course1.getId());
         assertThat(created.getDateStart()).isEqualTo(dto.getDateStart());
         assertThat(created.getDateEnd()).isEqualTo(dto.getDateEnd());
+        assertTrue(created.isPublished());
 
         assertThat(assignmentRepository.findById(created.getId())).isPresent();
     }
@@ -84,7 +87,8 @@ public class AssignmentServiceIntegrationTest {
                 consultant1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 2, 1),
-                LocalDate.of(2026, 2, 5)
+                LocalDate.of(2026, 2, 5),
+                true
         ));
 
         Optional<Assignment> found = assignmentService.getAssignmentById(created.getId());
@@ -99,14 +103,16 @@ public class AssignmentServiceIntegrationTest {
                 consultant1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 3, 1),
-                LocalDate.of(2026, 3, 5)
+                LocalDate.of(2026, 3, 5),
+                true
         ));
 
         assignmentService.createAssignment(validDto(
                 consultant1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 3, 10),
-                LocalDate.of(2026, 3, 15)
+                LocalDate.of(2026, 3, 15),
+                false
         ));
 
         List<Assignment> assignmentList = assignmentService.getAssignmentsByConsultant(consultant1.getId());
@@ -116,12 +122,53 @@ public class AssignmentServiceIntegrationTest {
     }
 
     @Test
+    void testGetAssignmentsByVisibility() {
+        assignmentService.createAssignment(validDto(
+                consultant1.getId(),
+                course1.getId(),
+                LocalDate.of(2026, 3, 1),
+                LocalDate.of(2026, 3, 5),
+                true
+        ));
+
+        assignmentService.createAssignment(validDto(
+                consultant1.getId(),
+                course1.getId(),
+                LocalDate.of(2026, 3, 1),
+                LocalDate.of(2026, 3, 5),
+                true
+        ));
+
+        assignmentService.createAssignment(validDto(
+                consultant1.getId(),
+                course1.getId(),
+                LocalDate.of(2026, 3, 1),
+                LocalDate.of(2026, 3, 5),
+                true
+        ));
+
+        assignmentService.createAssignment(validDto(
+                consultant1.getId(),
+                course1.getId(),
+                LocalDate.of(2026, 3, 10),
+                LocalDate.of(2026, 3, 15),
+                false
+        ));
+
+        List<Assignment> assignmentList = assignmentService.getAssignmentsByVisibility(true);
+
+        assertThat(assignmentList).hasSize(3);
+        assertThat(assignmentList).extracting(Assignment::isPublished).containsOnly(true);
+    }
+
+    @Test
     void testUpdateAssignment_Success() {
         Assignment created = assignmentService.createAssignment(validDto(
                 consultant1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 4, 1),
-                LocalDate.of(2026, 4, 5)
+                LocalDate.of(2026, 4, 5),
+                false
         ));
         Consultant consultant2 = persistConsultant(
                 "consultant.two", "Consultant Two", "consultant.two@mail.com", "Göteborg");
@@ -133,7 +180,8 @@ public class AssignmentServiceIntegrationTest {
                 consultant2.getId(),
                 course2.getId(),
                 LocalDate.of(2026, 4, 10),
-                LocalDate.of(2026, 4, 15)
+                LocalDate.of(2026, 4, 15),
+                true
         );
 
         Assignment updated = assignmentService.updateAssignment(created.getId(), updateDTO);
@@ -151,7 +199,8 @@ public class AssignmentServiceIntegrationTest {
                 consultant1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 5, 1),
-                LocalDate.of(2026, 5, 5)
+                LocalDate.of(2026, 5, 5),
+                false
         ));
 
         assignmentService.deleteAssignment(created.getId());
@@ -177,7 +226,8 @@ public class AssignmentServiceIntegrationTest {
                 consultantNotFoundId,
                 course1.getId(),
                 LocalDate.of(2026, 6, 1),
-                LocalDate.of(2026, 6, 5)
+                LocalDate.of(2026, 6, 5),
+                true
         );
 
         ResourceNotFoundException exc = assertThrows(ResourceNotFoundException.class,
@@ -194,7 +244,8 @@ public class AssignmentServiceIntegrationTest {
                 consultant1.getId(),
                 courseNotFoundId,
                 LocalDate.of(2026, 7, 1),
-                LocalDate.of(2026, 7, 5)
+                LocalDate.of(2026, 7, 5),
+                true
         );
 
         ResourceNotFoundException exc = assertThrows(ResourceNotFoundException.class,
@@ -209,7 +260,8 @@ public class AssignmentServiceIntegrationTest {
                 consultant1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 8, 5),
-                LocalDate.of(2026, 8, 1)
+                LocalDate.of(2026, 8, 1),
+                true
         );
 
         InvalidDataException exc = assertThrows(InvalidDataException.class,
@@ -235,7 +287,8 @@ public class AssignmentServiceIntegrationTest {
                 consultant1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 9, 1),
-                LocalDate.of(2026, 9, 5)
+                LocalDate.of(2026, 9, 5),
+                false
         );
 
         ResourceNotFoundException exc = assertThrows(ResourceNotFoundException.class,
@@ -256,12 +309,13 @@ public class AssignmentServiceIntegrationTest {
 
     // Helpers
 
-    private AssignmentDTO validDto(Long consultantId, Long courseId, LocalDate start, LocalDate end) {
+    private AssignmentDTO validDto(Long consultantId, Long courseId, LocalDate start, LocalDate end, boolean published) {
         AssignmentDTO dto = new AssignmentDTO();
         dto.setConsultantId(consultantId);
         dto.setCourseId(courseId);
         dto.setDateStart(start);
         dto.setDateEnd(end);
+        dto.setPublished(published);
         return dto;
     }
 
