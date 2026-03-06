@@ -2,7 +2,6 @@ package com.zo.webapi.service;
 
 import com.zo.webapi.WebapiApplication;
 import com.zo.webapi.dto.CustomerCreateDTO;
-import com.zo.webapi.dto.CustomerCreateDTO;
 import com.zo.webapi.dto.CustomerResponseDTO;
 import com.zo.webapi.dto.CustomerUpdateDTO;
 import com.zo.webapi.model.Customer;
@@ -36,22 +35,21 @@ public class CustomerServiceIntegrationTest {
 
     @BeforeEach
     void setUp() {
-
+        // Rensa databasen innan varje test
         customerRepository.deleteAll();
 
-
+        // Skapa en testkund och spara i klassvariabeln
         CustomerCreateDTO dto = new CustomerCreateDTO();
         dto.setName("John");
         dto.setCity("London");
         dto.setManagerId(null); // om manager är nullable
 
-        CustomerResponseDTO customer1 = customerService.createCustomer(dto);
-
+        CustomerResponseDTO created = customerService.createCustomer(dto);
+        customer1 = customerRepository.findById(created.getId()).orElseThrow();
     }
 
     @Test
     void testGetAllCustomers_Success() {
-
         List<Customer> customers = customerService.getAllCustomers();
 
         assertThat(customers).isNotEmpty();
@@ -76,7 +74,6 @@ public class CustomerServiceIntegrationTest {
 
     @Test
     void testUpdateCustomer_Success() {
-
         CustomerUpdateDTO updateDTO = new CustomerUpdateDTO();
         updateDTO.setName("John Updated");
         updateDTO.setCity("Stockholm");
@@ -89,7 +86,6 @@ public class CustomerServiceIntegrationTest {
 
     @Test
     void testUpdateCustomer_NotFound() {
-
         CustomerUpdateDTO updateDTO = new CustomerUpdateDTO();
         updateDTO.setName("Not found");
         updateDTO.setCity("None");
@@ -104,7 +100,6 @@ public class CustomerServiceIntegrationTest {
 
     @Test
     void testDeleteCustomer_Success() {
-
         customerService.deleteCustomer(customer1.getId());
 
         assertThat(customerRepository.findById(customer1.getId())).isEmpty();
@@ -112,7 +107,6 @@ public class CustomerServiceIntegrationTest {
 
     @Test
     void testDeleteCustomer_NotFound() {
-
         RuntimeException exc = assertThrows(
                 RuntimeException.class,
                 () -> customerService.deleteCustomer(9999L)

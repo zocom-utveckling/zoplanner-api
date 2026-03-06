@@ -3,6 +3,7 @@ package com.zo.webapi.service;
 import com.zo.webapi.WebapiApplication;
 import com.zo.webapi.exception.ResourceNotFoundException;
 import com.zo.webapi.model.Assignment;
+import com.zo.webapi.model.Consultant;
 import com.zo.webapi.model.Session;
 import com.zo.webapi.model.SessionLocation;
 import com.zo.webapi.repository.SessionRepository;
@@ -13,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,6 +37,9 @@ public class SessionServiceIntegrationTest {
     @Autowired
     private SessionRepository sessionRepository;
 
+    @Autowired
+    private EntityManager entityManager;
+
     private Assignment assignment1;
     private Assignment assignment2;
 
@@ -42,9 +47,15 @@ public class SessionServiceIntegrationTest {
     void setup() {
         sessionRepository.deleteAll();
 
-        // Skapa två assignments för test
-        assignment1 = assignmentService.createAssignment(validAssignmentDTO(1));
-        assignment2 = assignmentService.createAssignment(validAssignmentDTO(2));
+        // Skapa en testkonsult
+        Consultant testConsultant = new Consultant();
+        testConsultant.setName("Test Consultant");
+        entityManager.persist(testConsultant);
+        entityManager.flush(); // Se till att id genereras
+
+        // Skapa två assignments med konsulten
+        assignment1 = assignmentService.createAssignment(validAssignmentDTO(1, testConsultant.getId()));
+        assignment2 = assignmentService.createAssignment(validAssignmentDTO(2, testConsultant.getId()));
     }
 
     @Test
@@ -151,9 +162,9 @@ public class SessionServiceIntegrationTest {
     }
 
     // Helper för att skapa AssignmentDTO
-    private com.zo.webapi.dto.AssignmentDTO validAssignmentDTO(long suffix) {
+    private com.zo.webapi.dto.AssignmentDTO validAssignmentDTO(long suffix, Long consultantId) {
         com.zo.webapi.dto.AssignmentDTO dto = new com.zo.webapi.dto.AssignmentDTO();
-        dto.setConsultantId(1L);
+        dto.setConsultantId(consultantId);
         dto.setCourseId(1L);
         dto.setDateStart(LocalDate.of(2026, 1, (int) suffix));
         dto.setDateEnd(LocalDate.of(2026, 1, (int) (suffix + 2)));
