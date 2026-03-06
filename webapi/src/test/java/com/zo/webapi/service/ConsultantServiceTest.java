@@ -1,6 +1,7 @@
 package com.zo.webapi.service;
 
 import com.zo.webapi.dto.ConsultantDTO;
+import com.zo.webapi.enums.UserRole;
 import com.zo.webapi.exception.InvalidDataException;
 import com.zo.webapi.exception.ResourceNotFoundException;
 import com.zo.webapi.mapper.ConsultantMapper;
@@ -42,10 +43,14 @@ public class ConsultantServiceTest {
         Consultant consultant = new Consultant();
         consultant.setId(1L);
         consultant.setCity("Stockholm");
+        consultant.setUser(new User(1L, "konsult1", "password", "konsult1", "konsult1@mail.com", "Stockholm", UserRole.CONSULTANT));
+
 
         Consultant consultant2 = new Consultant();
         consultant2.setId(2L);
         consultant2.setCity("Paris");
+        consultant2.setUser(new User(2L, "konsult2", "password", "konsult2", "konsult2@mail.com", "Paris", UserRole.CONSULTANT));
+
 
         when(consultantRepository.findAll()).thenReturn(List.of(consultant, consultant2));
 
@@ -62,6 +67,7 @@ public class ConsultantServiceTest {
         consultant.setCity("London");
         consultant.setUser(new User());
         consultant.getUser().setId(10L);
+        consultant.getUser().setCity("London");
 
         when(consultantRepository.findById(1L)).thenReturn(Optional.of(consultant));
 
@@ -79,6 +85,7 @@ public class ConsultantServiceTest {
         ConsultantDTO dto = new ConsultantDTO(null, "London", 10L, null);
         User user = new User();
         user.setId(10L);
+        user.setCity("London");
 
         when(userRepository.findById(10L)).thenReturn(Optional.empty());
         when(userRepository.findById(10L)).thenReturn(Optional.of(user));
@@ -92,6 +99,7 @@ public class ConsultantServiceTest {
         ConsultantDTO result = consultantService.createConsultant(dto);
 
         assertNotNull(result);
+        System.out.println(result.toString());
         assertEquals(1L, result.getId());
         assertEquals("London", result.getCity());
         assertEquals(10L, result.getUserId());
@@ -113,8 +121,11 @@ public class ConsultantServiceTest {
 
     @Test
     void testGetConsultantByManagerId_Success() {
+        Consultant consultant = new Consultant();
+        consultant.setId(1L);
+        consultant.setUser(new User(1L, "konsult1", "password", "konsult1", "konsult1@mail.com", "Malmö", UserRole.CONSULTANT));
         when(managerRepository.existsById(1L)).thenReturn(true);
-        when(consultantRepository.findByManagerId(1L)).thenReturn(List.of(new Consultant()));
+        when(consultantRepository.findByManagerId(1L)).thenReturn(List.of(consultant));
 
         List<ConsultantDTO> result = consultantService.getConsultantsByManagerId(1L);
         assertEquals(1, result.size());
@@ -126,16 +137,21 @@ public class ConsultantServiceTest {
     void testUpdateConsultant_Success() {
         Consultant existing = new Consultant();
         existing.setId(1L);
-        existing.setCity("OldCity");
+        existing.setUser(new User(1L, "konsult1", "password", "konsult1", "konsult1@mail.com", "Malmö", UserRole.CONSULTANT));
 
-        ConsultantDTO dto = new ConsultantDTO(null, "NewCity", null, null);
+        Manager manager = new Manager();
+        manager.setId(1L);
 
+
+        ConsultantDTO dto = new ConsultantDTO(null, "NewCity", null, 1L);
+
+        when(managerRepository.findById(1L)).thenReturn(Optional.of(manager));
         when(consultantRepository.findById(1L)).thenReturn(Optional.of(existing));
         when(consultantRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
         ConsultantDTO result = consultantService.updateConsultant(1L, dto);
         assertEquals(1L, result.getId());
-        assertEquals("NewCity", result.getCity());
+        assertEquals(1L, result.getManagerId());
     }
 
     @Test
