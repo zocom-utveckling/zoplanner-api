@@ -1,11 +1,11 @@
 package com.zo.webapi.service;
 
 import com.zo.webapi.WebapiApplication;
+import com.zo.webapi.exception.ResourceNotFoundException;
 import com.zo.webapi.model.Assignment;
 import com.zo.webapi.model.Session;
+import com.zo.webapi.model.SessionLocation;
 import com.zo.webapi.repository.SessionRepository;
-import com.zo.webapi.service.AssignmentService;
-import com.zo.webapi.service.SessionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,21 +13,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.EntityNotFoundException;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/*@ActiveProfiles("test")
+@ActiveProfiles("test")
 @SpringBootTest(classes = WebapiApplication.class)
 @Transactional
 public class SessionServiceIntegrationTest {
-    @Autowired
-    private SessionRepository sessionRepository;
 
     @Autowired
     private SessionService sessionService;
@@ -35,63 +32,131 @@ public class SessionServiceIntegrationTest {
     @Autowired
     private AssignmentService assignmentService;
 
-    private Assignment existingAssignment;
-    private Session existingSession;
+    @Autowired
+    private SessionRepository sessionRepository;
+
+    private Assignment assignment1;
+    private Assignment assignment2;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         sessionRepository.deleteAll();
 
-        existingAssignment = new Assignment("Java", 1L,
-                LocalDateTime.of(2025, 1, 1, 10, 0).toLocalDate(),
-                LocalDateTime.of(2025, 1, 31, 10, 0).toLocalDate(),
-                100L);
-
-        existingAssignment =  assignmentService.createAssignment(existingAssignment);
-
-        existingSession = new Session(LocalDateTime.of(2025, 2, 1, 10, 0),
-                LocalDateTime.of(2025, 2, 10, 10, 0));
-
-        existingSession = sessionService.createSession(existingAssignment.getId(), existingSession);
+        // Skapa två assignments för test
+        assignment1 = assignmentService.createAssignment(validAssignmentDTO(1));
+        assignment2 = assignmentService.createAssignment(validAssignmentDTO(2));
     }
 
     @Test
     void testCreateSession_Success() {
-        Session newSession = new Session(LocalDateTime.of(2025, 11, 1, 10, 0),
-                LocalDateTime.of(2025, 11, 10, 10, 0));
+        Session session = new Session();
+        session.setTimeStart(LocalDateTime.of(2026, 1, 1, 10, 0));
+        session.setTimeEnd(LocalDateTime.of(2026, 1, 1, 12, 0));
+        session.setComment("Session 1 comment");
+        session.setLocation(SessionLocation.REMOTE);
 
-        Session saved =  sessionService.createSession(existingAssignment.getId(), newSession);
+        Session created = sessionService.createSession(assignment1.getId(), session);
 
-        assertThat(saved.getId()).isNotNull();
-        assertThat(saved.getAssignment().getId()).isEqualTo(existingAssignment.getId());
-        assertThat(saved.getTimeStart()).isEqualTo(newSession.getTimeStart());
+        assertThat(created.getId()).isNotNull();
+        assertThat(created.getAssignment().getId()).isEqualTo(assignment1.getId());
+        assertThat(created.getComment()).isEqualTo("Session 1 comment");
+        assertThat(created.getLocation()).isEqualTo(SessionLocation.REMOTE);
     }
 
     @Test
     void testGetSessionById_Success() {
-        Optional<Session> found = sessionService.getSessionById(existingSession.getId());
+        Session session = new Session();
+        session.setTimeStart(LocalDateTime.of(2026, 2, 1, 10, 0));
+        session.setTimeEnd(LocalDateTime.of(2026, 2, 1, 12, 0));
+        session.setLocation(SessionLocation.ONSITE);
 
+        session = sessionService.createSession(assignment1.getId(), session);
+
+        Optional<Session> found = sessionService.getSessionById(session.getId());
         assertThat(found).isPresent();
-        assertThat(found.get().getTimeStart()).isEqualTo(existingSession.getTimeStart());
+        assertThat(found.get().getId()).isEqualTo(session.getId());
+    }
+
+    @Test
+    void testGetAllSessions_Success() {
+        Session session1 = new Session();
+        session1.setTimeStart(LocalDateTime.of(2026, 3, 1, 9, 0));
+        session1.setTimeEnd(LocalDateTime.of(2026, 3, 1, 11, 0));
+        session1.setLocation(SessionLocation.REMOTE);
+
+        Session session2 = new Session();
+        session2.setTimeStart(LocalDateTime.of(2026, 3, 2, 14, 0));
+        session2.setTimeEnd(LocalDateTime.of(2026, 3, 2, 16, 0));
+        session2.setLocation(SessionLocation.ONSITE);
+
+        sessionService.createSession(assignment1.getId(), session1);
+        sessionService.createSession(assignment2.getId(), session2);
+
+        List<Session> allSessions = sessionService.getAllSessions();
+        assertThat(allSessions).hasSize(2);
+    }
+
+    @Test
+    void testUpdateSession_Success() {
+        Session session = new Session();
+        session.setTimeStart(LocalDateTime.of(2026, 4, 1, 10, 0));
+        session.setTimeEnd(LocalDateTime.of(2026, 4, 1, 12, 0));
+        session.setLocation(SessionLocation.ONSITE);
+
+        session = sessionService.createSession(assignment1.getId(), session);
+
+        Session updateSession = new Session();
+        updateSession.setTimeStart(LocalDateTime.of(2026, 4, 1, 11, 0));
+        updateSession.setTimeEnd(LocalDateTime.of(2026, 4, 1, 13, 0));
+        updateSession.setComment("Updated comment");
+        updateSession.setLocation(SessionLocation.HYBRID);
+
+        Session updated = sessionService.updateSession(session.getId(), updateSession);
+
+        assertThat(updated.getTimeStart()).isEqualTo(updateSession.getTimeStart());
+        assertThat(updated.getTimeEnd()).isEqualTo(updateSession.getTimeEnd());
+        assertThat(updated.getComment()).isEqualTo("Updated comment");
+        assertThat(updated.getLocation()).isEqualTo(SessionLocation.HYBRID);
     }
 
     @Test
     void testUpdateSession_NotFound() {
-        Session update = new Session(LocalDateTime.of(2025, 12, 1, 10, 0),
-                LocalDateTime.of(2025, 12, 10, 10, 0));
+        Session session = new Session();
+        session.setTimeStart(LocalDateTime.now());
+        session.setTimeEnd(LocalDateTime.now().plusHours(1));
+        session.setLocation(SessionLocation.REMOTE);
 
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
-                sessionService.updateSession(999L, update));
+        assertThrows(ResourceNotFoundException.class, () ->
+                sessionService.updateSession(9999L, session));
+    }
 
-        assertThat(exception.getMessage()).isEqualTo("Session with id 999 does not exist.");
+    @Test
+    void testDeleteSession_Success() {
+        Session session = new Session();
+        session.setTimeStart(LocalDateTime.of(2026, 5, 1, 10, 0));
+        session.setTimeEnd(LocalDateTime.of(2026, 5, 1, 12, 0));
+        session.setLocation(SessionLocation.REMOTE);
+
+        session = sessionService.createSession(assignment1.getId(), session);
+
+        boolean deleted = sessionService.deleteSessionById(session.getId());
+        assertThat(deleted).isTrue();
+        assertThat(sessionRepository.existsById(session.getId())).isFalse();
     }
 
     @Test
     void testDeleteSession_NotFound() {
-        boolean result = sessionService.deleteSessionById(999L);
-        assertThat(result).isFalse();
+        boolean deleted = sessionService.deleteSessionById(9999L);
+        assertThat(deleted).isFalse();
     }
 
-
-
-}*/
+    // Helper för att skapa AssignmentDTO
+    private com.zo.webapi.dto.AssignmentDTO validAssignmentDTO(long suffix) {
+        com.zo.webapi.dto.AssignmentDTO dto = new com.zo.webapi.dto.AssignmentDTO();
+        dto.setConsultantId(1L);
+        dto.setCourseId(1L);
+        dto.setDateStart(LocalDate.of(2026, 1, (int) suffix));
+        dto.setDateEnd(LocalDate.of(2026, 1, (int) (suffix + 2)));
+        return dto;
+    }
+}
