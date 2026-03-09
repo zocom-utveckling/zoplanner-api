@@ -2,6 +2,7 @@ package com.zo.webapi.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zo.webapi.dto.ConsultantDTO;
+import com.zo.webapi.dto.ConsultantResponseDTO;
 import com.zo.webapi.exception.InvalidDataException;
 import com.zo.webapi.exception.ResourceNotFoundException;
 import com.zo.webapi.service.ConsultantService;
@@ -31,7 +32,7 @@ public class ConsultantControllerTest {
 
     @Test
     void testGetAllConsultants_Success() throws Exception {
-        ConsultantDTO dto = new ConsultantDTO(1L, "London", 10L, null);
+        ConsultantResponseDTO dto = new ConsultantResponseDTO(1L, "fredrik", "Paris", 10L, 1L);
 
         when(consultantService.getAllConsultants()).thenReturn(List.of(dto));
 
@@ -43,7 +44,7 @@ public class ConsultantControllerTest {
 
     @Test
     void testGetConsultantById_Success() throws Exception {
-        ConsultantDTO dto = new ConsultantDTO(1L, "London", 10L, null);
+        ConsultantResponseDTO dto = new ConsultantResponseDTO(1L, "fredrik", "Paris", 10L, 1L);
 
         when(consultantService.getConsultantById(1L)).thenReturn(dto);
 
@@ -54,7 +55,7 @@ public class ConsultantControllerTest {
 
     @Test
     void testGetConsultantByUserId_Success() throws Exception {
-        ConsultantDTO dto = new ConsultantDTO(1L, "London", 10L, null);
+        ConsultantResponseDTO dto = new ConsultantResponseDTO(1L, "fredrik", "Paris", 10L, 1L);
 
         when(consultantService.getConsultantByUserId(10L)).thenReturn(dto);
 
@@ -66,7 +67,7 @@ public class ConsultantControllerTest {
 
     @Test
     void testGetConsultantByManagerId_Success() throws Exception {
-        ConsultantDTO dto = new ConsultantDTO(1L, "London", 10L, 5L);
+        ConsultantResponseDTO dto = new ConsultantResponseDTO(1L, "fredrik", "Paris", 5L, 5L);
 
         when(consultantService.getConsultantsByManagerId(5L)).thenReturn(List.of(dto));
 
@@ -78,8 +79,8 @@ public class ConsultantControllerTest {
 
     @Test
     void testCreateConsultant_Success() throws Exception {
-        ConsultantDTO request = new ConsultantDTO(null, "London", 10L, null);
-        ConsultantDTO created = new ConsultantDTO(1L, "London", 10L, null);
+        ConsultantDTO request = new ConsultantDTO(null, 10L, 1L);
+        ConsultantResponseDTO created = new ConsultantResponseDTO(1L, "fredrik", "Bjärred", 10L, 1L);
 
         when(consultantService.createConsultant(any(ConsultantDTO.class))).thenReturn(created);
 
@@ -93,8 +94,8 @@ public class ConsultantControllerTest {
 
     @Test
     void testUpdateConsultant_Success() throws Exception {
-        ConsultantDTO request = new ConsultantDTO(null, "London", 10L, null);
-        ConsultantDTO updated = new ConsultantDTO(1L, "London", 10L, null);
+        ConsultantDTO request = new ConsultantDTO(null, 10L, null);
+        ConsultantResponseDTO updated = new ConsultantResponseDTO(1L, "fredrik", "Bjärred", 10L, 1L);
 
         when(consultantService.updateConsultant(eq(1L), any())).thenReturn(updated);
 
@@ -102,7 +103,7 @@ public class ConsultantControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.city").value("London"));
+                .andExpect(jsonPath("$.managerId").value(1L));
     }
 
 
@@ -145,7 +146,7 @@ public class ConsultantControllerTest {
 
     @Test
     void testCreateConsultant_Failure() throws Exception {
-        ConsultantDTO request = new ConsultantDTO(null, "London", 10L, null);
+        ConsultantDTO request = new ConsultantDTO(null, 10L, null);
 
         when(consultantService.createConsultant(any()))
                 .thenThrow(new InvalidDataException("User already is consultant"));
@@ -158,7 +159,7 @@ public class ConsultantControllerTest {
 
     @Test
     void testUpdateConsultant_NotFound() throws Exception {
-        ConsultantDTO request = new ConsultantDTO(null, "London", 10L, null);
+        ConsultantDTO request = new ConsultantDTO(null, 10L, null);
 
         when(consultantService.updateConsultant(eq(999L), any()))
                 .thenThrow(new ResourceNotFoundException("Consultant", "id", 999L));

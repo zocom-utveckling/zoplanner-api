@@ -1,14 +1,15 @@
 package com.zo.webapi.mapper;
 
 import com.zo.webapi.dto.ConsultantDTO;
+import com.zo.webapi.dto.ConsultantResponseDTO;
 import com.zo.webapi.model.Consultant;
 
 public class ConsultantMapper {
 
-    public static ConsultantDTO toDTO(Consultant consultant) {
+    public static ConsultantResponseDTO toDTO(Consultant consultant) {
         if (consultant == null) return null;
 
-        return new ConsultantDTO(
+        return new ConsultantResponseDTO(
                 consultant.getId(),
                 consultant.getUser().getName(),
                 consultant.getUser().getCity(),
@@ -22,8 +23,6 @@ public class ConsultantMapper {
 
         Consultant consultant = new Consultant();
         consultant.setId(dto.getId());
-        consultant.setCity(dto.getCity());
-
 
         return consultant;
     }

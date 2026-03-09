@@ -331,7 +331,6 @@ public class AssignmentServiceIntegrationTest {
 
         Consultant c = new Consultant();
         c.setUser(u);
-        c.setCity(city);
         return consultantRepository.save(c);
     }
 

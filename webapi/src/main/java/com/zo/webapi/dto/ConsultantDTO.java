@@ -8,22 +8,12 @@ import lombok.NoArgsConstructor;
 public class ConsultantDTO {
 
     private Long id;
-    private String name;
-    private String city;
     private Long userId;
     private Long managerId;
 
-    public ConsultantDTO(Long id, String name, String city, Long userId, Long managerId) {
-        this.id = id;
-        this.name = name;
-        this.city = city;
-        this.userId = userId;
-        this.managerId = managerId;
-    }
 
-    public ConsultantDTO(Long id, String city, Long userId, Long managerId) {
+    public ConsultantDTO(Long id, Long userId, Long managerId) {
         this.id = id;
-        this.city = city;
         this.userId = userId;
         this.managerId = managerId;
     }

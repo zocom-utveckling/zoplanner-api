@@ -1,6 +1,7 @@
 package com.zo.webapi.service;
 
 import com.zo.webapi.dto.ConsultantDTO;
+import com.zo.webapi.dto.ConsultantResponseDTO;
 import com.zo.webapi.exception.InvalidDataException;
 import com.zo.webapi.exception.ResourceNotFoundException;
 import com.zo.webapi.mapper.ConsultantMapper;
@@ -28,7 +29,7 @@ public class ConsultantService {
     private final ManagerRepository managerRepository;
 
     @Transactional(readOnly = true)
-    public List<ConsultantDTO> getAllConsultants() {
+    public List<ConsultantResponseDTO> getAllConsultants() {
         return consultantRepository.findAll()
                 .stream()
                 .map(ConsultantMapper::toDTO)
@@ -36,7 +37,7 @@ public class ConsultantService {
     }
 
     @Transactional(readOnly = true)
-    public ConsultantDTO getConsultantById(Long id) {
+    public ConsultantResponseDTO getConsultantById(Long id) {
         return consultantRepository.findById(id)
                 .map(ConsultantMapper::toDTO)
                 .orElseThrow(() -> new ResourceNotFoundException("Consultant", "id", id));
@@ -60,14 +61,14 @@ public class ConsultantService {
     }
 
     @Transactional(readOnly = true)
-    public ConsultantDTO getConsultantByUserId(Long userId) {
+    public ConsultantResponseDTO getConsultantByUserId(Long userId) {
         return consultantRepository.findByUserId(userId)
                 .map(ConsultantMapper::toDTO)
                 .orElseThrow(() -> new ResourceNotFoundException("Consultant", "userId", userId));
     }
 
     @Transactional(readOnly = true)
-    public List<ConsultantDTO> getConsultantsByManagerId(Long managerId) {
+    public List<ConsultantResponseDTO> getConsultantsByManagerId(Long managerId) {
         // Verifiera att managern existerar
         if (!managerRepository.existsById(managerId)) {
             throw new ResourceNotFoundException("Manager", "id", managerId);
@@ -79,20 +80,8 @@ public class ConsultantService {
                 .toList();
     }
 
-    @Transactional(readOnly = true)
-    public List<ConsultantDTO> getConsultantsByCity(String city) {
-        if (city == null || city.trim().isEmpty()) {
-            throw new InvalidDataException("City cannot be null or empty");
-        }
-
-        return consultantRepository.findByCityIgnoreCase(city)
-                .stream()
-                .map(ConsultantMapper::toDTO)
-                .toList();
-    }
-
     @Transactional
-    public ConsultantDTO createConsultant(ConsultantDTO dto) {
+    public ConsultantResponseDTO createConsultant(ConsultantDTO dto) {
         // Validering
         validateConsultantDTO(dto);
 
@@ -120,16 +109,11 @@ public class ConsultantService {
     }
 
     @Transactional
-    public ConsultantDTO updateConsultant(Long id, ConsultantDTO dto) {
+    public ConsultantResponseDTO updateConsultant(Long id, ConsultantDTO dto) {
         // Validering
-        if (dto.getCity() == null || dto.getCity().trim().isEmpty()) {
-            throw new InvalidDataException("City cannot be null or empty");
-        }
 
         Consultant existing = consultantRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Consultant", "id", id));
-
-        existing.setCity(dto.getCity());
 
         if (dto.getManagerId() != null) {
             Manager manager = managerRepository.findById(dto.getManagerId())
@@ -157,9 +141,6 @@ public class ConsultantService {
         }
         if (dto.getUserId() == null) {
             throw new InvalidDataException("User ID is required");
-        }
-        if (dto.getCity() == null || dto.getCity().trim().isEmpty()) {
-            throw new InvalidDataException("City is required");
         }
     }
 }

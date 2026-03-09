@@ -2,12 +2,14 @@ package com.zo.webapi.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zo.webapi.dto.ConsultantDTO;
+import com.zo.webapi.dto.ConsultantResponseDTO;
 import com.zo.webapi.dto.CustomerDTO;
 import com.zo.webapi.dto.ManagerResponseDTO;
 import com.zo.webapi.service.ManagerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.server.ResponseStatusException;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -15,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 
@@ -83,7 +86,7 @@ public class ManagerControllerTest {
     @Test
     void testGetConsultantsForManager_Success() throws Exception {
         when(managerService.getConsultantsForManager(1L))
-                .thenReturn(List.of(new ConsultantDTO(1L, "Bob", "Paris", 1L, 1L)));
+                .thenReturn(List.of(new ConsultantResponseDTO(1L, "Bob", "Paris", 1L, 1L)));
 
         mockMvc.perform(get("/api/managers/1/consultants"))
                 .andExpect(status().isOk())

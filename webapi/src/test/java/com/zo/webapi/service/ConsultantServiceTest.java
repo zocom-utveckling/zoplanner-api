@@ -1,6 +1,7 @@
 package com.zo.webapi.service;
 
 import com.zo.webapi.dto.ConsultantDTO;
+import com.zo.webapi.dto.ConsultantResponseDTO;
 import com.zo.webapi.enums.UserRole;
 import com.zo.webapi.exception.InvalidDataException;
 import com.zo.webapi.exception.ResourceNotFoundException;
@@ -42,19 +43,13 @@ public class ConsultantServiceTest {
     void testGetAllConsultants() {
         Consultant consultant = new Consultant();
         consultant.setId(1L);
-        consultant.setCity("Stockholm");
-        consultant.setUser(new User(1L, "konsult1", "password", "konsult1", "konsult1@mail.com", "Stockholm", UserRole.CONSULTANT));
-
 
         Consultant consultant2 = new Consultant();
         consultant2.setId(2L);
-        consultant2.setCity("Paris");
-        consultant2.setUser(new User(2L, "konsult2", "password", "konsult2", "konsult2@mail.com", "Paris", UserRole.CONSULTANT));
-
 
         when(consultantRepository.findAll()).thenReturn(List.of(consultant, consultant2));
 
-        List<ConsultantDTO> result = consultantService.getAllConsultants();
+        List<ConsultantResponseDTO> result = consultantService.getAllConsultants();
 
         assertEquals(2, result.size());
     }
@@ -64,14 +59,12 @@ public class ConsultantServiceTest {
     void testGetConsultantById_Success() {
         Consultant consultant = new Consultant();
         consultant.setId(1L);
-        consultant.setCity("London");
         consultant.setUser(new User());
         consultant.getUser().setId(10L);
-        consultant.getUser().setCity("London");
 
         when(consultantRepository.findById(1L)).thenReturn(Optional.of(consultant));
 
-        ConsultantDTO result = consultantService.getConsultantById(1L);
+        ConsultantResponseDTO result = consultantService.getConsultantById(1L);
 
         assertNotNull(result);
         assertEquals(1L, result.getId());
@@ -82,10 +75,9 @@ public class ConsultantServiceTest {
 
     @Test
     void testCreateConsultant_Success() {
-        ConsultantDTO dto = new ConsultantDTO(null, "London", 10L, null);
+        ConsultantDTO dto = new ConsultantDTO(null, 10L, null);
         User user = new User();
         user.setId(10L);
-        user.setCity("London");
 
         when(userRepository.findById(10L)).thenReturn(Optional.empty());
         when(userRepository.findById(10L)).thenReturn(Optional.of(user));
@@ -96,10 +88,9 @@ public class ConsultantServiceTest {
                     return c;
                 });
 
-        ConsultantDTO result = consultantService.createConsultant(dto);
+        ConsultantResponseDTO result = consultantService.createConsultant(dto);
 
         assertNotNull(result);
-        System.out.println(result.toString());
         assertEquals(1L, result.getId());
         assertEquals("London", result.getCity());
         assertEquals(10L, result.getUserId());
@@ -114,20 +105,17 @@ public class ConsultantServiceTest {
 
         when(consultantRepository.findByUserId(10L)).thenReturn(Optional.of(consultant));
 
-        ConsultantDTO result = consultantService.getConsultantByUserId(10L);
+        ConsultantResponseDTO result = consultantService.getConsultantByUserId(10L);
         assertEquals(10L, result.getUserId());
     }
 
 
     @Test
     void testGetConsultantByManagerId_Success() {
-        Consultant consultant = new Consultant();
-        consultant.setId(1L);
-        consultant.setUser(new User(1L, "konsult1", "password", "konsult1", "konsult1@mail.com", "Malmö", UserRole.CONSULTANT));
         when(managerRepository.existsById(1L)).thenReturn(true);
-        when(consultantRepository.findByManagerId(1L)).thenReturn(List.of(consultant));
+        when(consultantRepository.findByManagerId(1L)).thenReturn(List.of(new Consultant()));
 
-        List<ConsultantDTO> result = consultantService.getConsultantsByManagerId(1L);
+        List<ConsultantResponseDTO> result = consultantService.getConsultantsByManagerId(1L);
         assertEquals(1, result.size());
     }
 
@@ -135,23 +123,24 @@ public class ConsultantServiceTest {
 
     @Test
     void testUpdateConsultant_Success() {
+        User consultantUser = new User(1L, "fredrik", "password123", "fredrik", "fredrik@mail.se", "Bjärred", UserRole.CONSULTANT);
         Consultant existing = new Consultant();
+        existing.setUser(consultantUser);
         existing.setId(1L);
-        existing.setUser(new User(1L, "konsult1", "password", "konsult1", "konsult1@mail.com", "Malmö", UserRole.CONSULTANT));
 
         Manager manager = new Manager();
-        manager.setId(1L);
+        manager.setId(2L);
 
+        ConsultantDTO dto = new ConsultantDTO(1L, 1L, 2L);
 
-        ConsultantDTO dto = new ConsultantDTO(null, "NewCity", null, 1L);
-
-        when(managerRepository.findById(1L)).thenReturn(Optional.of(manager));
         when(consultantRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(managerRepository.findById(2L)).thenReturn(Optional.of(manager));
         when(consultantRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
-        ConsultantDTO result = consultantService.updateConsultant(1L, dto);
+        ConsultantResponseDTO result = consultantService.updateConsultant(1L, dto);
+        System.out.println(result);
         assertEquals(1L, result.getId());
-        assertEquals(1L, result.getManagerId());
+        assertEquals(2L, result.getManagerId());
     }
 
     @Test
@@ -183,7 +172,7 @@ public class ConsultantServiceTest {
 
     @Test
     void testCreateConsultant_UserAlreadyExists() {
-        ConsultantDTO dto = new ConsultantDTO(null, "London", 10L, null);
+        ConsultantDTO dto = new ConsultantDTO(null, 10L, null);
         when(consultantRepository.findByUserId(10L)).thenReturn(Optional.of(new Consultant()));
         assertThrows(InvalidDataException.class, () -> consultantService.createConsultant(dto));
     }
@@ -193,7 +182,7 @@ public class ConsultantServiceTest {
     void testUpdateConsultant_NotFound() {
         when(consultantRepository.findById(1L)).thenReturn(Optional.empty());
 
-        ConsultantDTO dto = new ConsultantDTO(null, "NewCity", null, null);
+        ConsultantDTO dto = new ConsultantDTO(null, null, null);
         assertThrows(ResourceNotFoundException.class, () -> consultantService.updateConsultant(1L, dto));
     }
 

@@ -22,9 +22,6 @@ public class Consultant {
     @JoinColumn(name = "manager_id")
     private Manager manager;
 
-    @Column(nullable = false)
-    private String city;
-
     @JsonIgnore
     @OneToMany(mappedBy = "consultant", cascade = CascadeType.ALL)
     private List<Assignment> assignments;

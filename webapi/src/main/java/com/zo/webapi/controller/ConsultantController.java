@@ -1,6 +1,7 @@
 package com.zo.webapi.controller;
 
 import com.zo.webapi.dto.ConsultantDTO;
+import com.zo.webapi.dto.ConsultantResponseDTO;
 import com.zo.webapi.service.ConsultantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,8 +18,8 @@ public class ConsultantController {
     private final ConsultantService consultantService;
 
     @GetMapping
-    public ResponseEntity<List<ConsultantDTO>> getAllConsultants() {
-        List<ConsultantDTO> consultants = consultantService.getAllConsultants();
+    public ResponseEntity<List<ConsultantResponseDTO>> getAllConsultants() {
+        List<ConsultantResponseDTO> consultants = consultantService.getAllConsultants();
         return ResponseEntity.ok(consultants);
     }
 
@@ -31,40 +32,34 @@ public class ConsultantController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ConsultantDTO> getConsultantById(@PathVariable Long id) {
-        ConsultantDTO dto = consultantService.getConsultantById(id);
+    public ResponseEntity<ConsultantResponseDTO> getConsultantById(@PathVariable Long id) {
+        ConsultantResponseDTO dto = consultantService.getConsultantById(id);
         return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<ConsultantDTO> getConsultantByUserId(@PathVariable Long userId) {
-        ConsultantDTO dto = consultantService.getConsultantByUserId(userId);
+    public ResponseEntity<ConsultantResponseDTO> getConsultantByUserId(@PathVariable Long userId) {
+        ConsultantResponseDTO dto = consultantService.getConsultantByUserId(userId);
         return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/manager/{managerId}")
-    public ResponseEntity<List<ConsultantDTO>> getConsultantsByManagerId(@PathVariable Long managerId) {
-        List<ConsultantDTO> consultants = consultantService.getConsultantsByManagerId(managerId);
-        return ResponseEntity.ok(consultants);
-    }
-
-    @GetMapping("/city/{city}")
-    public ResponseEntity<List<ConsultantDTO>> getConsultantsByCity(@PathVariable String city) {
-        List<ConsultantDTO> consultants = consultantService.getConsultantsByCity(city);
+    public ResponseEntity<List<ConsultantResponseDTO>> getConsultantsByManagerId(@PathVariable Long managerId) {
+        List<ConsultantResponseDTO> consultants = consultantService.getConsultantsByManagerId(managerId);
         return ResponseEntity.ok(consultants);
     }
 
     @PostMapping
-    public ResponseEntity<ConsultantDTO> createConsultant(@RequestBody ConsultantDTO consultantDTO) {
-        ConsultantDTO created = consultantService.createConsultant(consultantDTO);
+    public ResponseEntity<ConsultantResponseDTO> createConsultant(@RequestBody ConsultantDTO consultantDTO) {
+        ConsultantResponseDTO created = consultantService.createConsultant(consultantDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ConsultantDTO> updateConsultant(
+    public ResponseEntity<ConsultantResponseDTO> updateConsultant(
             @PathVariable Long id,
             @RequestBody ConsultantDTO consultantDTO) {
-        ConsultantDTO updated = consultantService.updateConsultant(id, consultantDTO);
+        ConsultantResponseDTO updated = consultantService.updateConsultant(id, consultantDTO);
         return ResponseEntity.ok(updated);
     }
 
