@@ -31,6 +31,7 @@ public class SessionControllerTest {
     void testGetAllSessions() throws Exception {
 
         Session session = new Session(
+                "programmering 1",
                 LocalDateTime.of(2025, 11, 3, 12, 0),
                 LocalDateTime.of(2025, 11, 3, 16, 0)
         );
@@ -52,11 +53,13 @@ public class SessionControllerTest {
     void testGetSessionById_Success() throws Exception {
 
         Session session = new Session(
+                "programmering 1",
                 LocalDateTime.of(2026, 10, 5, 12, 0),
                 LocalDateTime.of(2026, 10, 5, 16, 0)
         );
 
         session.setId(1L);
+        session.setTitle("Programmering 1");
         session.setComment("Test comment");
         session.setLocation(SessionLocation.REMOTE);
 
@@ -65,6 +68,7 @@ public class SessionControllerTest {
         mockMvc.perform(get("/api/sessions/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.title").value("Programmering 1"))
                 .andExpect(jsonPath("$.comment").value("Test comment"))
                 .andExpect(jsonPath("$.location").value("REMOTE"));
     }
@@ -82,6 +86,7 @@ public class SessionControllerTest {
     void testUpdateSession_Success() throws Exception {
 
         Session session = new Session(
+                "programmering 1",
                 LocalDateTime.of(2025, 11, 10, 23, 0),
                 LocalDateTime.of(2025, 11, 10, 16, 0)
         );
