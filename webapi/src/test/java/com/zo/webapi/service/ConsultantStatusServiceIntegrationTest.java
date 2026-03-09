@@ -1,4 +1,4 @@
-package service;
+package com.zo.webapi.service;
 
 import com.zo.webapi.WebapiApplication;
 import com.zo.webapi.dto.ConsultantStatusDTO;
@@ -54,7 +54,6 @@ public class ConsultantStatusServiceIntegrationTest {
 
         consultant = new Consultant();
         consultant.setUser(userRepository.findAll().getFirst());
-        consultant.setCity("Stockholm");
         consultantRepository.save(consultant);
         System.out.println(consultantRepository.findAll());
 

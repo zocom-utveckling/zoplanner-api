@@ -1,6 +1,7 @@
 package com.zo.webapi.controller;
 
 import com.zo.webapi.dto.ConsultantDTO;
+import com.zo.webapi.dto.ConsultantResponseDTO;
 import com.zo.webapi.dto.CustomerDTO;
 import com.zo.webapi.dto.ManagerResponseDTO;
 import com.zo.webapi.service.ManagerService;
@@ -49,7 +50,7 @@ public class ManagerController {
 
     // GET associated consultants
     @GetMapping("/{id}/consultants")
-    public ResponseEntity<List<ConsultantDTO>> getConsultantsForManager(@PathVariable Long id) {
+    public ResponseEntity<List<ConsultantResponseDTO>> getConsultantsForManager(@PathVariable Long id) {
         return ResponseEntity.ok(managerService.getConsultantsForManager(id));
     }
 
