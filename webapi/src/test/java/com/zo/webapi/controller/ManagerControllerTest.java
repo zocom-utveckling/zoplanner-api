@@ -2,6 +2,7 @@ package com.zo.webapi.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zo.webapi.dto.ConsultantDTO;
+import com.zo.webapi.dto.ConsultantResponseDTO;
 import com.zo.webapi.dto.CustomerDTO;
 import com.zo.webapi.dto.ManagerResponseDTO;
 import com.zo.webapi.service.ManagerService;
@@ -85,7 +86,7 @@ public class ManagerControllerTest {
     @Test
     void testGetConsultantsForManager_Success() throws Exception {
         when(managerService.getConsultantsForManager(1L))
-                .thenReturn(List.of(new ConsultantDTO(1L, "Bob", "Paris")));
+                .thenReturn(List.of(new ConsultantResponseDTO(1L, "Bob", "Paris", 1L, 1L)));
 
         mockMvc.perform(get("/api/managers/1/consultants"))
                 .andExpect(status().isOk())

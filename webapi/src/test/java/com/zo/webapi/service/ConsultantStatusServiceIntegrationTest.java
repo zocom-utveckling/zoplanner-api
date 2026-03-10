@@ -1,4 +1,4 @@
-package service;
+package com.zo.webapi.service;
 
 import com.zo.webapi.WebapiApplication;
 import com.zo.webapi.dto.ConsultantStatusDTO;
@@ -54,7 +54,6 @@ public class ConsultantStatusServiceIntegrationTest {
 
         consultant = new Consultant();
         consultant.setUser(userRepository.findAll().getFirst());
-        consultant.setCity("Stockholm");
         consultantRepository.save(consultant);
         System.out.println(consultantRepository.findAll());
 
@@ -72,7 +71,7 @@ public class ConsultantStatusServiceIntegrationTest {
         ConsultantStatus status = statusService.createStatus(statusDTO);
         assertNotNull(status);
         assertEquals(ConsultantStatusType.AVAILABLE, status.getStatus());
-        assertEquals(1L, status.getConsultant().getId());
+        assertEquals(consultant.getId(), status.getConsultant().getId());
         assertEquals(LocalDate.of(2026, 10, 13), status.getDateStart());
         assertEquals(LocalDate.of(2026, 12, 13), status.getDateEnd());
         assertEquals("test comment", status.getComment());

@@ -1,6 +1,7 @@
 package com.zo.webapi.service;
 
 import com.zo.webapi.dto.ConsultantDTO;
+import com.zo.webapi.dto.ConsultantResponseDTO;
 import com.zo.webapi.dto.CustomerDTO;
 import com.zo.webapi.dto.ManagerResponseDTO;
 import com.zo.webapi.model.Consultant;
@@ -108,7 +109,7 @@ public class ManagerService {
         );
     }
 
-    public List<ConsultantDTO> getConsultantsForManager(Long managerId) {
+    public List<ConsultantResponseDTO> getConsultantsForManager(Long managerId) {
 
         // verify manager exists
         if(!managerRepository.existsById(managerId)) {
@@ -116,10 +117,12 @@ public class ManagerService {
         }
         return consultantRepository.findByManagerId(managerId)
                 .stream()
-                .map(consultant -> new ConsultantDTO(
+                .map(consultant -> new ConsultantResponseDTO(
                         consultant.getId(),
                         consultant.getUser().getName(),
-                        consultant.getCity()
+                        consultant.getUser().getCity(),
+                        consultant.getUser().getId(),
+                        consultant.getManager().getId()
                 ))
                 .toList();
     }
