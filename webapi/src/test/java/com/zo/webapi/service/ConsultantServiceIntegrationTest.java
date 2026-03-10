@@ -2,6 +2,7 @@ package com.zo.webapi.service;
 
 import com.zo.webapi.WebapiApplication;
 import com.zo.webapi.dto.ConsultantDTO;
+import com.zo.webapi.dto.ConsultantResponseDTO;
 import com.zo.webapi.enums.UserRole;
 import com.zo.webapi.model.Manager;
 import com.zo.webapi.model.User;
@@ -38,7 +39,6 @@ public class ConsultantServiceIntegrationTest {
     private User consultantUser1;
     private User consultantUser2;
     private User consultantUser3;
-    private User managerUser;
     private Manager manager;
 
 
@@ -53,7 +53,7 @@ public class ConsultantServiceIntegrationTest {
         consultantUser1 = userRepository.save(new User(null, "sturep", "password", "Sture P.", "sturep@mail.se", "Stureplan", UserRole.CONSULTANT));
         consultantUser2 = userRepository.save(new User(null, "gustaf", "password", "Gustaf", "gustaf@mail.se", "Göteborg", UserRole.CONSULTANT));
         consultantUser3 = userRepository.save(new User(null, "peter", "password", "Peter", "peter@mail.se", "Göteborg", UserRole.CONSULTANT));
-        managerUser = userRepository.save(new User(null, "supermackan", "password", "Markus", "supermackan@mail.se", "Malmö", UserRole.MANAGER));
+        User managerUser = userRepository.save(new User(null, "supermackan", "password", "Markus", "supermackan@mail.se", "Malmö", UserRole.MANAGER));
 
         //Skapa en manager
         manager = managerRepository.save(new Manager(managerUser));
@@ -62,12 +62,12 @@ public class ConsultantServiceIntegrationTest {
     @Test
     void searchForConsultantUsingName_Success() {
         //Arrange
-        consultantService.createConsultant(new ConsultantDTO(null, "Malmö", consultantUser1.getId(), manager.getId()));
-        consultantService.createConsultant(new ConsultantDTO(null, "Bjärred", consultantUser2.getId(), manager.getId()));
-        consultantService.createConsultant(new ConsultantDTO(null, "Limhamn", consultantUser3.getId(), manager.getId()));
+        consultantService.createConsultant(new ConsultantDTO(null, consultantUser1.getId(), manager.getId()));
+        consultantService.createConsultant(new ConsultantDTO(null,consultantUser2.getId(), manager.getId()));
+        consultantService.createConsultant(new ConsultantDTO(null, consultantUser3.getId(), manager.getId()));
 
         //Act
-        List<ConsultantDTO> foundConsultants = consultantService.searchConsultants("Stu", null, null);
+        List<ConsultantResponseDTO> foundConsultants = consultantService.searchConsultants("Stu", null, null);
 
         //Assert
         assertThat(foundConsultants).hasSize(1);
@@ -77,12 +77,12 @@ public class ConsultantServiceIntegrationTest {
     @Test
     void FilterConsultantsUsingCity_Success() {
         //Arrange
-        consultantService.createConsultant(new ConsultantDTO(null, "Malmö", consultantUser1.getId(), manager.getId()));
-        consultantService.createConsultant(new ConsultantDTO(null, "Bjärred", consultantUser2.getId(), manager.getId()));
-        consultantService.createConsultant(new ConsultantDTO(null, "Limhamn", consultantUser3.getId(), manager.getId()));
+        consultantService.createConsultant(new ConsultantDTO(null, consultantUser1.getId(), manager.getId()));
+        consultantService.createConsultant(new ConsultantDTO(null, consultantUser2.getId(), manager.getId()));
+        consultantService.createConsultant(new ConsultantDTO(null, consultantUser3.getId(), manager.getId()));
 
         //Act
-        List<ConsultantDTO> foundConsultants = consultantService.searchConsultants(null, "Göteborg", null);
+        List<ConsultantResponseDTO> foundConsultants = consultantService.searchConsultants(null, "Göteborg", null);
 
 
         //Assert
@@ -93,14 +93,14 @@ public class ConsultantServiceIntegrationTest {
     @Test
     void FilterConsultantsUsingManagerId_Success() {
         //Arrange
-        consultantService.createConsultant(new ConsultantDTO(null, "Malmö", consultantUser1.getId(), manager.getId()));
-        consultantService.createConsultant(new ConsultantDTO(null, "Bjärred", consultantUser2.getId(), manager.getId()));
-        consultantService.createConsultant(new ConsultantDTO(null, "Limhamn", consultantUser3.getId(), manager.getId()));
+        consultantService.createConsultant(new ConsultantDTO(null, consultantUser1.getId(), manager.getId()));
+        consultantService.createConsultant(new ConsultantDTO(null, consultantUser2.getId(), manager.getId()));
+        consultantService.createConsultant(new ConsultantDTO(null, consultantUser3.getId(), manager.getId()));
 
         Long managerId = managerRepository.findAll().getFirst().getId();
 
         //Act
-        List<ConsultantDTO> foundConsultants = consultantService.searchConsultants(null, null, managerId);
+        List<ConsultantResponseDTO> foundConsultants = consultantService.searchConsultants(null, null, managerId);
 
         //Assert
         assertThat(foundConsultants).hasSize(3);
@@ -109,7 +109,7 @@ public class ConsultantServiceIntegrationTest {
 
     @Test
     void searchForConsultantUsingName_NoFound() {
-        List<ConsultantDTO> foundConsultants = consultantService.searchConsultants("Erik", null, null);
+        List<ConsultantResponseDTO> foundConsultants = consultantService.searchConsultants("Erik", null, null);
         assertThat(foundConsultants).isEmpty();
     }
 

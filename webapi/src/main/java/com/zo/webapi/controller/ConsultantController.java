@@ -24,7 +24,7 @@ public class ConsultantController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<ConsultantDTO>> searchConsultants(
+    public ResponseEntity<List<ConsultantResponseDTO>> searchConsultants(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String city,
             @RequestParam(required = false) Long manager) {

@@ -43,7 +43,7 @@ public class ConsultantService {
                 .orElseThrow(() -> new ResourceNotFoundException("Consultant", "id", id));
     }
 
-    public List<ConsultantDTO> searchConsultants(String name, String city, Long managerId) {
+    public List<ConsultantResponseDTO> searchConsultants(String name, String city, Long managerId) {
 
         //Förberedd sökning
         Specification<Consultant> spec = Specification.allOf(
@@ -52,7 +52,7 @@ public class ConsultantService {
                 ConsultantSpecification.hasManager(managerId)
         );
         List<Consultant> result = consultantRepository.findAll(spec);
-        List<ConsultantDTO> consultants = new ArrayList<>();
+        List<ConsultantResponseDTO> consultants = new ArrayList<>();
 
         //konvertera Consultant till ConsultantDto
         result.forEach(consultant -> consultants.add(ConsultantMapper.toDTO(consultant)));
