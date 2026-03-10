@@ -67,6 +67,9 @@ public class SessionService {
         if (session.getComment() != null) {
             updatedSession.setComment(session.getComment());
         }
+        if (session.getTitle() != null) {
+            updatedSession.setTitle(session.getTitle());
+        }
 
         return sessionRepository.save(updatedSession);
     }
