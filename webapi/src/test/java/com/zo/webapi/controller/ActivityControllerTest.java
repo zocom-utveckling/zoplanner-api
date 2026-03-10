@@ -42,6 +42,7 @@ class ActivityControllerTest {
         ActivityCreateRequestDTO req = new ActivityCreateRequestDTO(
                 "Möte med kursledare",
                 ActivityType.MEETING,
+                7L,
                 "2026-02-10",
                 "09:00",
                 "10:00",
@@ -52,6 +53,7 @@ class ActivityControllerTest {
                 1L,
                 req.getTitle(),
                 req.getType(),
+                7L,
                 req.getDate(),
                 req.getStartTime(),
                 req.getEndTime(),
@@ -69,6 +71,7 @@ class ActivityControllerTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.title").value("Möte med kursledare"))
                 .andExpect(jsonPath("$.type").value("meeting"))
+                .andExpect(jsonPath("$.consultantId").value(7))
                 .andExpect(jsonPath("$.date").value("2026-02-10"))
                 .andExpect(jsonPath("$.startTime").value("09:00"))
                 .andExpect(jsonPath("$.endTime").value("10:00"))
@@ -81,6 +84,7 @@ class ActivityControllerTest {
         ActivityCreateRequestDTO sent = captor.getValue();
         assertEquals("Möte med kursledare", sent.getTitle());
         assertEquals(ActivityType.MEETING, sent.getType());
+        assertEquals(7L, sent.getConsultantId());
         assertEquals("2026-02-10", sent.getDate());
         assertEquals("09:00", sent.getStartTime());
         assertEquals("10:00", sent.getEndTime());
@@ -93,10 +97,10 @@ class ActivityControllerTest {
     @Test
     void testGetAllActivities_NoParams_Success() throws Exception {
         ActivityResponseDTO a1 = new ActivityResponseDTO(
-                1L, "A", ActivityType.LESSON, "2026-02-10",
+                1L, "A", ActivityType.LESSON, 7L, "2026-02-10",
                 "09:00", "10:00", null, "2026-02-01T10:15:30+01:00"
         );
-        when(activityService.getAllActivities(null, null)).thenReturn(List.of(a1));
+        when(activityService.getAllActivities(null, null,null)).thenReturn(List.of(a1));
 
         mockMvc.perform(get("/api/activities"))
                 .andExpect(status().isOk())
@@ -106,13 +110,13 @@ class ActivityControllerTest {
                 .andExpect(jsonPath("$.[0].id").value(1))
                 .andExpect(jsonPath("$[0].type").value("lesson"));
 
-        verify(activityService).getAllActivities(null, null);
+        verify(activityService).getAllActivities(null, null, null);
         verifyNoMoreInteractions(activityService);
     }
 
     @Test
     void testGetAllActivities_WithDates_Success() throws Exception {
-        when(activityService.getAllActivities("2026-02-10", "2026-02-20"))
+        when(activityService.getAllActivities(null, "2026-02-10", "2026-02-20"))
                 .thenReturn(List.of());
 
         mockMvc.perform(get("/api/activities")
@@ -123,8 +127,19 @@ class ActivityControllerTest {
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(0));
 
-        verify(activityService).getAllActivities("2026-02-10", "2026-02-20");
+        verify(activityService).getAllActivities(null, "2026-02-10", "2026-02-20");
         verifyNoMoreInteractions(activityService);
+    }
+
+    @Test
+    void testGetAllActivities_WithConsultantId_Success() throws Exception {
+        when(activityService.getAllActivities(7L, null, null)).thenReturn(List.of());
+
+        mockMvc.perform(get("/api/activities")
+                        .param("consultantId", "7"))
+                .andExpect(status().isOk());
+
+        verify(activityService).getAllActivities(7L, null, null);
     }
 
     @Test
@@ -132,13 +147,14 @@ class ActivityControllerTest {
         ActivityUpdateRequestDTO req = new ActivityUpdateRequestDTO();
         req.setTitle("Ny title");
         req.setType(ActivityType.REVIEW);
+        req.setConsultantId(8L);
         req.setDate("2026-02-15");
         req.setStartTime("10:00");
         req.setEndTime("11:00");
         req.setDescription("Ny beskrivning");
 
         ActivityResponseDTO resp = new ActivityResponseDTO(
-                99L, "Ny title", ActivityType.REVIEW, "2026-02-15",
+                99L, "Ny title", ActivityType.REVIEW, 8L, "2026-02-15",
                 "10:00", "11:00", "Ny beskrivning","2026-02-01T10:15:30+01:00"
         );
 
@@ -159,6 +175,7 @@ class ActivityControllerTest {
         ActivityUpdateRequestDTO sent = captor.getValue();
         assertEquals("Ny title", sent.getTitle());
         assertEquals(ActivityType.REVIEW, sent.getType());
+        assertEquals(8L, sent.getConsultantId());
         assertEquals("2026-02-15", sent.getDate());
         assertEquals("10:00", sent.getStartTime());
         assertEquals("11:00", sent.getEndTime());
@@ -182,6 +199,7 @@ class ActivityControllerTest {
         ActivityCreateRequestDTO badReq = new ActivityCreateRequestDTO(
                 "  ",
                 ActivityType.MEETING,
+                7L,
                 "2026/02/10",
                 "9:00",
                 "10:0",
@@ -228,14 +246,14 @@ class ActivityControllerTest {
     @Test
     void testGetAllActivities_OnlyOneDateProvided_ReturnsBadRequest() throws Exception {
 
-        when(activityService.getAllActivities("2026-02-01", null))
+        when(activityService.getAllActivities(null, "2026-02-01", null))
                 .thenThrow(new InvalidDataException("Both 'from' and 'to' must be provided together"));
 
         mockMvc.perform(get("/api/activities")
                 .param("from", "2026-02-01"))
                 .andExpect(status().isBadRequest());
 
-        verify(activityService).getAllActivities("2026-02-01", null);
+        verify(activityService).getAllActivities(null, "2026-02-01", null);
     }
 
     @Test

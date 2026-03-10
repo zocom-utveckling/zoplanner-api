@@ -5,6 +5,7 @@ import com.zo.webapi.enums.ActivityType;
 import jakarta.persistence.*;
 
 
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -42,6 +43,10 @@ public class Activity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "consultant_id", nullable = false)
+    private Consultant consultant;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = OffsetDateTime.now();
@@ -50,13 +55,14 @@ public class Activity {
     public Activity (){}
 
     public Activity (String title, ActivityType type, LocalDate date,
-                     LocalTime startTime, LocalTime endTime, String description){
+                     LocalTime startTime, LocalTime endTime, String description, Consultant consultant){
         this.title = title;
         this.type = type;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
         this.description = description;
+        this.consultant = consultant;
     }
 
     public Long getId() {
@@ -114,6 +120,10 @@ public class Activity {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public Consultant getConsultant() {return consultant;}
+
+    public void setConsultant(Consultant consultant) { this.consultant = consultant;}
 
     public OffsetDateTime getCreatedAt() {
         return createdAt;
