@@ -43,9 +43,13 @@ public class ConsultantServiceTest {
     void testGetAllConsultants() {
         Consultant consultant = new Consultant();
         consultant.setId(1L);
+        User consultantUser = new User();
+        consultant.setUser(consultantUser);
 
         Consultant consultant2 = new Consultant();
         consultant2.setId(2L);
+        User consultantUser2 = new User();
+        consultant2.setUser(consultantUser2);
 
         when(consultantRepository.findAll()).thenReturn(List.of(consultant, consultant2));
 
@@ -61,6 +65,7 @@ public class ConsultantServiceTest {
         consultant.setId(1L);
         consultant.setUser(new User());
         consultant.getUser().setId(10L);
+        consultant.getUser().setCity("London");
 
         when(consultantRepository.findById(1L)).thenReturn(Optional.of(consultant));
 
@@ -78,6 +83,7 @@ public class ConsultantServiceTest {
         ConsultantDTO dto = new ConsultantDTO(null, 10L, null);
         User user = new User();
         user.setId(10L);
+        user.setCity("London");
 
         when(userRepository.findById(10L)).thenReturn(Optional.empty());
         when(userRepository.findById(10L)).thenReturn(Optional.of(user));
@@ -112,8 +118,12 @@ public class ConsultantServiceTest {
 
     @Test
     void testGetConsultantByManagerId_Success() {
+        Consultant consultant = new Consultant();
+        consultant.setId(1L);
+        consultant.setUser(new User());
+        consultant.getUser().setId(1L);
         when(managerRepository.existsById(1L)).thenReturn(true);
-        when(consultantRepository.findByManagerId(1L)).thenReturn(List.of(new Consultant()));
+        when(consultantRepository.findByManagerId(1L)).thenReturn(List.of(consultant));
 
         List<ConsultantResponseDTO> result = consultantService.getConsultantsByManagerId(1L);
         assertEquals(1, result.size());
