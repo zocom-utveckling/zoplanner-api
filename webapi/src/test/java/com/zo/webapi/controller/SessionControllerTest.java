@@ -31,6 +31,7 @@ public class SessionControllerTest {
     void testGetAllSessions() throws Exception {
 
         Session session = new Session(
+                "test title",
                 LocalDateTime.of(2025, 11, 3, 12, 0),
                 LocalDateTime.of(2025, 11, 3, 16, 0)
         );
@@ -44,6 +45,7 @@ public class SessionControllerTest {
         mockMvc.perform(get("/api/sessions"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].title").value("test title"))
                 .andExpect(jsonPath("$[0].comment").value("Test comment"))
                 .andExpect(jsonPath("$[0].location").value("ONSITE"));
     }
@@ -52,6 +54,7 @@ public class SessionControllerTest {
     void testGetSessionById_Success() throws Exception {
 
         Session session = new Session(
+                "test title",
                 LocalDateTime.of(2026, 10, 5, 12, 0),
                 LocalDateTime.of(2026, 10, 5, 16, 0)
         );
@@ -65,6 +68,7 @@ public class SessionControllerTest {
         mockMvc.perform(get("/api/sessions/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.title").value("test title"))
                 .andExpect(jsonPath("$.comment").value("Test comment"))
                 .andExpect(jsonPath("$.location").value("REMOTE"));
     }
@@ -82,11 +86,13 @@ public class SessionControllerTest {
     void testUpdateSession_Success() throws Exception {
 
         Session session = new Session(
+                "test title",
                 LocalDateTime.of(2025, 11, 10, 23, 0),
                 LocalDateTime.of(2025, 11, 10, 16, 0)
         );
 
         session.setId(1L);
+        session.setTitle("Updated title");
         session.setComment("Updated comment");
         session.setLocation(SessionLocation.HYBRID);
 
@@ -97,6 +103,7 @@ public class SessionControllerTest {
                         .content("{\"timeStart\":\"2025-11-10T23:00:00\",\"timeEnd\":\"2025-11-10T16:00:00\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.title").value("Updated title"))
                 .andExpect(jsonPath("$.comment").value("Updated comment"))
                 .andExpect(jsonPath("$.location").value("HYBRID"));
     }

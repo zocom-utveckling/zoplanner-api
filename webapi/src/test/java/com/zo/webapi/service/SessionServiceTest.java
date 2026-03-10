@@ -33,7 +33,7 @@ public class SessionServiceTest {
         assignment = new Assignment();
         assignment.setId(1L);
 
-        session = new Session(LocalDateTime.now(), LocalDateTime.now().plusHours(1));
+        session = new Session("Title", LocalDateTime.now(), LocalDateTime.now().plusHours(1));
         session.setId(10L);
         session.setAssignment(assignment);
         session.setComment("Initial comment");
@@ -77,7 +77,9 @@ public class SessionServiceTest {
         when(assignmentService.getAssignmentById(1L)).thenReturn(Optional.of(assignment));
         when(sessionRepository.save(any(Session.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Session newSession = new Session(LocalDateTime.of(2025, 11, 4, 9, 0),
+        Session newSession = new Session(
+                "Title",
+                LocalDateTime.of(2025, 11, 4, 9, 0),
                 LocalDateTime.of(2025, 11, 4, 12, 0));
 
         newSession.setComment("New comment");
@@ -90,6 +92,7 @@ public class SessionServiceTest {
         assertNull(result.getId()); // ID is reset before saving
         assertEquals(SessionLocation.REMOTE, result.getLocation());
         assertEquals("New comment", result.getComment());
+        assertEquals("Title", result.getTitle());
 
         verify(assignmentService).getAssignmentById(1L);
         verify(sessionRepository).save(any(Session.class));
@@ -108,11 +111,12 @@ public class SessionServiceTest {
 
     @Test
     void testUpdateSession_shouldUpdateAllFields() {
-        Session updatedSession = new Session(LocalDateTime.of(2025, 12, 1, 10, 0),
+        Session updatedSession = new Session( "Title", LocalDateTime.of(2025, 12, 1, 10, 0),
                 LocalDateTime.of(2025, 12, 1, 12, 0));
 
         updatedSession.setComment("Updated comment");
         updatedSession.setLocation(SessionLocation.HYBRID);
+        updatedSession.setTitle("Updated title");
 
         when(sessionRepository.findById(10L)).thenReturn(Optional.of(session));
         when(sessionRepository.save(any(Session.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -123,6 +127,7 @@ public class SessionServiceTest {
         assertEquals(updatedSession.getTimeEnd(), result.getTimeEnd());
         assertEquals("Updated comment", result.getComment());
         assertEquals(SessionLocation.HYBRID, result.getLocation());
+        assertEquals("Updated title", result.getTitle());
 
         verify(sessionRepository).save(session);
     }
@@ -131,7 +136,7 @@ public class SessionServiceTest {
     void testUpdateSession_shouldThrowIfNotFound() {
         when(sessionRepository.findById(99L)).thenReturn(Optional.empty());
 
-        Session updatedSession = new Session(LocalDateTime.now(), LocalDateTime.now().plusHours(1));
+        Session updatedSession = new Session("Title", LocalDateTime.now(), LocalDateTime.now().plusHours(1));
 
         assertThrows(EntityNotFoundException.class, () -> sessionService.updateSession(99L, updatedSession));
         verify(sessionRepository, never()).save(any());

@@ -19,7 +19,6 @@ public class Session {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(hidden = true)
     private Long id;
 
     @Column(name = "date_start")
@@ -43,6 +42,9 @@ public class Session {
     @Column(name = "location")
     private SessionLocation location;
 
+    @Column(name = "title")
+    private String title;
+
     @Column(name = "comment")
     private String comment;
 
@@ -53,9 +55,10 @@ public class Session {
     @JsonBackReference
     private Assignment assignment;
 
-    public Session(LocalDateTime timeStart, LocalDateTime timeEnd) {
+    public Session(String title, LocalDateTime timeStart, LocalDateTime timeEnd) {
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;
+        this.title = title;
     }
 
     public Session() {}
@@ -84,4 +87,7 @@ public class Session {
 
     public Assignment getAssignment() { return assignment; }
     public void setAssignment(Assignment assignment) { this.assignment = assignment; }
+
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 }
