@@ -37,9 +37,10 @@ public class ActivityController {
      * */
     @GetMapping
     public ResponseEntity<List<ActivityResponseDTO>> getAllActivities(
+            @RequestParam(required = false) Long consultantId,
             @RequestParam(required = false) String from,
             @RequestParam(required = false) String to) {
-        return ResponseEntity.ok(activityService.getAllActivities(from, to));
+        return ResponseEntity.ok(activityService.getAllActivities(consultantId, from, to));
     }
 
     @PatchMapping("/{id}")

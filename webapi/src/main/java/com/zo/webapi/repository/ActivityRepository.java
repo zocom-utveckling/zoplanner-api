@@ -14,4 +14,11 @@ public interface ActivityRepository extends JpaRepository <Activity, Long> {
     List<Activity> findByDateBetweenOrderByDateAscStartTimeAsc(LocalDate from, LocalDate to);
     // Hämta alla aktiviteter, sorterat från först -> sist
     List<Activity> findAllByOrderByDateAscStartTimeAsc();
+
+    // Samma som ovan men baserat på consultantId
+    List<Activity> findByConsultantIdOrderByDateAscStartTimeAsc(Long consultantId);
+
+    List<Activity> findByConsultantIdAndDateBetweenOrderByDateAscStartTimeAsc(
+            Long consultantId, LocalDate from, LocalDate to
+    );
 }

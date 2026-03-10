@@ -5,10 +5,16 @@ import com.zo.webapi.dto.ActivityCreateRequestDTO;
 import com.zo.webapi.dto.ActivityResponseDTO;
 import com.zo.webapi.dto.ActivityUpdateRequestDTO;
 import com.zo.webapi.enums.ActivityType;
+import com.zo.webapi.enums.UserRole;
 import com.zo.webapi.exception.InvalidDataException;
 import com.zo.webapi.exception.ResourceNotFoundException;
 import com.zo.webapi.model.Activity;
+import com.zo.webapi.model.Consultant;
+import com.zo.webapi.model.User;
 import com.zo.webapi.repository.ActivityRepository;
+import com.zo.webapi.repository.ConsultantRepository;
+import com.zo.webapi.repository.UserRepository;
+import org.antlr.v4.runtime.misc.LogManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,24 +36,39 @@ public class ActivityServiceIntegrationTest {
     @Autowired
     private ActivityService activityService;
 
-    @Autowired ActivityRepository activityRepository;
+    @Autowired
+    private ActivityRepository activityRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ConsultantRepository consultantRepository;
+
+    private Consultant consultant1;
+    private Consultant consultant2;
 
     @BeforeEach
     void setUp() {
         activityRepository.deleteAll();
+        consultantRepository.deleteAll();
+        userRepository.deleteAll();
+
+        consultant1 = consultant("consultant1", "consultant1@test.com");
+        consultant2 = consultant("consultant2", "consultant2@test.com");
 
         // Databasseed för sortering & intervall
         activityRepository.save(activity("B", ActivityType.MEETING,
                 LocalDate.of(2026, 2, 10), LocalTime.of(9, 0),
-                LocalTime.of(10, 0), "Beskrivning B"));
+                LocalTime.of(10, 0), "Beskrivning B", consultant1));
 
         activityRepository.save(activity("A", ActivityType.LESSON,
                 LocalDate.of(2026, 2, 9), LocalTime.of(8, 0),
-                LocalTime.of(9, 0), null));
+                LocalTime.of(9, 0), null, consultant1));
 
         activityRepository.save(activity("C", ActivityType.REVIEW,
                 LocalDate.of(2026, 2, 10), LocalTime.of(8, 30),
-                LocalTime.of(9, 0), "Beskrivning C"));
+                LocalTime.of(9, 0), "Beskrivning C", consultant2));
     }
 
     @Test
@@ -55,6 +76,7 @@ public class ActivityServiceIntegrationTest {
         ActivityCreateRequestDTO dto = new ActivityCreateRequestDTO(
                 "Ny aktivitet",
                 ActivityType.OTHER,
+                consultant1.getId(),
                 "2026-02-11",
                 "13:00",
                 "14:00",
@@ -66,6 +88,7 @@ public class ActivityServiceIntegrationTest {
         assertThat(created.getId()).isNotNull();
         assertThat(created.getTitle()).isEqualTo("Ny aktivitet");
         assertThat(created.getType()).isEqualTo(ActivityType.OTHER);
+        assertThat(created.getConsultantId()).isEqualTo(consultant1.getId());
         assertThat(created.getDate()).isEqualTo("2026-02-11");
         assertThat(created.getStartTime()).isEqualTo("13:00");
         assertThat(created.getEndTime()).isEqualTo("14:00");
@@ -76,11 +99,13 @@ public class ActivityServiceIntegrationTest {
         assertThat(saved.getCreatedAt()).isNotNull();
         assertThat(saved.getDate()).isEqualTo(LocalDate.of(2026, 2, 11));
         assertThat(saved.getStartTime()).isEqualTo(LocalTime.of(13, 0));
+        assertThat(saved.getConsultant().getId()).isEqualTo(consultant1.getId());
     }
 
     @Test
     void getAllActivities_noParams_returnsSorted() {
-        List<ActivityResponseDTO> res = activityService.getAllActivities(null, null);
+        List<ActivityResponseDTO> res = activityService.getAllActivities(
+                null, null, null);
 
         assertThat(res).hasSize(3);
 
@@ -92,12 +117,35 @@ public class ActivityServiceIntegrationTest {
 
     @Test
     void getAllActivities_withInterval_returnsSorted() {
-        List<ActivityResponseDTO> res = activityService.getAllActivities("2026-02-10", "2026-02-10");
+        List<ActivityResponseDTO> res = activityService.getAllActivities(
+                null,"2026-02-10", "2026-02-10");
 
         assertThat(res).hasSize(2); // Endast två aktiviteter mellan datum,aktivitet "A" annat datum
         assertThat(res)
                 .extracting(ActivityResponseDTO::getTitle)
                 .containsExactly("C", "B"); // 08:30 före 09:00
+    }
+
+    @Test
+    void getAllActivities_withConsultantId_returnsThatConsultantsActivities() {
+        List<ActivityResponseDTO> res = activityService.getAllActivities(
+                consultant1.getId(), null, null);
+
+        assertThat(res).hasSize(2); // consultant1 har activity A och B
+        assertThat(res)
+                .extracting(ActivityResponseDTO::getConsultantId)
+                .allMatch(id -> id.equals(consultant1.getId()));
+    }
+
+    @Test
+    void getAllActivities_withConsultantIdAndInterval_returnsFiltered() {
+        List<ActivityResponseDTO> res = activityService.getAllActivities(
+                consultant1.getId(), "2026-02-10", "2026-02-10");
+
+        // Endast aktivitet B ska matcha
+        assertThat(res).hasSize(1);
+        assertThat(res.get(0).getTitle()).isEqualTo("B");
+        assertThat(res.get(0).getConsultantId()).isEqualTo(consultant1.getId());
     }
 
     @Test
@@ -109,6 +157,7 @@ public class ActivityServiceIntegrationTest {
 
         ActivityUpdateRequestDTO patch = new ActivityUpdateRequestDTO();
         patch.setTitle("Uppdaterad");
+        patch.setConsultantId(consultant2.getId());
         patch.setStartTime("10:00");
         patch.setEndTime("11:00");
 
@@ -116,11 +165,13 @@ public class ActivityServiceIntegrationTest {
 
         assertThat(updated.getId()).isEqualTo(existing.getId());
         assertThat(updated.getTitle()).isEqualTo("Uppdaterad");
+        assertThat(updated.getConsultantId()).isEqualTo(consultant2.getId());
         assertThat(updated.getStartTime()).isEqualTo("10:00");
         assertThat(updated.getEndTime()).isEqualTo("11:00");
 
         Activity saved = activityRepository.findById(existing.getId()).orElseThrow();
         assertThat(saved.getTitle()).isEqualTo("Uppdaterad");
+        assertThat(saved.getConsultant().getId()).isEqualTo(consultant2.getId());
         assertThat(saved.getStartTime()).isEqualTo(LocalTime.of(10, 0));
         assertThat(saved.getEndTime()).isEqualTo(LocalTime.of(11, 0));
     }
@@ -136,8 +187,26 @@ public class ActivityServiceIntegrationTest {
 
 
     // Helper
+
+    private Consultant consultant(String username, String email) {
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword("password");
+        user.setName("Test User");
+        user.setEmail(email);
+        user.setCity("Stockholm");
+        user.setRole(UserRole.CONSULTANT);
+        user = userRepository.save(user);
+
+        Consultant consultant = new Consultant();
+        consultant.setUser(user);
+
+        return consultantRepository.save(consultant);
+
+    }
+
     private Activity activity(String title, ActivityType type, LocalDate date,
-                              LocalTime start, LocalTime end, String description) {
+                              LocalTime start, LocalTime end, String description, Consultant consultant) {
         Activity a = new Activity();
         a.setTitle(title);
         a.setType(type);
@@ -145,6 +214,7 @@ public class ActivityServiceIntegrationTest {
         a.setStartTime(start);
         a.setEndTime(end);
         a.setDescription(description);
+        a.setConsultant(consultant);
         // createdAt sätts av @PrePersist i entitetsklassen
         return a;
     }
