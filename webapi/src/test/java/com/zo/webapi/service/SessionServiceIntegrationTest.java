@@ -47,15 +47,27 @@ public class SessionServiceIntegrationTest {
     void setup() {
         sessionRepository.deleteAll();
 
-        // Skapa en testkonsult
+        // Skapa en testkonsult med korrekt Long ID
         Consultant testConsultant = new Consultant();
-        testConsultant.setName("Test Consultant");
+        testConsultant.setUserId(1L); // Om du har User-fält, sätt Long ID
+        testConsultant.setCity("Test City"); // Om du har city-fält
         entityManager.persist(testConsultant);
-        entityManager.flush(); // Se till att id genereras
+        entityManager.flush(); // Genererar ID
 
-        // Skapa två assignments med konsulten
-        assignment1 = assignmentService.createAssignment(validAssignmentDTO(1, testConsultant.getId()));
-        assignment2 = assignmentService.createAssignment(validAssignmentDTO(2, testConsultant.getId()));
+        Long consultantId = testConsultant.getId(); // Få Long ID
+
+        // Skapa två assignments med consultantId
+        assignment1 = assignmentService.createAssignment(validAssignmentDTO(1, consultantId));
+        assignment2 = assignmentService.createAssignment(validAssignmentDTO(2, consultantId));
+    }
+
+    private com.zo.webapi.dto.AssignmentDTO validAssignmentDTO(long suffix, Long consultantId) {
+        com.zo.webapi.dto.AssignmentDTO dto = new com.zo.webapi.dto.AssignmentDTO();
+        dto.setConsultantId(consultantId); // ✅ Long
+        dto.setCourseId(1L);
+        dto.setDateStart(LocalDate.of(2026, 1, (int) suffix));
+        dto.setDateEnd(LocalDate.of(2026, 1, (int) (suffix + 2)));
+        return dto;
     }
 
     @Test
@@ -159,15 +171,5 @@ public class SessionServiceIntegrationTest {
     void testDeleteSession_NotFound() {
         boolean deleted = sessionService.deleteSessionById(9999L);
         assertThat(deleted).isFalse();
-    }
-
-    // Helper för att skapa AssignmentDTO
-    private com.zo.webapi.dto.AssignmentDTO validAssignmentDTO(long suffix, Long consultantId) {
-        com.zo.webapi.dto.AssignmentDTO dto = new com.zo.webapi.dto.AssignmentDTO();
-        dto.setConsultantId(consultantId);
-        dto.setCourseId(1L);
-        dto.setDateStart(LocalDate.of(2026, 1, (int) suffix));
-        dto.setDateEnd(LocalDate.of(2026, 1, (int) (suffix + 2)));
-        return dto;
     }
 }
