@@ -200,7 +200,6 @@ public class ActivityServiceIntegrationTest {
 
         Consultant consultant = new Consultant();
         consultant.setUser(user);
-        consultant.setCity("Stockholm");
 
         return consultantRepository.save(consultant);
 
