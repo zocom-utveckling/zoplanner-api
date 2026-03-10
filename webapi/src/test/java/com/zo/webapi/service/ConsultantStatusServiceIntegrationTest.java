@@ -71,7 +71,7 @@ public class ConsultantStatusServiceIntegrationTest {
         ConsultantStatus status = statusService.createStatus(statusDTO);
         assertNotNull(status);
         assertEquals(ConsultantStatusType.AVAILABLE, status.getStatus());
-        assertEquals(1L, status.getConsultant().getId());
+        assertEquals(consultant.getId(), status.getConsultant().getId());
         assertEquals(LocalDate.of(2026, 10, 13), status.getDateStart());
         assertEquals(LocalDate.of(2026, 12, 13), status.getDateEnd());
         assertEquals("test comment", status.getComment());
