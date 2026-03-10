@@ -13,6 +13,9 @@ public class ActivityCreateRequestDTO {
     @NotNull(message = "type is required")
     private ActivityType type;
 
+    @NotNull(message = "consultantId is required")
+    private Long consultantId;
+
     @NotBlank(message = "date is required")
     @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "date must be YYYY-MM-DD")
     private String date; // "yyyy-MM-dd"
@@ -29,10 +32,11 @@ public class ActivityCreateRequestDTO {
 
     public ActivityCreateRequestDTO() {}
 
-    public ActivityCreateRequestDTO(String title, ActivityType type, String date,
+    public ActivityCreateRequestDTO(String title, ActivityType type, Long consultantId, String date,
                                     String startTime, String endTime, String description) {
         this.title = title;
         this.type = type;
+        this.consultantId = consultantId;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -54,6 +58,10 @@ public class ActivityCreateRequestDTO {
     public void setType(ActivityType type) {
         this.type = type;
     }
+
+    public Long getConsultantId(){ return consultantId;}
+
+    public void setConsultantId(Long consultantId) { this.consultantId = consultantId;}
 
     public String getDate() {
         return date;

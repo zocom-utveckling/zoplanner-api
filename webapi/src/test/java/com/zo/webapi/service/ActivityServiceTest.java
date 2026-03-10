@@ -7,7 +7,9 @@ import com.zo.webapi.enums.ActivityType;
 import com.zo.webapi.exception.InvalidDataException;
 import com.zo.webapi.exception.ResourceNotFoundException;
 import com.zo.webapi.model.Activity;
+import com.zo.webapi.model.Consultant;
 import com.zo.webapi.repository.ActivityRepository;
+import com.zo.webapi.repository.ConsultantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -28,16 +30,24 @@ public class ActivityServiceTest {
     @Mock
     private ActivityRepository activityRepository;
 
+    @Mock
+    private ConsultantRepository consultantRepository;
+
     @InjectMocks
     private ActivityService activityService;
 
     private ActivityCreateRequestDTO validCreateDto;
+    private Consultant consultant;
 
     @BeforeEach
     void setUp() {
+        consultant = new Consultant();
+        consultant.setId(7L);
+
         validCreateDto = new ActivityCreateRequestDTO(
                 "Möte",
                 ActivityType.MEETING,
+                7L,
                 "2026-02-10",
                 "09:00",
                 "10:00",
@@ -47,6 +57,7 @@ public class ActivityServiceTest {
 
     @Test
     void createActivity_Success() {
+        when(consultantRepository.findById(7L)).thenReturn(Optional.of(consultant));
 
         when(activityRepository.save(any(Activity.class))).thenAnswer(inv -> {
             Activity a = inv.getArgument(0);
@@ -61,6 +72,7 @@ public class ActivityServiceTest {
         assertEquals(1L, resp.getId());
         assertEquals("Möte", resp.getTitle());
         assertEquals(ActivityType.MEETING, resp.getType());
+        assertEquals(7L, resp.getConsultantId());
         assertEquals("2026-02-10", resp.getDate());
         assertEquals("09:00", resp.getStartTime());
         assertEquals("10:00", resp.getEndTime());
@@ -69,6 +81,7 @@ public class ActivityServiceTest {
 
         ArgumentCaptor<Activity> captor = ArgumentCaptor.forClass(Activity.class);
         verify(activityRepository).save(captor.capture());
+        verify(consultantRepository).findById(7L);
 
         Activity saved = captor.getValue();
         assertEquals("Möte", saved.getTitle());
@@ -77,34 +90,51 @@ public class ActivityServiceTest {
         assertEquals(LocalTime.of(9, 0), saved.getStartTime());
         assertEquals(LocalTime.of(10, 0), saved.getEndTime());
         assertEquals("Beskrivning", saved.getDescription());
+        assertEquals(consultant, saved.getConsultant());
 
         verifyNoMoreInteractions(activityRepository);
     }
 
     @Test
+    void createActivity_ConsultantNotFound_ThrowsResourceNotFound() {
+        when(consultantRepository.findById(7L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> activityService.createActivity(validCreateDto));
+
+        verify(consultantRepository).findById(7L);
+        verifyNoInteractions(activityRepository);
+    }
+
+    @Test
     void createActivity_InvalidDateFormat_ThrowsInvalidData() {
+        when(consultantRepository.findById(7L)).thenReturn(Optional.of(consultant));
         validCreateDto.setDate("10-02-2026"); // Fel format
 
         InvalidDataException exc = assertThrows(InvalidDataException.class,
                 () -> activityService.createActivity(validCreateDto));
 
         assertTrue(exc.getMessage().toLowerCase().contains("invalid date"));
+        verify(consultantRepository).findById(7L);
         verifyNoInteractions(activityRepository);
     }
 
     @Test
     void createActivity_InvalidTimeFormat_ThrowsInvalidData() {
+        when(consultantRepository.findById(7L)).thenReturn(Optional.of(consultant));
         validCreateDto.setStartTime("9:00"); // Fel format, ska vara HH:mm
 
         InvalidDataException exc = assertThrows(InvalidDataException.class,
                 () -> activityService.createActivity(validCreateDto));
 
         assertTrue(exc.getMessage().toLowerCase().contains("starttime"));
+        verify(consultantRepository).findById(7L);
         verifyNoInteractions(activityRepository);
     }
 
     @Test
     void createActivity_StartTimeNotBeforeEndTime_ThrowsInvalidData() {
+        when(consultantRepository.findById(7L)).thenReturn(Optional.of(consultant));
         validCreateDto.setStartTime("10:00");
         validCreateDto.setEndTime("10:00");
 
@@ -112,17 +142,18 @@ public class ActivityServiceTest {
                 () -> activityService.createActivity(validCreateDto));
 
         assertTrue(exc.getMessage().toLowerCase().contains("starttime must be before endtime"));
+        verify(consultantRepository).findById(7L);
         verifyNoInteractions(activityRepository);
     }
 
     @Test
     void getAllActivities_NoParams_ReturnsAllOrdered() {
-        Activity a1 = activity(1L, "A", "2026-01-01", "09:00", "10:00");
-        Activity a2 = activity(2L, "B", "2026-01-02", "09:00", "10:00");
+        Activity a1 = activity(1L, "A", "2026-01-01", "09:00", "10:00", 7L);
+        Activity a2 = activity(2L, "B", "2026-01-02", "09:00", "10:00", 7L);
 
         when(activityRepository.findAllByOrderByDateAscStartTimeAsc()).thenReturn(List.of(a1, a2));
 
-        List<ActivityResponseDTO> result = activityService.getAllActivities(null, null);
+        List<ActivityResponseDTO> result = activityService.getAllActivities(null, null, null);
 
         assertEquals(2, result.size());
         assertEquals(1L, result.get(0).getId());
@@ -133,14 +164,30 @@ public class ActivityServiceTest {
     }
 
     @Test
+    void getAllActivities_ConsultantOnly_ReturnsFiltered() {
+        Activity a1 = activity(1L, "A", "2026-01-01", "09:00", "10:00", 7L);
+
+        when(activityRepository.findByConsultantIdOrderByDateAscStartTimeAsc(7L))
+                .thenReturn(List.of(a1));
+
+        List<ActivityResponseDTO> result = activityService.getAllActivities(7L, null, null);
+
+        assertEquals(1, result.size());
+        assertEquals(7L, result.get(0).getConsultantId());
+
+        verify(activityRepository).findByConsultantIdOrderByDateAscStartTimeAsc(7L);
+        verifyNoMoreInteractions(activityRepository);
+    }
+
+    @Test
     void getAllActivities_FromToProvided_ReturnsBetweenOrdered() {
-        Activity a1 = activity(1L, "A", "2026-01-10", "09:00", "10:00");
+        Activity a1 = activity(1L, "A", "2026-01-10", "09:00", "10:00", 7L);
 
         when(activityRepository.findByDateBetweenOrderByDateAscStartTimeAsc(
                 LocalDate.of(2026, 1, 1),
                 LocalDate.of(2026, 1, 31))).thenReturn(List.of(a1));
 
-        List<ActivityResponseDTO> result = activityService.getAllActivities("2026-01-01", "2026-01-31");
+        List<ActivityResponseDTO> result = activityService.getAllActivities(null, "2026-01-01", "2026-01-31");
 
         assertEquals(1, result.size());
         assertEquals("2026-01-10", result.get(0).getDate());
@@ -153,9 +200,31 @@ public class ActivityServiceTest {
     }
 
     @Test
+    void getAllActivities_ConsultantAndDates_ReturnsBetweenOrdered() {
+        Activity a1 = activity(1L, "A", "2026-01-10", "09:00", "10:00", 7L);
+
+        when(activityRepository.findByConsultantIdAndDateBetweenOrderByDateAscStartTimeAsc(
+                7L,
+                LocalDate.of(2026, 1, 1),
+                LocalDate.of(2026, 1, 31))).thenReturn(List.of(a1));
+
+        List<ActivityResponseDTO> result = activityService.getAllActivities(7L, "2026-01-01", "2026-01-31");
+
+        assertEquals(1, result.size());
+        assertEquals(7L, result.get(0).getConsultantId());
+
+        verify(activityRepository).findByConsultantIdAndDateBetweenOrderByDateAscStartTimeAsc(
+                7L,
+                LocalDate.of(2026, 1, 1),
+                LocalDate.of(2026, 1, 31)
+        );
+        verifyNoMoreInteractions(activityRepository);
+    }
+
+    @Test
     void getAllActivities_OnlyFromProvided_ThrowsInvalidData() {
         InvalidDataException exc = assertThrows(InvalidDataException.class,
-                () -> activityService.getAllActivities("2026-01-01", null));
+                () -> activityService.getAllActivities(null, "2026-01-01", null));
 
         assertTrue(exc.getMessage().toLowerCase().contains("both 'from' and 'to'"));
         verifyNoInteractions(activityRepository);
@@ -164,7 +233,7 @@ public class ActivityServiceTest {
     @Test
     void getAllActivities_FromAfterTo_ThrowsInvalidData() {
         InvalidDataException exc = assertThrows(InvalidDataException.class,
-                () -> activityService.getAllActivities("2026-02-01", "2026-01-01"));
+                () -> activityService.getAllActivities(null, "2026-02-01", "2026-01-01"));
 
         assertTrue(exc.getMessage().toLowerCase().contains("from"));
         verifyNoInteractions(activityRepository);
@@ -172,28 +241,53 @@ public class ActivityServiceTest {
 
     @Test
     void updateActivity_Success_PartialUpdate() {
-        Activity existing = activity(10L, "Befintlig title", "2026-01-01", "09:00", "10:00");
+        Activity existing = activity(10L, "Befintlig title", "2026-01-01", "09:00", "10:00", 7L);
         existing.setType(ActivityType.OTHER);
         existing.setDescription("Gammal beskrivning");
 
+        Consultant newConsultant = new Consultant();
+        newConsultant.setId(8L);
+
         when(activityRepository.findById(10L)).thenReturn(Optional.of(existing));
+        when(consultantRepository.findById(8L)).thenReturn(Optional.of(newConsultant));
         when(activityRepository.save(any(Activity.class))).thenAnswer(inv -> inv.getArgument(0));
 
         ActivityUpdateRequestDTO dto = new ActivityUpdateRequestDTO();
         dto.setTitle("Ny");
+        dto.setConsultantId(8L);
         dto.setStartTime("08:30");
 
         ActivityResponseDTO resp = activityService.updateActivity(10L, dto);
 
         assertEquals(10L, resp.getId());
         assertEquals("Ny", resp.getTitle());
+        assertEquals(8L, resp.getConsultantId());
         assertEquals("08:30", resp.getStartTime()); // Oförändrad
         assertEquals("10:00", resp.getEndTime());   // Oförändrad
         assertEquals("2026-01-01", resp.getDate()); // Oförändrad
 
         verify(activityRepository).findById(10L);
+        verify(consultantRepository).findById(8L);
         verify(activityRepository).save(existing);
-        verifyNoMoreInteractions(activityRepository);
+        verifyNoMoreInteractions(activityRepository, consultantRepository);
+    }
+
+    @Test
+    void updateActivity_ConsultantNotFound_ThrowsResourceNotFound() {
+        Activity existing = activity(10L, "Befintlig title", "2026-01-01", "09:00", "10:00", 7L);
+
+        when(activityRepository.findById(10L)).thenReturn(Optional.of(existing));
+        when(consultantRepository.findById(999L)).thenReturn(Optional.empty());
+
+        ActivityUpdateRequestDTO dto = new ActivityUpdateRequestDTO();
+        dto.setConsultantId(999L);
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> activityService.updateActivity(10L, dto));
+
+        verify(activityRepository).findById(10L);
+        verify(consultantRepository).findById(999L);
+        verify(activityRepository, never()).save(any());
     }
 
     @Test
@@ -209,7 +303,7 @@ public class ActivityServiceTest {
 
     @Test
     void updateActivity_InvalidTimeRange_ThrowsInvalidData() {
-        Activity existing = activity(10L, "Befintlig title", "2026-01-01", "09:00", "10:00");
+        Activity existing = activity(10L, "Befintlig title", "2026-01-01", "09:00", "10:00", 7L);
         when(activityRepository.findById(10L)).thenReturn(Optional.of(existing));
 
         ActivityUpdateRequestDTO dto = new ActivityUpdateRequestDTO();
@@ -249,7 +343,7 @@ public class ActivityServiceTest {
     }
 
     // Helper
-    private Activity activity(Long id, String title, String date, String start, String end) {
+    private Activity activity(Long id, String title, String date, String start, String end, Long consultantId) {
         Activity a = new Activity();
         a.setId(id);
         a.setTitle(title);
@@ -258,6 +352,11 @@ public class ActivityServiceTest {
         a.setStartTime(LocalTime.parse(start));
         a.setEndTime(LocalTime.parse(end));
         a.setCreatedAt(OffsetDateTime.parse("2026-02-01T10:15:30+01:00"));
+
+        Consultant c = new Consultant();
+        c.setId(consultantId);
+        a.setConsultant(c);
+
         return a;
     }
 }

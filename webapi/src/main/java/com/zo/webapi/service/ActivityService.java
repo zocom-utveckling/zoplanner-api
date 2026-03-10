@@ -6,7 +6,9 @@ import com.zo.webapi.dto.ActivityUpdateRequestDTO;
 import com.zo.webapi.exception.InvalidDataException;
 import com.zo.webapi.exception.ResourceNotFoundException;
 import com.zo.webapi.model.Activity;
+import com.zo.webapi.model.Consultant;
 import com.zo.webapi.repository.ActivityRepository;
+import com.zo.webapi.repository.ConsultantRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,20 +24,27 @@ import java.util.List;
 public class ActivityService {
 
     private final ActivityRepository activityRepository;
+    private final ConsultantRepository consultantRepository;
 
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ISO_LOCAL_DATE; // yyyy-MM-dd
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm");
     private static final DateTimeFormatter CREATED_FMT = DateTimeFormatter.ISO_OFFSET_DATE_TIME; // ISO-8601
 
-    public ActivityService(ActivityRepository activityRepository) {
+    public ActivityService(ActivityRepository activityRepository, ConsultantRepository consultantRepository) {
         this.activityRepository = activityRepository;
+        this.consultantRepository = consultantRepository;
     }
 
     @Transactional
     public ActivityResponseDTO createActivity(ActivityCreateRequestDTO dto) {
+
+        Consultant consultant = consultantRepository.findById(dto.getConsultantId())
+                .orElseThrow(() -> new ResourceNotFoundException("Consultant", "id", dto.getConsultantId()));
+
         Activity activity = new Activity();
         activity.setTitle(dto.getTitle());
         activity.setType(dto.getType());
+        activity.setConsultant(consultant);
         activity.setDate(parseDate(dto.getDate(), "date"));
         activity.setStartTime(parseTime(dto.getStartTime(), "startTime"));
         activity.setEndTime(parseTime(dto.getEndTime(), "endTime"));
@@ -49,7 +58,7 @@ public class ActivityService {
     }
 
     @Transactional(readOnly = true)
-    public List<ActivityResponseDTO> getAllActivities(String from, String to) {
+    public List<ActivityResponseDTO> getAllActivities(Long consultantId, String from, String to) {
         List<Activity> activities;
 
         if (from != null && to != null) {
@@ -59,9 +68,20 @@ public class ActivityService {
                 throw new InvalidDataException("'from' cannot be after 'to'");
             }
 
-            activities = activityRepository.findByDateBetweenOrderByDateAscStartTimeAsc(fromDate, toDate);
+            if(consultantId != null) {
+                activities = activityRepository.findByConsultantIdAndDateBetweenOrderByDateAscStartTimeAsc(
+                        consultantId, fromDate, toDate
+                );
+            } else {
+                activities = activityRepository.findByDateBetweenOrderByDateAscStartTimeAsc(fromDate, toDate);
+            }
+
         } else if (from == null && to == null) {
-            activities = activityRepository.findAllByOrderByDateAscStartTimeAsc();
+            if(consultantId != null) {
+                activities = activityRepository.findByConsultantIdOrderByDateAscStartTimeAsc(consultantId);
+            } else {
+                activities = activityRepository.findAllByOrderByDateAscStartTimeAsc();
+            }
         } else {
             throw new InvalidDataException("Both 'from' and 'to' must be provided together");
         }
@@ -76,6 +96,11 @@ public class ActivityService {
 
         if (dto.getTitle() != null) activity.setTitle(dto.getTitle());
         if (dto.getType() != null) activity.setType(dto.getType());
+        if (dto.getConsultantId() != null) {
+            Consultant consultant = consultantRepository.findById(dto.getConsultantId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Consultant", "id", dto.getConsultantId()));
+            activity.setConsultant(consultant);
+        }
         if (dto.getDate() != null) activity.setDate(parseDate(dto.getDate(), "date"));
         if (dto.getStartTime() != null) activity.setStartTime(parseTime(dto.getStartTime(), "startTime"));
         if (dto.getEndTime() != null) activity.setEndTime(parseTime(dto.getEndTime(), "endTime"));
@@ -102,6 +127,7 @@ public class ActivityService {
                 a.getId(),
                 a.getTitle(),
                 a.getType(),
+                a.getConsultant() != null ? a.getConsultant().getId() : null,
                 a.getDate() != null ? a.getDate().format(DATE_FMT) : null,
                 a.getStartTime() != null ? a.getStartTime().format(TIME_FMT) : null,
                 a.getEndTime() != null ? a.getEndTime().format(TIME_FMT) : null,
