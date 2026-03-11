@@ -1,12 +1,11 @@
 package com.zo.webapi.service;
 
 import com.zo.webapi.WebapiApplication;
+import com.zo.webapi.enums.UserRole;
 import com.zo.webapi.exception.ResourceNotFoundException;
-import com.zo.webapi.model.Assignment;
-import com.zo.webapi.model.Consultant;
-import com.zo.webapi.model.Session;
-import com.zo.webapi.model.SessionLocation;
-import com.zo.webapi.repository.SessionRepository;
+import com.zo.webapi.model.*;
+import com.zo.webapi.repository.*;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,53 +26,80 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Transactional
 public class SessionServiceIntegrationTest {
 
-    @Autowired
-    private SessionService sessionService;
-
-    @Autowired
-    private AssignmentService assignmentService;
-
-    @Autowired
-    private SessionRepository sessionRepository;
-
-    @Autowired
-    private EntityManager entityManager;
+    @Autowired private SessionService sessionService;
+    @Autowired private AssignmentService assignmentService;
+    @Autowired private SessionRepository sessionRepository;
+    @Autowired private UserRepository userRepository;
+    @Autowired private ConsultantRepository consultantRepository;
+    @Autowired private CourseRepository courseRepository;
+    @Autowired private CustomerRepository customerRepository;
+    @Autowired private ClassGroupRepository classGroupRepository;
+    @Autowired private AssignmentRepository assignmentRepository;
 
     private Assignment assignment1;
     private Assignment assignment2;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         sessionRepository.deleteAll();
+        assignmentRepository.deleteAll();
+        courseRepository.deleteAll();
+        classGroupRepository.deleteAll();
+        customerRepository.deleteAll();
 
-        // Skapa en testkonsult med korrekt Long ID
-        Consultant testConsultant = new Consultant();
-        testConsultant.setUserId(1L); // Om du har User-fält, sätt Long ID
-        testConsultant.setCity("Test City"); // Om du har city-fält
-        entityManager.persist(testConsultant);
-        entityManager.flush(); // Genererar ID
+        // Consultant
+        User user = new User();
+        user.setUsername("session.user");
+        user.setPassword("pw");
+        user.setName("Session User");
+        user.setEmail("session@test.com");
+        user.setCity("Stockholm");
+        user.setRole(UserRole.CONSULTANT);
+        user = userRepository.save(user);
 
-        Long consultantId = testConsultant.getId(); // Få Long ID
+        Consultant consultant = new Consultant();
+        consultant.setUser(user);
+        consultant = consultantRepository.save(consultant);
 
-        // Skapa två assignments med consultantId
-        assignment1 = assignmentService.createAssignment(validAssignmentDTO(1, consultantId));
-        assignment2 = assignmentService.createAssignment(validAssignmentDTO(2, consultantId));
-    }
+        // Course
+        Customer customer = new Customer();
+        customer.setName("Customer A");
+        customer.setCity("Stockholm");
+        customer = customerRepository.save(customer);
 
-    private com.zo.webapi.dto.AssignmentDTO validAssignmentDTO(long suffix, Long consultantId) {
-        com.zo.webapi.dto.AssignmentDTO dto = new com.zo.webapi.dto.AssignmentDTO();
-        dto.setConsultantId(consultantId); // ✅ Long
-        dto.setCourseId(1L);
-        dto.setDateStart(LocalDate.of(2026, 1, (int) suffix));
-        dto.setDateEnd(LocalDate.of(2026, 1, (int) (suffix + 2)));
-        return dto;
+        ClassGroup classGroup = new ClassGroup();
+        classGroup.setName("Class A");
+        classGroup.setCustomer(customer);
+        classGroup = classGroupRepository.save(classGroup);
+
+        Course course = new Course();
+        course.setName("Course A");
+        course.setClassGroup(classGroup);
+        course.setDateStart(LocalDate.of(2026, 1, 1));
+        course.setDateEnd(LocalDate.of(2026, 12, 31));
+        course = courseRepository.save(course);
+
+        // Assignments
+        com.zo.webapi.dto.AssignmentDTO dto1 = new com.zo.webapi.dto.AssignmentDTO();
+        dto1.setConsultantId(consultant.getId());
+        dto1.setCourseId(course.getId());
+        dto1.setDateStart(LocalDate.of(2026, 1, 1));
+        dto1.setDateEnd(LocalDate.of(2026, 6, 30));
+        assignment1 = assignmentService.createAssignment(dto1);
+
+        com.zo.webapi.dto.AssignmentDTO dto2 = new com.zo.webapi.dto.AssignmentDTO();
+        dto2.setConsultantId(consultant.getId());
+        dto2.setCourseId(course.getId());
+        dto2.setDateStart(LocalDate.of(2026, 7, 1));
+        dto2.setDateEnd(LocalDate.of(2026, 12, 31));
+        assignment2 = assignmentService.createAssignment(dto2);
     }
 
     @Test
     void testCreateSession_Success() {
-        Session session = new Session();
-        session.setTimeStart(LocalDateTime.of(2026, 1, 1, 10, 0));
-        session.setTimeEnd(LocalDateTime.of(2026, 1, 1, 12, 0));
+        Session session = new Session("Session 1",
+                LocalDateTime.of(2026, 1, 1, 10, 0),
+                LocalDateTime.of(2026, 1, 1, 12, 0));
         session.setComment("Session 1 comment");
         session.setLocation(SessionLocation.REMOTE);
 
@@ -88,9 +113,9 @@ public class SessionServiceIntegrationTest {
 
     @Test
     void testGetSessionById_Success() {
-        Session session = new Session();
-        session.setTimeStart(LocalDateTime.of(2026, 2, 1, 10, 0));
-        session.setTimeEnd(LocalDateTime.of(2026, 2, 1, 12, 0));
+        Session session = new Session("Session 2",
+                LocalDateTime.of(2026, 2, 1, 10, 0),
+                LocalDateTime.of(2026, 2, 1, 12, 0));
         session.setLocation(SessionLocation.ONSITE);
 
         session = sessionService.createSession(assignment1.getId(), session);
@@ -102,14 +127,14 @@ public class SessionServiceIntegrationTest {
 
     @Test
     void testGetAllSessions_Success() {
-        Session session1 = new Session();
-        session1.setTimeStart(LocalDateTime.of(2026, 3, 1, 9, 0));
-        session1.setTimeEnd(LocalDateTime.of(2026, 3, 1, 11, 0));
+        Session session1 = new Session("Session 3",
+                LocalDateTime.of(2026, 3, 1, 9, 0),
+                LocalDateTime.of(2026, 3, 1, 11, 0));
         session1.setLocation(SessionLocation.REMOTE);
 
-        Session session2 = new Session();
-        session2.setTimeStart(LocalDateTime.of(2026, 3, 2, 14, 0));
-        session2.setTimeEnd(LocalDateTime.of(2026, 3, 2, 16, 0));
+        Session session2 = new Session("Session 4",
+                LocalDateTime.of(2026, 3, 2, 14, 0),
+                LocalDateTime.of(2026, 3, 2, 16, 0));
         session2.setLocation(SessionLocation.ONSITE);
 
         sessionService.createSession(assignment1.getId(), session1);
@@ -121,16 +146,16 @@ public class SessionServiceIntegrationTest {
 
     @Test
     void testUpdateSession_Success() {
-        Session session = new Session();
-        session.setTimeStart(LocalDateTime.of(2026, 4, 1, 10, 0));
-        session.setTimeEnd(LocalDateTime.of(2026, 4, 1, 12, 0));
+        Session session = new Session("Session 5",
+                LocalDateTime.of(2026, 4, 1, 10, 0),
+                LocalDateTime.of(2026, 4, 1, 12, 0));
         session.setLocation(SessionLocation.ONSITE);
 
         session = sessionService.createSession(assignment1.getId(), session);
 
-        Session updateSession = new Session();
-        updateSession.setTimeStart(LocalDateTime.of(2026, 4, 1, 11, 0));
-        updateSession.setTimeEnd(LocalDateTime.of(2026, 4, 1, 13, 0));
+        Session updateSession = new Session("Updated Session",
+                LocalDateTime.of(2026, 4, 1, 11, 0),
+                LocalDateTime.of(2026, 4, 1, 13, 0));
         updateSession.setComment("Updated comment");
         updateSession.setLocation(SessionLocation.HYBRID);
 
@@ -144,20 +169,20 @@ public class SessionServiceIntegrationTest {
 
     @Test
     void testUpdateSession_NotFound() {
-        Session session = new Session();
-        session.setTimeStart(LocalDateTime.now());
-        session.setTimeEnd(LocalDateTime.now().plusHours(1));
+        Session session = new Session("Ghost Session",
+                LocalDateTime.now(),
+                LocalDateTime.now().plusHours(1));
         session.setLocation(SessionLocation.REMOTE);
 
-        assertThrows(ResourceNotFoundException.class, () ->
+        assertThrows(EntityNotFoundException.class, () ->
                 sessionService.updateSession(9999L, session));
     }
 
     @Test
     void testDeleteSession_Success() {
-        Session session = new Session();
-        session.setTimeStart(LocalDateTime.of(2026, 5, 1, 10, 0));
-        session.setTimeEnd(LocalDateTime.of(2026, 5, 1, 12, 0));
+        Session session = new Session("Session 6",
+                LocalDateTime.of(2026, 5, 1, 10, 0),
+                LocalDateTime.of(2026, 5, 1, 12, 0));
         session.setLocation(SessionLocation.REMOTE);
 
         session = sessionService.createSession(assignment1.getId(), session);
