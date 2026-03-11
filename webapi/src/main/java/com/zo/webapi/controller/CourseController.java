@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -33,6 +34,18 @@ public class CourseController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Course not found: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Course>> searchCourse(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) LocalDate dateStart,
+            @RequestParam(required = false) LocalDate dateEnd,
+            @RequestParam(required = false) Long customer,
+            @RequestParam(required = false) String city
+    ) {
+        List<Course> courses = courseService.searchCourse(name, dateStart, dateEnd, customer, city);
+        return ResponseEntity.ok(courses);
     }
 
     @GetMapping("/class/{classId}")
