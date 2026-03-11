@@ -495,6 +495,187 @@ Build-steg förklarning:
 <img width="602" height="595" alt="image" src="https://github.com/user-attachments/assets/c08fbcc5-4d57-43f8-a795-dd4163d9885e" />
 <img width="602" height="127" alt="image" src="https://github.com/user-attachments/assets/b0d3db8f-d3be-429a-9000-ab959671e9a9" />
 
+---
+
+## File Upload Feature (Consultant Images)
+
+### Overview of Core Functions
+
+**FileService - 4 main functions:**
+
+- **uploadFile(MultipartFile file)**
+  - Receives a file via MultipartFile
+  - Extracts metadata (name, type, size) and binary data
+  - Saves to database via FileRepository
+  - Returns FileResponse with ID and URL
+
+- **replaceFile(Integer id, MultipartFile file)**
+  - Finds existing file by ID
+  - Throws FileNotFoundException if ID doesn't exist
+  - Updates all field data with new file
+  - Returns updated FileResponse
+
+- **deleteFile(Integer id)**
+  - Checks that the file exists
+  - Throws FileNotFoundException if ID doesn't exist
+  - Removes the file from the database
+  - Returns nothing (void)
+
+- **getFile(Integer id)**
+  - Retrieves file from database by ID
+  - Throws FileNotFoundException if ID doesn't exist
+  - Returns complete FileEntity with binary data
+  - Used by controller to download files
+
+### API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/files` | Upload a new file |
+| GET | `/files/{id}` | Download a file |
+| PUT | `/files/{id}` | Replace an existing file |
+| DELETE | `/files/{id}` | Delete a file |
+
+### Testing Guide for Postman
+
+#### Test 1: Upload File
+- **Method:** `POST`
+- **URL:** `http://localhost:8080/files`
+- **Body:** 
+  - Select `form-data`
+  - Key: `file` (change type to `File` via dropdown)
+  - Value: Select a file from your computer
+- **Click:** Send
+- **Expected response:**
+```json
+{
+  "id": 1,
+  "url": "/files/1",
+  "fileName": "your-file.pdf",
+  "size": 12345
+}
+```
+
+#### Test 2: Retrieve/Download File
+- **Method:** `GET`
+- **URL:** `http://localhost:8080/files/1`
+- **Body:** (no body needed)
+- **Click:** Send
+- **Expected:** File downloads or displays in Postman
+
+#### Test 3: Replace File
+- **Method:** `PUT`
+- **URL:** `http://localhost:8080/files/1`
+- **Body:**
+  - Select `form-data`
+  - Key: `file` (type `File`)
+  - Value: Select a new/different file
+- **Click:** Send
+- **Expected response:**
+```json
+{
+  "id": 1,
+  "url": "/files/1",
+  "fileName": "updated-file.pdf",
+  "size": 54321
+}
+```
+
+#### Test 4: Delete File
+- **Method:** `DELETE`
+- **URL:** `http://localhost:8080/files/1`
+- **Body:** (no body needed)
+- **Click:** Send
+- **Expected response:**
+```json
+{
+  "status": "success",
+  "message": "File with ID 1 has been successfully deleted",
+  "deleteFieldId": "1"
+}
+```
+
+#### Test 5: Error Handling - File Not Found
+- **Method:** `GET` (or `PUT`/`DELETE`)
+- **URL:** `http://localhost:8080/files/999`
+- **Click:** Send
+- **Expected:** HTTP 404 with error message
+```json
+{
+  "status": 404,
+  "error": "Not Found",
+  "message": "File not found with id: 999",
+  "path": "/files/999"
+}
+```
+
+**Tip:** Save the ID from the upload response to use in subsequent tests.
+
+#### Verification Checklist
+- ✅ File uploads and returns correct metadata
+- ✅ Downloaded file matches uploaded file
+- ✅ File replacement updates the content
+- ✅ File deletion removes the record from database
+- ✅ Operations on non-existent files return 404
+- ✅ Check database to verify records are created/updated/deleted
+- ✅ Check application logs for info/error messages
+- ✅ Test with different file types (PDF, images, text)
+- ✅ Verify that `createdAt` and `updatedAt` timestamps are set correctly
+
+### Database Schema
+
+Files are stored in the `files` table:
+- `id` - Auto-generated primary key
+- `file_name` - Original filename
+- `content_type` - MIME type (e.g., image/jpeg)
+- `size` - File size in bytes
+- `data` - Binary file data (BYTEA)
+- `created_at` - Upload timestamp
+- `updated_at` - Last update timestamp
+
+### Configuration
+
+Maximum file size: **10MB** (configurable in `application.properties`)
+
+```properties
+spring.servlet.multipart.max-file-size=10MB
+spring.servlet.multipart.max-request-size=10MB
+spring.servlet.multipart.enabled=true
+```
+
+### Testing
+
+Run file service tests:
+```bash
+# Run specific test class
+mvn test -Dtest=FileServiceTest
+```
+
+All 7 file service tests should pass:
+- File upload
+- File replacement
+- File deletion
+- File retrieval
+- Error handling
+
+### Important Notes
+
+**Database:**
+- Files are stored directly in PostgreSQL using BYTEA column type
+- The `files` table is auto-created by Hibernate (`ddl-auto=update`)
+- Binary data is stored in the `data` column
+
+**Error Handling:**
+- `FileNotFoundException` - Returns HTTP 404 when file ID doesn't exist
+- `FileStorageException` - Returns HTTP 500 for I/O errors
+- `MaxUploadSizeExceededException` - Returns HTTP 413 when file exceeds 10MB
+
+  
+
+
+
+
+
 
   
 
