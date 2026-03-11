@@ -2,6 +2,7 @@ package com.zo.webapi.repository;
 
 import com.zo.webapi.model.Consultant;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ConsultantRepository extends JpaRepository<Consultant, Long> {
+public interface ConsultantRepository extends JpaRepository<Consultant, Long>, JpaSpecificationExecutor<Consultant> {
 
     Optional<Consultant> findByUserId(Long userId);
 

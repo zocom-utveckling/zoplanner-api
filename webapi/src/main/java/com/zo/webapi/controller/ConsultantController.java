@@ -23,6 +23,14 @@ public class ConsultantController {
         return ResponseEntity.ok(consultants);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<ConsultantResponseDTO>> searchConsultants(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) Long manager) {
+        return ResponseEntity.ok(consultantService.searchConsultants(name, city, manager));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ConsultantResponseDTO> getConsultantById(@PathVariable Long id) {
         ConsultantResponseDTO dto = consultantService.getConsultantById(id);

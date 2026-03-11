@@ -4,8 +4,11 @@ import com.zo.webapi.model.ClassGroup;
 import com.zo.webapi.model.Course;
 import com.zo.webapi.repository.ClassGroupRepository;
 import com.zo.webapi.repository.CourseRepository;
+import com.zo.webapi.specification.CourseSpecification;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -20,6 +23,16 @@ public class CourseService {
 
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
+    }
+
+    public List<Course> searchCourse(String name, LocalDate dateStart, LocalDate dateEnd, Long customerId, String city) {
+        Specification<Course> spec = Specification.allOf(
+                CourseSpecification.hasName(name),
+                CourseSpecification.hasDate(dateStart, dateEnd),
+                CourseSpecification.hasCustomer(customerId),
+                CourseSpecification.hasCity(city)
+        );
+        return courseRepository.findAll(spec);
     }
 
     public Course getCourseById(Long id) {
