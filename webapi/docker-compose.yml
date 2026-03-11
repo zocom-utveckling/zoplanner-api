@@ -46,7 +46,7 @@ services:
   # .NET Application
   dotnet-service:
     build:
-      context: C:\Users\Benny\DEVjensen\ZoPlanner-Notification\zoplanner-notificationservice\zoplanner-service\zoplannerservice
+      context: ../../zoplanner-service/zoplannerservice # Sökväg till .NET-tjänstens mapp som innehåller Dockerfile
       dockerfile: Dockerfile
     container_name: zoplanner-dotnet
     networks:
@@ -65,7 +65,7 @@ services:
   # Frontend Application
   frontend:
     build:
-      context: C:\Users\Benny\DEVjensen\ZoPlanner-Notification\zoplanner-notificationservice\zoplanner-frontend
+      context: ../../zoplanner-frontend # Sökväg till frontend-mappen som innehåller Dockerfile
       dockerfile: Dockerfile
     container_name: zoplanner-frontend
     networks:
@@ -80,7 +80,7 @@ services:
   # Notification Service
   notification-service:
     build:
-      context: C:\Users\Benny\DEVjensen\ZoPlanner-Notification\zoplanner-notificationservice
+      context: ../../zoplanner-notificationservice # Sökväg till notification service-mappen som innehåller Dockerfile
       dockerfile: Dockerfile
     container_name: zoplanner-notification-service
     networks:
