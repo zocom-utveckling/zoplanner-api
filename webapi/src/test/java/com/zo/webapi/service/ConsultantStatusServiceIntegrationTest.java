@@ -9,6 +9,7 @@ import com.zo.webapi.model.ConsultantStatus;
 import com.zo.webapi.model.User;
 import com.zo.webapi.repository.ConsultantRepository;
 import com.zo.webapi.repository.ConsultantStatusRepository;
+import com.zo.webapi.repository.ManagerRepository;
 import com.zo.webapi.repository.UserRepository;
 import com.zo.webapi.service.ConsultantStatusService;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +42,9 @@ public class ConsultantStatusServiceIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ManagerRepository managerRepository;
+
     private Consultant consultant;
 
     private ConsultantStatusDTO statusDTO;
@@ -48,6 +52,9 @@ public class ConsultantStatusServiceIntegrationTest {
 
     @BeforeEach
     void setup() {
+        consultantRepository.deleteAll();
+        managerRepository.deleteAll();
+        userRepository.deleteAll();
         statusRepository.deleteAll();
 
         userRepository.save(new User(null, "testuser", "testuser", "testuser", "e@mail.com", "Stockholm", UserRole.CONSULTANT));
