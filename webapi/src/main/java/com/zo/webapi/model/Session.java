@@ -3,8 +3,6 @@ package com.zo.webapi.model;
 import com.fasterxml.jackson.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -60,8 +58,9 @@ public class Session {
         this.timeEnd = timeEnd;
         this.title = title;
     }
-
     public Session() {}
+
+    public Session(LocalDateTime now, LocalDateTime localDateTime) {}
 
     // --- Getters och Setters ---
     public Long getId() { return id; }

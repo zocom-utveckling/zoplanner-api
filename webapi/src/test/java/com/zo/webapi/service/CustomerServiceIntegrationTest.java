@@ -1,79 +1,117 @@
 package com.zo.webapi.service;
 
 import com.zo.webapi.WebapiApplication;
+import com.zo.webapi.dto.CustomerCreateDTO;
+import com.zo.webapi.dto.CustomerResponseDTO;
 import com.zo.webapi.dto.CustomerUpdateDTO;
 import com.zo.webapi.model.Customer;
 import com.zo.webapi.repository.CustomerRepository;
-import com.zo.webapi.service.CustomerService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/*@ActiveProfiles("test")
+@ActiveProfiles("test")
 @SpringBootTest(classes = WebapiApplication.class)
 @Transactional
 public class CustomerServiceIntegrationTest {
-    @Autowired
-    private CustomerRepository customerRepository;
+
     @Autowired
     private CustomerService customerService;
 
-    private Customer testCustomer;
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    private Customer customer1;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
+        // Rensa databasen innan varje test
         customerRepository.deleteAll();
-        testCustomer = customerService.createCustomer("John", "London", null);
 
+        // Skapa en testkund och spara i klassvariabeln
+        CustomerCreateDTO dto = new CustomerCreateDTO();
+        dto.setName("John");
+        dto.setCity("London");
+        dto.setManagerId(null); // om manager är nullable
+
+        CustomerResponseDTO created = customerService.createCustomer(dto);
+        customer1 = customerRepository.findById(created.getId()).orElseThrow();
     }
 
     @Test
-    void testGetAllCustomers() {
+    void testGetAllCustomers_Success() {
         List<Customer> customers = customerService.getAllCustomers();
-        assertFalse(customers.isEmpty());
-        assertEquals(1, customers.size());
-        assertEquals("John", customers.get(0).getName());
+
+        assertThat(customers).isNotEmpty();
+        assertThat(customers).hasSize(1);
+        assertThat(customers.get(0).getName()).isEqualTo("John");
     }
 
     @Test
-    void testUpdateCustomers() {
-        CustomerUpdateDTO customerUpdateDTO = new CustomerUpdateDTO();
-        customerUpdateDTO.setName("John Updated");
-        customerUpdateDTO.setCity("Stockholm");
+    void testCreateCustomer_Success() {
+        CustomerCreateDTO dto = new CustomerCreateDTO();
+        dto.setName("Alice");
+        dto.setCity("Paris");
+        dto.setManagerId(null);
 
-        Customer updatedCustomer = customerService.updateCustomer(testCustomer.getId(), customerUpdateDTO);
+        CustomerResponseDTO created = customerService.createCustomer(dto);
 
-        assertEquals("John Updated", updatedCustomer.getName());
-        assertEquals("Stockholm", updatedCustomer.getCity());
+        assertThat(created.getId()).isNotNull();
+        assertThat(created.getName()).isEqualTo("Alice");
+        assertThat(created.getCity()).isEqualTo("Paris");
+        assertThat(customerRepository.findById(created.getId())).isPresent();
     }
 
     @Test
-    void testDeleteCustomer_NotFound() {
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            customerService.deleteCustomer(999L);
-        });
-        assertTrue(exception.getMessage().contains("Customer not found with id"));
+    void testUpdateCustomer_Success() {
+        CustomerUpdateDTO updateDTO = new CustomerUpdateDTO();
+        updateDTO.setName("John Updated");
+        updateDTO.setCity("Stockholm");
+
+        CustomerResponseDTO updated = customerService.updateCustomer(customer1.getId(), updateDTO);
+
+        assertThat(updated.getName()).isEqualTo("John Updated");
+        assertThat(updated.getCity()).isEqualTo("Stockholm");
     }
 
     @Test
     void testUpdateCustomer_NotFound() {
-        CustomerUpdateDTO customerUpdateDTO = new CustomerUpdateDTO();
-        customerUpdateDTO.setName("Non Existent");
-        customerUpdateDTO.setCity("None");
+        CustomerUpdateDTO updateDTO = new CustomerUpdateDTO();
+        updateDTO.setName("Not found");
+        updateDTO.setCity("None");
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            customerService.updateCustomer(999L, customerUpdateDTO);
+        RuntimeException exc = assertThrows(
+                RuntimeException.class,
+                () -> customerService.updateCustomer(9999L, updateDTO)
+        );
 
-        });
-        assertTrue(exception.getMessage().contains("Customer not found"));
+        assertThat(exc.getMessage()).contains("Customer not found");
+    }
+
+    @Test
+    void testDeleteCustomer_Success() {
+        customerService.deleteCustomer(customer1.getId());
+
+        assertThat(customerRepository.findById(customer1.getId())).isEmpty();
+    }
+
+    @Test
+    void testDeleteCustomer_NotFound() {
+        RuntimeException exc = assertThrows(
+                RuntimeException.class,
+                () -> customerService.deleteCustomer(9999L)
+        );
+
+        assertThat(exc.getMessage()).contains("Customer not found");
     }
 }
-*/

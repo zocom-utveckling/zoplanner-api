@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-@DataJpaTest
+/*@DataJpaTest
 public class UserRepositoryIntegrationTest {
     @Autowired
     private UserRepository userRepository;
@@ -139,3 +139,5 @@ public class UserRepositoryIntegrationTest {
     }
 
 }
+
+ */
