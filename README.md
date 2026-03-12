@@ -1,5 +1,5 @@
 # Zoplanner-api
-[![CI - Build, Test, and Publish Docker Image](https://github.com/zocom-utveckling/zoplanner-api/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/zocom-utveckling/zoplanner-api/actions/workflows/ci.yml)
+[![CI - Build and Test Java](https://github.com/zocom-utveckling/zoplanner-api/actions/workflows/integration.yml/badge.svg?event=push)](https://github.com/zocom-utveckling/zoplanner-api/actions/workflows/integration.yml)
 <br>
 <br>
 
