@@ -71,7 +71,7 @@ class ActivityControllerTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.title").value("Möte med kursledare"))
                 .andExpect(jsonPath("$.type").value("meeting"))
-                .andExpect(jsonPath("$.consultantId").value(7))
+                .andExpect(jsonPath("$.userId").value(7))
                 .andExpect(jsonPath("$.date").value("2026-02-10"))
                 .andExpect(jsonPath("$.startTime").value("09:00"))
                 .andExpect(jsonPath("$.endTime").value("10:00"))
@@ -84,7 +84,7 @@ class ActivityControllerTest {
         ActivityCreateRequestDTO sent = captor.getValue();
         assertEquals("Möte med kursledare", sent.getTitle());
         assertEquals(ActivityType.MEETING, sent.getType());
-        assertEquals(7L, sent.getConsultantId());
+        assertEquals(7L, sent.getUserId());
         assertEquals("2026-02-10", sent.getDate());
         assertEquals("09:00", sent.getStartTime());
         assertEquals("10:00", sent.getEndTime());
@@ -132,11 +132,11 @@ class ActivityControllerTest {
     }
 
     @Test
-    void testGetAllActivities_WithConsultantId_Success() throws Exception {
+    void testGetAllActivities_WithUserId_Success() throws Exception {
         when(activityService.getAllActivities(7L, null, null)).thenReturn(List.of());
 
         mockMvc.perform(get("/api/activities")
-                        .param("consultantId", "7"))
+                        .param("userId", "7"))
                 .andExpect(status().isOk());
 
         verify(activityService).getAllActivities(7L, null, null);
@@ -147,7 +147,7 @@ class ActivityControllerTest {
         ActivityUpdateRequestDTO req = new ActivityUpdateRequestDTO();
         req.setTitle("Ny title");
         req.setType(ActivityType.REVIEW);
-        req.setConsultantId(8L);
+        req.setUserId(8L);
         req.setDate("2026-02-15");
         req.setStartTime("10:00");
         req.setEndTime("11:00");
@@ -175,7 +175,7 @@ class ActivityControllerTest {
         ActivityUpdateRequestDTO sent = captor.getValue();
         assertEquals("Ny title", sent.getTitle());
         assertEquals(ActivityType.REVIEW, sent.getType());
-        assertEquals(8L, sent.getConsultantId());
+        assertEquals(8L, sent.getUserId());
         assertEquals("2026-02-15", sent.getDate());
         assertEquals("10:00", sent.getStartTime());
         assertEquals("11:00", sent.getEndTime());

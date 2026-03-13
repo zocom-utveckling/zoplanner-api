@@ -7,7 +7,7 @@ public class ActivityResponseDTO {
     private Long id;
     private String title;
     private ActivityType type;
-    private Long consultantId;
+    private Long userId;
     private String date;
     private String startTime;
     private String endTime;
@@ -16,12 +16,12 @@ public class ActivityResponseDTO {
 
     public ActivityResponseDTO() {}
 
-    public ActivityResponseDTO(Long id, String title, ActivityType type, Long consultantId, String date,
+    public ActivityResponseDTO(Long id, String title, ActivityType type, Long userId, String date,
                                String startTime, String endTime, String description, String createdAt) {
         this.id = id;
         this.title = title;
         this.type = type;
-        this.consultantId = consultantId;
+        this.userId = userId;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -53,9 +53,9 @@ public class ActivityResponseDTO {
         this.type = type;
     }
 
-    public Long getConsultantId() { return consultantId;}
+    public Long getUserId() { return userId;}
 
-    public void setConsultantId(Long consultantId) { this.consultantId = consultantId; }
+    public void setUserId(Long userId) { this.userId = userId; }
 
     public String getDate() {
         return date;

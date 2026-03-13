@@ -2,6 +2,7 @@ package com.zo.webapi.repository;
 
 
 import com.zo.webapi.model.Activity;
+import com.zo.webapi.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
@@ -15,10 +16,12 @@ public interface ActivityRepository extends JpaRepository <Activity, Long> {
     // Hämta alla aktiviteter, sorterat från först -> sist
     List<Activity> findAllByOrderByDateAscStartTimeAsc();
 
-    // Samma som ovan men baserat på consultantId
-    List<Activity> findByConsultantIdOrderByDateAscStartTimeAsc(Long consultantId);
+    // Samma som ovan men baserat på userId
+    List<Activity> findByUserIdOrderByDateAscStartTimeAsc(Long userId);
 
-    List<Activity> findByConsultantIdAndDateBetweenOrderByDateAscStartTimeAsc(
-            Long consultantId, LocalDate from, LocalDate to
+    List<Activity> findByUserIdAndDateBetweenOrderByDateAscStartTimeAsc(
+            Long userId, LocalDate from, LocalDate to
     );
+
+    Long user(User user);
 }

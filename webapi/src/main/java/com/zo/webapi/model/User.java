@@ -1,9 +1,12 @@
 package com.zo.webapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.zo.webapi.enums.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.List;
 
 @Entity
 @Table(name="users")
@@ -38,6 +41,9 @@ public class User {
     @Column(name = "role", nullable = false)
     private UserRole role = UserRole.CONSULTANT;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Activity> activities;
 
     //Constructors
     public User(Long id, String username, String password, String name, String email, String city, UserRole role) {
@@ -107,6 +113,14 @@ public class User {
     }
     public void setRole(UserRole role) {
         this.role = role;
+    }
+
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
     }
 
 }

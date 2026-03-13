@@ -9,7 +9,7 @@ public class ActivityUpdateRequestDTO {
     private String title;
 
     private ActivityType type;
-    private Long consultantId;
+    private Long userId;
 
     @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "date must be YYYY-MM-DD")
     private String date;
@@ -24,11 +24,11 @@ public class ActivityUpdateRequestDTO {
 
     public ActivityUpdateRequestDTO() {}
 
-    public ActivityUpdateRequestDTO(String title, ActivityType type, Long consultantId, String date,
+    public ActivityUpdateRequestDTO(String title, ActivityType type, Long userId, String date,
                                     String startTime, String endTime, String description) {
         this.title = title;
         this.type = type;
-        this.consultantId = consultantId;
+        this.userId = userId;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -47,9 +47,9 @@ public class ActivityUpdateRequestDTO {
         return type;
     }
 
-    public Long getConsultantId() {return consultantId;}
+    public Long getUserId() {return userId;}
 
-    public void setConsultantId(Long consultantId) { this.consultantId = consultantId;}
+    public void setUserId(Long userId) { this.userId = userId;}
 
     public void setType(ActivityType type) {
         this.type = type;
