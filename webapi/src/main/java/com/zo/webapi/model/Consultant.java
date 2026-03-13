@@ -30,7 +30,4 @@ public class Consultant {
     @OneToMany(mappedBy = "consultant", cascade = CascadeType.ALL)
     private List<ConsultantStatus> statuses;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "consultant", cascade = CascadeType.ALL)
-    private List<Activity> activities;
 }

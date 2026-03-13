@@ -44,8 +44,8 @@ public class Activity {
     private OffsetDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "consultant_id", nullable = false)
-    private Consultant consultant;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @PrePersist
     protected void onCreate() {
@@ -55,14 +55,14 @@ public class Activity {
     public Activity (){}
 
     public Activity (String title, ActivityType type, LocalDate date,
-                     LocalTime startTime, LocalTime endTime, String description, Consultant consultant){
+                     LocalTime startTime, LocalTime endTime, String description, User user) {
         this.title = title;
         this.type = type;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
         this.description = description;
-        this.consultant = consultant;
+        this.user = user;
     }
 
     public Long getId() {
@@ -121,9 +121,9 @@ public class Activity {
         this.description = description;
     }
 
-    public Consultant getConsultant() {return consultant;}
+    public User getUser() {return user;}
 
-    public void setConsultant(Consultant consultant) { this.consultant = consultant;}
+    public void setUser(User user) {this.user = user;}
 
     public OffsetDateTime getCreatedAt() {
         return createdAt;
