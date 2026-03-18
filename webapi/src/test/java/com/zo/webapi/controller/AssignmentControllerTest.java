@@ -87,6 +87,7 @@ public class AssignmentControllerTest {
         assignmentDTO.setConsultantId(1L);
         assignmentDTO.setCourseId(2L);
         assignmentDTO.setPublished(true);
+        assignmentDTO.setManagerId(3L);
 
         when(assignmentService.createAssignment(any(AssignmentDTO.class))).thenReturn(created);
 
@@ -104,6 +105,7 @@ public class AssignmentControllerTest {
         assertEquals(1L, sent.getConsultantId());
         assertEquals(2L, sent.getCourseId());
         assertTrue(sent.isPublished());
+        assertEquals(3L, sent.getManagerId());
 
         verifyNoMoreInteractions(assignmentService);
     }
@@ -118,6 +120,7 @@ public class AssignmentControllerTest {
         assignmentDTO.setConsultantId(1L);
         assignmentDTO.setCourseId(2L);
         assignmentDTO.setPublished(false);
+        assignmentDTO.setManagerId(3L);
 
         when(assignmentService.updateAssignment(eq(1L), any(AssignmentDTO.class))).thenReturn(updated);
 
@@ -135,6 +138,7 @@ public class AssignmentControllerTest {
         assertEquals(1L, sent.getConsultantId());
         assertEquals(2L, sent.getCourseId());
         assertFalse(sent.isPublished());
+        assertEquals(3L, sent.getManagerId());
 
         verifyNoMoreInteractions(assignmentService);
     }
@@ -168,7 +172,23 @@ public class AssignmentControllerTest {
        verifyNoMoreInteractions(assignmentService);
     }
 
+    @Test
+    void testGetAssignmentByManager_Success() throws Exception {
+        Assignment assignment = new Assignment();
+        assignment.setId(1L);
 
+        when(assignmentService.getAssignmentsByManager(5L)).thenReturn(List.of(assignment));
+
+        mockMvc.perform(get("/api/assignments/consultant/{consultantId}", 5))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1));
+
+        verify(assignmentService).getAssignmentsByConsultant(5L);
+        verifyNoMoreInteractions(assignmentService);
+    }
 
     @Test
      void testGetAssignmentById_NotFound() throws Exception {

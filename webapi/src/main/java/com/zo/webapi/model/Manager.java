@@ -31,6 +31,9 @@ public class Manager {
     @JsonIgnore
     private List<Customer> customers;
 
+    @OneToMany(mappedBy = "manager")
+    @JsonIgnore
+    private List<Assignment> assignments;
 
     //Constructors
 

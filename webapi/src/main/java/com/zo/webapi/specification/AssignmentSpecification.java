@@ -18,4 +18,11 @@ public class AssignmentSpecification {
             return criteriaBuilder.equal(root.get("consultant").get("id"), consultantId);
         };
     }
+
+    public static Specification<Assignment> hasManager(Long managerId) {
+        return (root, query, criteriaBuilder) -> {
+            if(managerId == null) return null;
+            return criteriaBuilder.equal(root.get("manager").get("id"), managerId);
+        };
+    }
 }

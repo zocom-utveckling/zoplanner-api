@@ -17,14 +17,19 @@ public class Assignment {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id", nullable = false)
+    @JoinColumn(name = "course_id")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Course course;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "consultant_id", nullable = false)
+    @JoinColumn(name = "consultant_id")
     @JsonBackReference
     private Consultant consultant;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "manager_id", nullable = false)
+    @JsonBackReference
+    private Manager manager;
 
     @Column(name = "date_start", nullable = false)
     private LocalDate dateStart;
@@ -99,5 +104,17 @@ public class Assignment {
 
     public void setPublished(boolean published) {
         this.published = published;
+    }
+
+    public Manager getManager() {
+        return manager;
+    }
+
+    public void setManager(Manager manager) {
+        this.manager = manager;
+    }
+
+    public Long getManagerId() {
+        return manager != null ? manager.getId() : null;
     }
 }
