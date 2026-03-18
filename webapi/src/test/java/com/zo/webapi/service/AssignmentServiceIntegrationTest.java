@@ -118,8 +118,8 @@ public class AssignmentServiceIntegrationTest {
 
         assignmentService.createAssignment(validDto(
                 consultant1.getId(),
-                course1.getId(),
                 manager1.getId(),
+                course1.getId(),
                 LocalDate.of(2026, 3, 10),
                 LocalDate.of(2026, 3, 15),
                 false
@@ -144,8 +144,8 @@ public class AssignmentServiceIntegrationTest {
 
         assignmentService.createAssignment(validDto(
                 consultant1.getId(),
-                course1.getId(),
                 manager1.getId(),
+                course1.getId(),
                 LocalDate.of(2026, 3, 10),
                 LocalDate.of(2026, 3, 15),
                 false

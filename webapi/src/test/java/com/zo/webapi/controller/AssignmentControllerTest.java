@@ -6,7 +6,6 @@ import com.zo.webapi.exception.ResourceNotFoundException;
 import com.zo.webapi.model.Assignment;
 
 import com.zo.webapi.service.AssignmentService;
-import com.zo.webapi.service.SessionService;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +30,6 @@ public class AssignmentControllerTest {
 
     @MockBean
     private AssignmentService assignmentService;
-
-    @MockBean
-    private SessionService sessionService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -179,14 +175,14 @@ public class AssignmentControllerTest {
 
         when(assignmentService.getAssignmentsByManager(5L)).thenReturn(List.of(assignment));
 
-        mockMvc.perform(get("/api/assignments/consultant/{consultantId}", 5))
+        mockMvc.perform(get("/api/assignments/manager/{managerId}", 5))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].id").value(1));
 
-        verify(assignmentService).getAssignmentsByConsultant(5L);
+        verify(assignmentService).getAssignmentsByManager(5L);
         verifyNoMoreInteractions(assignmentService);
     }
 
