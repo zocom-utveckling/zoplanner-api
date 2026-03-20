@@ -7,8 +7,6 @@ import com.zo.webapi.exception.InvalidDataException;
 import com.zo.webapi.exception.ResourceNotFoundException;
 import com.zo.webapi.model.*;
 import com.zo.webapi.repository.*;
-import org.checkerframework.checker.units.qual.A;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,8 +42,11 @@ public class AssignmentServiceIntegrationTest {
     private CustomerRepository customerRepository;
     @Autowired
     private ClassGroupRepository classGroupRepository;
+    @Autowired
+    private ManagerRepository managerRepository;
 
     private Consultant consultant1;
+    private Manager manager1;
     private Course course1;
 
     @BeforeEach
@@ -53,6 +54,8 @@ public class AssignmentServiceIntegrationTest {
         assignmentRepository.deleteAll();
 
         consultant1 = persistConsultant("consultant.one", "Consultant One", "consultant.one@mail.com", "Stockholm");
+        manager1 = persistManager("manager.one", "Manager One", "manager.one@mail.com", "Stockholm");
+
         course1 = persistCourseWithClassGroup("Course A", "Class A", "Customer A", "Stockholm");
 
     }
@@ -61,6 +64,7 @@ public class AssignmentServiceIntegrationTest {
     void testCreateAssignment_Success() {
         AssignmentDTO dto = validDto(
                 consultant1.getId(),
+                manager1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 1, 1),
                 LocalDate.of(2026, 1, 5),
@@ -77,6 +81,9 @@ public class AssignmentServiceIntegrationTest {
         assertThat(created.getDateStart()).isEqualTo(dto.getDateStart());
         assertThat(created.getDateEnd()).isEqualTo(dto.getDateEnd());
         assertTrue(created.isPublished());
+        assertThat(created.getManager()).isNotNull();
+        assertThat(created.getManager().getId()).isEqualTo(manager1.getId());
+
 
         assertThat(assignmentRepository.findById(created.getId())).isPresent();
     }
@@ -85,6 +92,7 @@ public class AssignmentServiceIntegrationTest {
     void testGetAssignmentById_Success() {
         Assignment created = assignmentService.createAssignment(validDto(
                 consultant1.getId(),
+                manager1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 2, 1),
                 LocalDate.of(2026, 2, 5),
@@ -101,6 +109,7 @@ public class AssignmentServiceIntegrationTest {
     void testGetAssignmentsByConsultant_Success() {
         assignmentService.createAssignment(validDto(
                 consultant1.getId(),
+                manager1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 3, 1),
                 LocalDate.of(2026, 3, 5),
@@ -109,6 +118,7 @@ public class AssignmentServiceIntegrationTest {
 
         assignmentService.createAssignment(validDto(
                 consultant1.getId(),
+                manager1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 3, 10),
                 LocalDate.of(2026, 3, 15),
@@ -122,9 +132,36 @@ public class AssignmentServiceIntegrationTest {
     }
 
     @Test
+    void testGetAssignmentsByManager_Success() {
+        assignmentService.createAssignment(validDto(
+                consultant1.getId(),
+                manager1.getId(),
+                course1.getId(),
+                LocalDate.of(2026, 3, 1),
+                LocalDate.of(2026, 3, 5),
+                true
+        ));
+
+        assignmentService.createAssignment(validDto(
+                consultant1.getId(),
+                manager1.getId(),
+                course1.getId(),
+                LocalDate.of(2026, 3, 10),
+                LocalDate.of(2026, 3, 15),
+                false
+        ));
+
+        List<Assignment> assignmentList = assignmentService.getAssignmentsByManager(manager1.getId());
+
+        assertThat(assignmentList).hasSize(2);
+        assertThat(assignmentList).allMatch(a -> a.getManager().getId().equals(manager1.getId()));
+    }
+
+    @Test
     void testGetAssignmentsByVisibility() {
         assignmentService.createAssignment(validDto(
                 consultant1.getId(),
+                manager1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 3, 1),
                 LocalDate.of(2026, 3, 5),
@@ -133,6 +170,7 @@ public class AssignmentServiceIntegrationTest {
 
         assignmentService.createAssignment(validDto(
                 consultant1.getId(),
+                manager1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 3, 1),
                 LocalDate.of(2026, 3, 5),
@@ -141,6 +179,7 @@ public class AssignmentServiceIntegrationTest {
 
         assignmentService.createAssignment(validDto(
                 consultant1.getId(),
+                manager1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 3, 1),
                 LocalDate.of(2026, 3, 5),
@@ -149,6 +188,7 @@ public class AssignmentServiceIntegrationTest {
 
         assignmentService.createAssignment(validDto(
                 consultant1.getId(),
+                manager1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 3, 10),
                 LocalDate.of(2026, 3, 15),
@@ -165,6 +205,7 @@ public class AssignmentServiceIntegrationTest {
     void testUpdateAssignment_Success() {
         Assignment created = assignmentService.createAssignment(validDto(
                 consultant1.getId(),
+                manager1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 4, 1),
                 LocalDate.of(2026, 4, 5),
@@ -173,11 +214,15 @@ public class AssignmentServiceIntegrationTest {
         Consultant consultant2 = persistConsultant(
                 "consultant.two", "Consultant Two", "consultant.two@mail.com", "Göteborg");
 
+        Manager manager2 = persistManager(
+                "manager.two", "Manager Two", "manager.two@mail.com", "Göteborg");
+
         Course course2 = persistCourseWithClassGroup(
                 "Course B", "Class B", "Customer B", "Göteborg");
 
         AssignmentDTO updateDTO = validDto(
                 consultant2.getId(),
+                manager2.getId(),
                 course2.getId(),
                 LocalDate.of(2026, 4, 10),
                 LocalDate.of(2026, 4, 15),
@@ -188,6 +233,7 @@ public class AssignmentServiceIntegrationTest {
 
         assertThat(updated.getId()).isEqualTo(created.getId());
         assertThat(updated.getConsultant().getId()).isEqualTo(consultant2.getId());
+        assertThat(updated.getManager().getId()).isEqualTo(manager2.getId());
         assertThat(updated.getCourse().getId()).isEqualTo(course2.getId());
         assertThat(updated.getDateStart()).isEqualTo(updateDTO.getDateStart());
         assertThat(updated.getDateEnd()).isEqualTo(updateDTO.getDateEnd());
@@ -197,6 +243,7 @@ public class AssignmentServiceIntegrationTest {
     void testDeleteAssignment_Success() {
         Assignment created = assignmentService.createAssignment(validDto(
                 consultant1.getId(),
+                manager1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 5, 1),
                 LocalDate.of(2026, 5, 5),
@@ -224,6 +271,7 @@ public class AssignmentServiceIntegrationTest {
 
         AssignmentDTO dto = validDto(
                 consultantNotFoundId,
+                manager1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 6, 1),
                 LocalDate.of(2026, 6, 5),
@@ -242,6 +290,7 @@ public class AssignmentServiceIntegrationTest {
 
         AssignmentDTO dto = validDto(
                 consultant1.getId(),
+                manager1.getId(),
                 courseNotFoundId,
                 LocalDate.of(2026, 7, 1),
                 LocalDate.of(2026, 7, 5),
@@ -258,6 +307,7 @@ public class AssignmentServiceIntegrationTest {
     void testCreateAssignment_InvalidDates() {
         AssignmentDTO dto = validDto(
                 consultant1.getId(),
+                manager1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 8, 5),
                 LocalDate.of(2026, 8, 1),
@@ -285,6 +335,7 @@ public class AssignmentServiceIntegrationTest {
         long assignmentNotFoundId = 9999L;
         AssignmentDTO dto = validDto(
                 consultant1.getId(),
+                manager1.getId(),
                 course1.getId(),
                 LocalDate.of(2026, 9, 1),
                 LocalDate.of(2026, 9, 5),
@@ -309,9 +360,10 @@ public class AssignmentServiceIntegrationTest {
 
     // Helpers
 
-    private AssignmentDTO validDto(Long consultantId, Long courseId, LocalDate start, LocalDate end, boolean published) {
+    private AssignmentDTO validDto(Long consultantId, Long managerId, Long courseId, LocalDate start, LocalDate end, boolean published) {
         AssignmentDTO dto = new AssignmentDTO();
         dto.setConsultantId(consultantId);
+        dto.setManagerId(managerId);
         dto.setCourseId(courseId);
         dto.setDateStart(start);
         dto.setDateEnd(end);
@@ -332,6 +384,21 @@ public class AssignmentServiceIntegrationTest {
         Consultant c = new Consultant();
         c.setUser(u);
         return consultantRepository.save(c);
+    }
+
+    private Manager persistManager(String username, String name, String email, String city) {
+        User u = new User();
+        u.setUsername(username);
+        u.setPassword("pw");
+        u.setName(name);
+        u.setEmail(email);
+        u.setCity(city);
+        u.setRole(UserRole.MANAGER);
+        u = userRepository.save(u);
+
+        Manager m = new Manager();
+        m.setUser(u);
+        return managerRepository.save(m);
     }
 
     private Course persistCourseWithClassGroup(String courseName, String className, String customerName, String customerCity) {

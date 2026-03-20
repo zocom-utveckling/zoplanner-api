@@ -6,8 +6,9 @@ import java.time.LocalDate;
 @Data
 public class AssignmentDTO {
 
-    private Long id; // for update, kan vara null for create
+    private Long id; // för update, kan vara null för create
     private Long consultantId;
+    private Long managerId;
     private Long courseId;
     private LocalDate dateStart;
     private LocalDate dateEnd;

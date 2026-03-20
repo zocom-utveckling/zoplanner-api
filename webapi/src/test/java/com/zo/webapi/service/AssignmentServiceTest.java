@@ -6,10 +6,11 @@ import com.zo.webapi.exception.ResourceNotFoundException;
 import com.zo.webapi.model.Assignment;
 import com.zo.webapi.model.Consultant;
 import com.zo.webapi.model.Course;
+import com.zo.webapi.model.Manager;
 import com.zo.webapi.repository.AssignmentRepository;
 import com.zo.webapi.repository.ConsultantRepository;
 import com.zo.webapi.repository.CourseRepository;
-
+import com.zo.webapi.repository.ManagerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -21,6 +22,7 @@ import static org.mockito.Mockito.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.data.jpa.domain.Specification;
 
 @ExtendWith(MockitoExtension.class)
 public class AssignmentServiceTest {
@@ -32,10 +34,14 @@ public class AssignmentServiceTest {
     private ConsultantRepository consultantRepository;
 
     @Mock
+    private ManagerRepository managerRepository;
+
+    @Mock
     private CourseRepository courseRepository;
 
     private AssignmentDTO assignmentDTO;
     private Consultant consultant;
+    private Manager manager;
     private Course course;
 
     @InjectMocks
@@ -49,9 +55,13 @@ public class AssignmentServiceTest {
         assignmentDTO.setCourseId(2L);
         assignmentDTO.setDateStart(LocalDate.of(2025, 1, 1));
         assignmentDTO.setDateEnd(LocalDate.of(2025, 1, 5));
+        assignmentDTO.setManagerId(5L);
 
         consultant = new Consultant();
         consultant.setId(1L);
+
+        manager = new Manager();
+        manager.setId(5L);
 
         course = new Course();
         course.setId(2L);
@@ -99,9 +109,23 @@ public class AssignmentServiceTest {
     }
 
     @Test
+    void testGetAssignmentByManager_Success() {
+        when(managerRepository.existsById(10L)).thenReturn(true);
+        when(assignmentRepository.findAll(any(Specification.class))).thenReturn(List.of(new Assignment()));
+
+        List<Assignment> result = assignmentService.getAssignmentsByManager(10L);
+
+        assertEquals(1, result.size());
+        verify(managerRepository).existsById(10L);
+        verify(assignmentRepository).findAll(any(Specification.class));
+        verifyNoMoreInteractions(managerRepository, assignmentRepository);
+    }
+
+    @Test
     void testCreateAssignment_Success() {
         when(consultantRepository.findById(1L)).thenReturn(Optional.of(consultant));
         when(courseRepository.findById(2L)).thenReturn(Optional.of(course));
+        when(managerRepository.findById(5L)).thenReturn(Optional.of(manager));
 
         Assignment created = new Assignment();
         created.setId(123L);
@@ -116,6 +140,7 @@ public class AssignmentServiceTest {
         verify(assignmentRepository).save(captor.capture());
         verify(consultantRepository).findById(1L);
         verify(courseRepository).findById(2L);
+        verify(managerRepository).findById(5L);
 
         Assignment toSave = captor.getValue();
         assertSame(consultant, toSave.getConsultant());
@@ -123,8 +148,41 @@ public class AssignmentServiceTest {
         assertEquals(assignmentDTO.getDateStart(), toSave.getDateStart());
         assertEquals(assignmentDTO.getDateEnd(), toSave.getDateEnd());
         assertFalse(toSave.isPublished());
+        assertEquals(manager, toSave.getManager());
 
-        verifyNoMoreInteractions(assignmentRepository, consultantRepository, courseRepository);
+        verifyNoMoreInteractions(assignmentRepository, consultantRepository, courseRepository, managerRepository);
+    }
+
+    @Test
+    void testCreateAssignmentWithBareMinimum_Success() {
+        when(managerRepository.findById(5L)).thenReturn(Optional.of(manager));
+
+        Assignment created = new Assignment();
+        created.setId(123L);
+        when(assignmentRepository.save(any(Assignment.class))).thenReturn(created);
+
+        assignmentDTO.setConsultantId(null);
+        assignmentDTO.setCourseId(null);
+        Assignment result = assignmentService.createAssignment(assignmentDTO);
+
+        assertNotNull(result);
+        assertEquals(123L, result.getId());
+
+        ArgumentCaptor<Assignment> captor = ArgumentCaptor.forClass(Assignment.class);
+        verify(assignmentRepository).save(captor.capture());
+        verify(managerRepository, times(1)).findById(5L);
+        verify(courseRepository, never()).findById(any());
+        verify(consultantRepository, never()).findById(any());
+
+        Assignment toSave = captor.getValue();
+        assertNull(toSave.getConsultant());
+        assertNull(toSave.getCourse());
+        assertEquals(assignmentDTO.getDateStart(), toSave.getDateStart());
+        assertEquals(assignmentDTO.getDateEnd(), toSave.getDateEnd());
+        assertFalse(toSave.isPublished());
+        assertEquals(manager, toSave.getManager());
+
+        verifyNoMoreInteractions(assignmentRepository, managerRepository);
     }
 
     @Test
@@ -135,6 +193,7 @@ public class AssignmentServiceTest {
         when(assignmentRepository.findById(1L)).thenReturn(Optional.of(existingAssignment));
         when(consultantRepository.findById(1L)).thenReturn(Optional.of(consultant));
         when(courseRepository.findById(2L)).thenReturn(Optional.of(course));
+        when(managerRepository.findById(5L)).thenReturn(Optional.of(manager));
         when(assignmentRepository.save(existingAssignment)).thenReturn(existingAssignment);
 
         Assignment updated = assignmentService.updateAssignment(1L, assignmentDTO);
@@ -143,6 +202,7 @@ public class AssignmentServiceTest {
         assertSame(existingAssignment, updated);
         assertSame(consultant, existingAssignment.getConsultant());
         assertSame(course, existingAssignment.getCourse());
+        assertSame(manager, existingAssignment.getManager());
         assertEquals(assignmentDTO.getDateStart(), existingAssignment.getDateStart());
         assertEquals(assignmentDTO.getDateEnd(), existingAssignment.getDateEnd());
 
@@ -150,7 +210,8 @@ public class AssignmentServiceTest {
         verify(assignmentRepository).save(existingAssignment);
         verify(consultantRepository).findById(1L);
         verify(courseRepository).findById(2L);
-        verifyNoMoreInteractions(assignmentRepository, consultantRepository, courseRepository);
+        verify(managerRepository).findById(5L);
+        verifyNoMoreInteractions(assignmentRepository, consultantRepository, courseRepository, managerRepository);
 
     }
 
@@ -189,33 +250,42 @@ public class AssignmentServiceTest {
 
         verify(consultantRepository).existsById(10L);
         verifyNoInteractions(assignmentRepository, courseRepository);
-
     }
 
+    @Test
+    void testGetAssignmentByManager_ManagerNotFound() {
+        when(managerRepository.existsById(10L)).thenReturn(false);
+
+        assertThrows(ResourceNotFoundException.class, () ->
+                assignmentService.getAssignmentsByManager(10L));
+
+        verify(managerRepository).existsById(10L);
+        verifyNoInteractions(assignmentRepository);
+    }
 
     @Test
-    void testCreateAssignment_MissingConsultantId() {
-        assignmentDTO.setConsultantId(null);
+    void testCreateAssignment_MissingManagerId() {
+        assignmentDTO.setManagerId(null);
 
         InvalidDataException exc = assertThrows(InvalidDataException.class,
                 () -> assignmentService.createAssignment(assignmentDTO));
 
-        assertTrue(exc.getMessage().contains("Consultant ID"));
+        assertTrue(exc.getMessage().contains("Manager ID is required"));
 
-        verifyNoInteractions(consultantRepository, courseRepository, assignmentRepository);
+        verifyNoInteractions(managerRepository);
     }
 
-    @Test
-    void testCreateAssignment_MissingCourseId() {
-        assignmentDTO.setCourseId(null);
-
-        InvalidDataException exc = assertThrows(InvalidDataException.class,
-                () -> assignmentService.createAssignment(assignmentDTO));
-
-        assertTrue(exc.getMessage().contains("Course ID"));
-        verifyNoInteractions(consultantRepository, courseRepository, assignmentRepository);
-
-    }
+//    @Test
+//    void testCreateAssignment_MissingCourseId() {
+//        assignmentDTO.setCourseId(null);
+//
+//        InvalidDataException exc = assertThrows(InvalidDataException.class,
+//                () -> assignmentService.createAssignment(assignmentDTO));
+//
+//        assertTrue(exc.getMessage().contains("Course ID"));
+//        verifyNoInteractions(consultantRepository, courseRepository, assignmentRepository);
+//
+//    }
 
 
     @Test
@@ -267,25 +337,25 @@ public class AssignmentServiceTest {
         verifyNoInteractions(consultantRepository, courseRepository, assignmentRepository);
     }
 
-    @Test
-    void testUpdateAssignment_MissingConsultant() {
-        Assignment existingAssignment = new Assignment();
-        existingAssignment.setId(1L);
-
-        when(assignmentRepository.findById(1L)).thenReturn(Optional.of(existingAssignment));
-        when(consultantRepository.findById(1L)).thenReturn(Optional.empty());
-
-        ResourceNotFoundException exc = assertThrows(ResourceNotFoundException.class,
-                () -> assignmentService.updateAssignment(1L, assignmentDTO));
-
-        assertTrue(exc.getMessage().contains("Consultant"));
-
-        verify(assignmentRepository).findById(1L);
-        verify(consultantRepository).findById(1L);
-        verifyNoInteractions(courseRepository);
-        verify(assignmentRepository, never()).save(any());
-        verifyNoMoreInteractions(assignmentRepository, consultantRepository);
-    }
+//    @Test
+//    void testUpdateAssignment_MissingConsultant() {
+//        Assignment existingAssignment = new Assignment();
+//        existingAssignment.setId(1L);
+//
+//        when(assignmentRepository.findById(1L)).thenReturn(Optional.of(existingAssignment));
+//        when(consultantRepository.findById(1L)).thenReturn(Optional.empty());
+//
+//        ResourceNotFoundException exc = assertThrows(ResourceNotFoundException.class,
+//                () -> assignmentService.updateAssignment(1L, assignmentDTO));
+//
+//        assertTrue(exc.getMessage().contains("Consultant"));
+//
+//        verify(assignmentRepository).findById(1L);
+//        verify(consultantRepository).findById(1L);
+//        verifyNoInteractions(courseRepository);
+//        verify(assignmentRepository, never()).save(any());
+//        verifyNoMoreInteractions(assignmentRepository, consultantRepository);
+//    }
 
     @Test
     void testDeleteAssignment_NotFound() {

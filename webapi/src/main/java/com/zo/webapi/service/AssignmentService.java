@@ -6,9 +6,11 @@ import com.zo.webapi.exception.ResourceNotFoundException;
 import com.zo.webapi.model.Assignment;
 import com.zo.webapi.model.Consultant;
 import com.zo.webapi.model.Course;
+import com.zo.webapi.model.Manager;
 import com.zo.webapi.repository.AssignmentRepository;
 import com.zo.webapi.repository.ConsultantRepository;
 import com.zo.webapi.repository.CourseRepository;
+import com.zo.webapi.repository.ManagerRepository;
 import com.zo.webapi.specification.AssignmentSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -25,14 +27,17 @@ public class AssignmentService {
     private final AssignmentRepository assignmentRepository;
     private final ConsultantRepository consultantRepository;
     private final CourseRepository courseRepository;
+    private final ManagerRepository managerRepository;
 
     @Autowired
     public AssignmentService(AssignmentRepository assignmentRepository,
                              ConsultantRepository consultantRepository,
-                             CourseRepository courseRepository) {
+                             CourseRepository courseRepository,
+                             ManagerRepository managerRepository) {
         this.assignmentRepository = assignmentRepository;
         this.consultantRepository = consultantRepository;
         this.courseRepository = courseRepository;
+        this.managerRepository = managerRepository;
     }
 
     @Transactional(readOnly = true)
@@ -55,6 +60,16 @@ public class AssignmentService {
         return assignmentRepository.findByConsultant_Id(consultantId);
     }
 
+    public List<Assignment> getAssignmentsByManager(Long managerId) {
+        if (!managerRepository.existsById(managerId)) {
+            throw new ResourceNotFoundException("Manager", "id", managerId);
+        }
+        Specification<Assignment> spec = Specification.allOf(
+                AssignmentSpecification.hasManager(managerId)
+        );
+        return assignmentRepository.findAll(spec);
+    }
+
     public List<Assignment> getAssignmentsByVisibility(boolean published) {
         Specification<Assignment> spec = Specification.allOf(AssignmentSpecification.isPublished(published));
         return assignmentRepository.findAll(spec);
@@ -70,20 +85,34 @@ public class AssignmentService {
 
     @Transactional
     public Assignment createAssignment(AssignmentDTO dto) {
+        Consultant consultant = null;
+        Course course = null;
+
         // Validera DTO
         validateAssignmentDTO(dto);
 
         // Validera datum
         validateDates(dto.getDateStart(), dto.getDateEnd());
 
-        Consultant consultant = consultantRepository.findById(dto.getConsultantId())
-                .orElseThrow(() -> new ResourceNotFoundException("Consultant", "id", dto.getConsultantId()));
+        if(dto.getManagerId() == null) {
+            throw new InvalidDataException("Manager ID is required");
+        }
+        Manager manager = managerRepository.findById(dto.getManagerId())
+                .orElseThrow(() -> new ResourceNotFoundException("Manager", "id", dto.getManagerId()));
 
-        Course course = courseRepository.findById(dto.getCourseId())
-                .orElseThrow(() -> new ResourceNotFoundException("Course", "id", dto.getCourseId()));
+        if(dto.getConsultantId() != null) {
+            consultant = consultantRepository.findById(dto.getConsultantId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Consultant", "id", dto.getConsultantId()));
+        }
+
+        if(dto.getCourseId() != null) {
+            course = courseRepository.findById(dto.getCourseId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Course", "id", dto.getCourseId()));
+        }
 
         Assignment assignment = new Assignment();
         assignment.setConsultant(consultant);
+        assignment.setManager(manager);
         assignment.setCourse(course);
         assignment.setDateStart(dto.getDateStart());
         assignment.setDateEnd(dto.getDateEnd());
@@ -104,17 +133,29 @@ public class AssignmentService {
         Assignment assignment = assignmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Assignment", "id", id));
 
-        Consultant consultant = consultantRepository.findById(dto.getConsultantId())
-                .orElseThrow(() -> new ResourceNotFoundException("Consultant", "id", dto.getConsultantId()));
+        Manager manager = managerRepository.findById(dto.getManagerId())
+                .orElseThrow(() -> new ResourceNotFoundException("Manager", "id", dto.getManagerId()));
+        assignment.setManager(manager);
 
-        Course course = courseRepository.findById(dto.getCourseId())
-                .orElseThrow(() -> new ResourceNotFoundException("Course", "id", dto.getCourseId()));
+        if(dto.getConsultantId() != null) {
+            Consultant consultant = consultantRepository.findById(dto.getConsultantId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Consultant", "id", dto.getConsultantId()));
+            assignment.setConsultant(consultant);
+        } else {
+            assignment.setConsultant(null);
+        }
 
-        assignment.setConsultant(consultant);
-        assignment.setCourse(course);
+        if(dto.getCourseId() != null) {
+            Course course = courseRepository.findById(dto.getCourseId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Course", "id", dto.getCourseId()));
+            assignment.setCourse(course);
+        } else {
+            assignment.setCourse(null);
+        }
+
+        if(dto.isPublished() != null) assignment.setPublished(dto.isPublished());
         assignment.setDateStart(dto.getDateStart());
         assignment.setDateEnd(dto.getDateEnd());
-        if(dto.isPublished() != null) assignment.setPublished(dto.isPublished());
 
         return assignmentRepository.save(assignment);
     }
@@ -130,12 +171,6 @@ public class AssignmentService {
     private void validateAssignmentDTO(AssignmentDTO dto) {
         if (dto == null) {
             throw new InvalidDataException("Assignment data cannot be null");
-        }
-        if (dto.getConsultantId() == null) {
-            throw new InvalidDataException("Consultant ID is required");
-        }
-        if (dto.getCourseId() == null) {
-            throw new InvalidDataException("Course ID is required");
         }
         if (dto.getDateStart() == null) {
             throw new InvalidDataException("Start date is required");

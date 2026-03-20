@@ -46,6 +46,11 @@ public class AssignmentController {
         }
         return ResponseEntity.ok(assignments);
     }
+    @GetMapping("/manager/{managerId}")
+    public ResponseEntity<List<Assignment>> getAssignmentByManager(@PathVariable Long managerId) {
+        List<Assignment> assignments = assignmentService.getAssignmentsByManager(managerId);
+        return ResponseEntity.ok(assignments);
+    }
 
     @GetMapping("/visibility")
     public ResponseEntity<List<Assignment>> getAssignmentsByVisibility(@RequestParam(required = false) boolean published) {

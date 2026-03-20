@@ -21,7 +21,7 @@ public class Customer {
     private String city;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id", nullable = true, foreignKey = @ForeignKey(name = "fk_customer_manager"))
+    @JoinColumn(name = "manager_id", foreignKey = @ForeignKey(name = "fk_customer_manager"))
     @JsonIgnore
     private Manager manager;
 

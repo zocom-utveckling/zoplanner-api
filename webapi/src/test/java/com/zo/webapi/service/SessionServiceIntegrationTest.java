@@ -2,7 +2,6 @@ package com.zo.webapi.service;
 
 import com.zo.webapi.WebapiApplication;
 import com.zo.webapi.enums.UserRole;
-import com.zo.webapi.exception.ResourceNotFoundException;
 import com.zo.webapi.model.*;
 import com.zo.webapi.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -31,6 +30,7 @@ public class SessionServiceIntegrationTest {
     @Autowired private SessionRepository sessionRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private ConsultantRepository consultantRepository;
+    @Autowired private ManagerRepository managerRepository;
     @Autowired private CourseRepository courseRepository;
     @Autowired private CustomerRepository customerRepository;
     @Autowired private ClassGroupRepository classGroupRepository;
@@ -61,6 +61,19 @@ public class SessionServiceIntegrationTest {
         consultant.setUser(user);
         consultant = consultantRepository.save(consultant);
 
+        // Manager
+        User user2 = new User();
+        user2.setUsername("session.user2");
+        user2.setPassword("pw");
+        user2.setName("Session User2");
+        user2.setEmail("session2@test.com");
+        user2.setCity("Stockholm");
+        user2.setRole(UserRole.MANAGER);
+        user2 = userRepository.save(user2);
+
+        Manager manager = new Manager(user2);
+        manager = managerRepository.save(manager);
+
         // Course
         Customer customer = new Customer();
         customer.setName("Customer A");
@@ -85,6 +98,7 @@ public class SessionServiceIntegrationTest {
         dto1.setCourseId(course.getId());
         dto1.setDateStart(LocalDate.of(2026, 1, 1));
         dto1.setDateEnd(LocalDate.of(2026, 6, 30));
+        dto1.setManagerId(manager.getId());
         assignment1 = assignmentService.createAssignment(dto1);
 
         com.zo.webapi.dto.AssignmentDTO dto2 = new com.zo.webapi.dto.AssignmentDTO();
@@ -92,6 +106,7 @@ public class SessionServiceIntegrationTest {
         dto2.setCourseId(course.getId());
         dto2.setDateStart(LocalDate.of(2026, 7, 1));
         dto2.setDateEnd(LocalDate.of(2026, 12, 31));
+        dto2.setManagerId(manager.getId());
         assignment2 = assignmentService.createAssignment(dto2);
     }
 
