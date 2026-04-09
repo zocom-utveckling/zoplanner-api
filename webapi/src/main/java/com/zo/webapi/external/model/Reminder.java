@@ -1,4 +1,4 @@
-package external.model;
+package com.zo.webapi.external.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
