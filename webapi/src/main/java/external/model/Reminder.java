@@ -33,15 +33,3 @@ public class Reminder {
 
     public Reminder() {}
 }
-
-
-
-//CREATE TABLE reminders (
-//        id UUID PRIMARY KEY,
-//        teacher_email TEXT NOT NULL,
-//        message TEXT NOT NULL,
-//        send_at TIMESTAMP NOT NULL,
-//        event_time TIMESTAMP,
-//        sent BOOLEAN DEFAULT FALSE,
-//        created_at TIMESTAMP DEFAULT NOW()
-//);
