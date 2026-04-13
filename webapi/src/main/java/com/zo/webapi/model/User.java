@@ -41,6 +41,9 @@ public class User {
     @Column(name = "role", nullable = false)
     private UserRole role = UserRole.CONSULTANT;
 
+    @Column(name = "profile_picture")
+    private String profilePicture;
+
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Activity> activities;
@@ -114,6 +117,10 @@ public class User {
     public void setRole(UserRole role) {
         this.role = role;
     }
+
+    public String getProfilePicture(){ return profilePicture; }
+
+    public void setProfilePicture(String profilePicture){ this.profilePicture = profilePicture; }
 
     public List<Activity> getActivities() {
         return activities;
