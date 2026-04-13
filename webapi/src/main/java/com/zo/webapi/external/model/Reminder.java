@@ -13,19 +13,19 @@ public class Reminder {
     private Long id;
 
     @Email
-    @Column(name = "consultant_email")
+    @Column(name = "consultant_email", nullable = false)
     private String consultantEmail;
 
-    @Column(name = "message")
+    @Column(name = "message", nullable = false)
     private String message;
 
-    @Column(name = "send_at")
+    @Column(name = "send_at", nullable = false)
     private LocalDateTime sendAt;
 
     @Column(name = "event_date")
     private LocalDateTime eventDate;
 
-    @Column(name = "sent")
+    @Column(name = "sent", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean sent;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT NOW()")
