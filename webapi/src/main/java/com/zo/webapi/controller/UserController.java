@@ -1,15 +1,20 @@
 package com.zo.webapi.controller;
 
 import com.zo.webapi.dto.CreateUserRequestDTO;
+import com.zo.webapi.dto.ProfilePictureResponseDTO;
+import com.zo.webapi.exception.FileStorageException;
 import com.zo.webapi.model.User;
 import com.zo.webapi.service.UserService;
 import jakarta.validation.Valid;
 import org.springdoc.core.service.GenericResponseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/users")
@@ -126,6 +131,19 @@ public class UserController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("User with name " + username + " not found: " + e.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/{id}/profile-picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProfilePictureResponseDTO> uploadProfilePicture(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file){
+
+        try {
+            ProfilePictureResponseDTO response = userService.uploadProfilePicture(id, file);
+            return ResponseEntity.ok(response);
+        } catch (IOException e) {
+            throw new FileStorageException("Failed to upload profile picture: " + e.getMessage(), e);
         }
     }
 }

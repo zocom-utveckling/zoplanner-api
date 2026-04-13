@@ -1,11 +1,17 @@
 package com.zo.webapi.service;
 
+import com.zo.webapi.dto.FileResponse;
+import com.zo.webapi.dto.ProfilePictureResponseDTO;
 import com.zo.webapi.model.User;
 import com.zo.webapi.repository.ConsultantRepository;
 import com.zo.webapi.repository.ManagerRepository;
 import com.zo.webapi.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import com.zo.webapi.exception.InvalidDataException;
+import com.zo.webapi.exception.ResourceNotFoundException;
+import java.io.IOException;
 
 import java.util.List;
 
@@ -16,14 +22,17 @@ public class UserService {
     private final ConsultantRepository consultantRepository;
     private final ManagerService managerService;
     private final ConsultantService consultantService;
+    private final FileService fileService;
 
     //Constructor
-    public UserService(UserRepository userRepository, ManagerRepository managerRepository, ConsultantRepository consultantRepository, ManagerService managerService, ConsultantService consultantService) {
+    public UserService(UserRepository userRepository, ManagerRepository managerRepository, ConsultantRepository consultantRepository,
+                       ManagerService managerService, ConsultantService consultantService, FileService fileService) {
         this.userRepository = userRepository;
         this.managerRepository = managerRepository;
         this.consultantRepository = consultantRepository;
         this.managerService = managerService;
         this.consultantService = consultantService;
+        this.fileService = fileService;
     }
 
     //Gets all users
@@ -104,6 +113,32 @@ public class UserService {
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with name " + username));
+    }
+
+    @Transactional
+    public ProfilePictureResponseDTO uploadProfilePicture(Long userId, MultipartFile file) throws IOException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
+        validateProfilePicture(file);
+
+        FileResponse uploadedFile = fileService.uploadFile(file);
+
+        user.setProfilePicture(uploadedFile.getUrl());
+        User savedUser = userRepository.save(user);
+
+        return new ProfilePictureResponseDTO(savedUser.getId(), savedUser.getProfilePicture());
+    }
+
+    private void validateProfilePicture(MultipartFile file){
+        if (file == null || file.isEmpty()) {
+            throw new InvalidDataException("File must not be empty");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new InvalidDataException("Only image files are allowed");
+        }
     }
 
 }
