@@ -4,18 +4,24 @@ import com.zo.webapi.model.User;
 import com.zo.webapi.repository.ConsultantRepository;
 import com.zo.webapi.repository.ManagerRepository;
 import com.zo.webapi.service.UserService;
+import com.zo.webapi.dto.ProfilePictureResponseDTO;
+import com.zo.webapi.exception.InvalidDataException;
+import com.zo.webapi.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springdoc.core.service.GenericResponseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
 import java.util.ArrayList;
 import java.util.List;
 import com.zo.webapi.enums.UserRole;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -172,6 +178,105 @@ public class UserControllerTest {
                         .content(requestJson))
                 .andExpect(status().isConflict());
         verify(userService, never()).createUser(user);
+    }
+
+    @Test
+    void testUploadProfilePicture_Success() throws Exception {
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "avatar.png",
+                "image/png",
+                "fake-image-content".getBytes()
+        );
+
+        ProfilePictureResponseDTO responseDTO =
+                new ProfilePictureResponseDTO(1L, "/files/10");
+
+        when(userService.uploadProfilePicture(eq(1L), any())).thenReturn(responseDTO);
+
+        mockMvc.perform(multipart("/api/users/{id}/profile-picture", 1L)
+                .file(file))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(1))
+                .andExpect(jsonPath("$.profilePicture").value("/files/10"));
+
+        verify(userService, times(1)).uploadProfilePicture(eq(1L), any());
+    }
+
+    @Test
+    void testUploadProfilePicture_UserNotFound() throws Exception {
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "avatar.png",
+                "image/png",
+                "fake-image-content".getBytes()
+        );
+
+        when(userService.uploadProfilePicture(eq(999L), any()))
+                .thenThrow(new ResourceNotFoundException("User", "id", 999L));
+
+        mockMvc.perform(multipart("/api/users/{id}/profile-picture", 999L)
+                .file(file))
+                .andExpect(status().isNotFound());
+
+        verify(userService, times(1)).uploadProfilePicture(eq(999L), any());
+    }
+
+    @Test
+    void testUploadProfilePicture_EmptyFile_BadRequest() throws Exception {
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "empty.png",
+                "image/png",
+                new byte[0]
+        );
+
+        when(userService.uploadProfilePicture(eq(1L), any()))
+                .thenThrow(new InvalidDataException("File must not be empty"));
+
+        mockMvc.perform(multipart("/api/users/{id}/profile-picture", 1L)
+                .file(file))
+                .andExpect(status().isBadRequest());
+
+        verify(userService, times(1)).uploadProfilePicture(eq(1L), any());
+    }
+
+    @Test
+    void testUploadProfilePicture_InvalidContentType_BadRequest() throws Exception {
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "document.pdf",
+                "application/pdf",
+                "fake-pdf-content".getBytes()
+        );
+
+        when(userService.uploadProfilePicture(eq(1L), any()))
+                .thenThrow(new InvalidDataException("Only image files are allowed"));
+
+        mockMvc.perform(multipart("/api/users/{id}/profile-picture", 1L)
+                .file(file))
+                .andExpect(status().isBadRequest());
+
+        verify(userService, times(1)).uploadProfilePicture(eq(1L), any());
+    }
+
+    @Test
+    void testUploadProfilePicture_IOException() throws Exception {
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "avatar.png",
+                "image/png",
+                "fake-image-content".getBytes()
+        );
+
+        when(userService.uploadProfilePicture(eq(1L), any()))
+                .thenThrow(new java.io.IOException("Disk error"));
+
+        mockMvc.perform(multipart("/api/users/{id}/profile-picture", 1L)
+                .file(file))
+                .andExpect(status().isInternalServerError());
+
+        verify(userService, times(1)).uploadProfilePicture(eq(1L), any());
     }
 }
 
