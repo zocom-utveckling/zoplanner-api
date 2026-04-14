@@ -134,6 +134,7 @@ public class UserController {
         }
     }
 
+    // Upload a profile picture
     @PostMapping(value = "/{id}/profile-picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProfilePictureResponseDTO> uploadProfilePicture(
             @PathVariable Long id,
